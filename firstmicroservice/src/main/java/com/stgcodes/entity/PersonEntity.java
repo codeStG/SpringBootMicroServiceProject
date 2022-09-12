@@ -8,33 +8,44 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "PERSON_TBL")
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@NoArgsConstructor
 public class PersonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id")
     private Long personId;
 
     @Column(name = "first_name", nullable = false, length = 25)
+    @NonNull
     private String firstName;
 
     @Column(name = "last_name", nullable = false, length = 25)
+    @NonNull
     private String lastName;
 
     @Column(name = "username", nullable = false, length = 25, unique = true)
+    @NonNull
     private String username;
 
     @Column(name = "date_of_birth", nullable = false)
+    @NonNull
     private String dateOfBirth;
 
     @Column(name = "ssn", nullable = false)
+    @NonNull
     private String socialSecurityNumber;
 
     @Column(name = "gender")
+    @NonNull
     private String gender;
 
     @Column(name = "email", nullable = false)
+    @NonNull
     private String email;
 
     @Override

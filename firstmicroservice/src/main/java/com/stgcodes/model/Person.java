@@ -10,12 +10,12 @@ public class Person {
     private String firstName;
     private String lastName;
     private String username;
-    private Date dateOfBirth;
+    private String dateOfBirth;
     private String socialSecurityNumber;
     private String gender;
     private String email;
 
-    public Person(String firstName, String lastName, String username, Date dateOfBirth, String socialSecurityNumber, String gender, String email) {
+    public Person(String firstName, String lastName, String username, String dateOfBirth, String socialSecurityNumber, String gender, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

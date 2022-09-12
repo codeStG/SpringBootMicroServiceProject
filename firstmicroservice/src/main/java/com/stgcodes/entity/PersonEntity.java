@@ -9,12 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "PERSON_TBL")
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class PersonEntity {
 
     @Id

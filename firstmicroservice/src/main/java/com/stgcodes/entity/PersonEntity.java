@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -14,27 +13,28 @@ public class PersonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "person_id")
     private Long personId;
 
-    @Column(name = "FIRST_NAME", nullable = false, length = 25)
+    @Column(name = "first_name", nullable = false, length = 25)
     private String firstName;
 
-    @Column(name = "LAST_NAME", nullable = false, length = 25)
+    @Column(name = "last_name", nullable = false, length = 25)
     private String lastName;
 
-    @Column(name = "USERNAME", nullable = false, length = 25, unique = true)
+    @Column(name = "username", nullable = false, length = 25, unique = true)
     private String username;
 
-    @Column(name = "DATE_OF_BIRTH", nullable = false)
-    private Date dateOfBirth;
+    @Column(name = "date_of_birth", nullable = false)
+    private String dateOfBirth;
 
-    @Column(name = "SSN", nullable = false)
+    @Column(name = "ssn", nullable = false)
     private String socialSecurityNumber;
 
-    @Column(name = "GENDER")
+    @Column(name = "gender")
     private String gender;
 
-    @Column(name = "EMAIL", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Override

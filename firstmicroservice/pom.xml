@@ -26,7 +26,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+<!-- TODO: group scoped dependencies together - put all test artifacts together -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

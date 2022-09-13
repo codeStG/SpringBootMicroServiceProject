@@ -1,6 +1,7 @@
 package com.stgcodes.dao;
 
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.model.Person;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -34,7 +35,7 @@ public class PersonDao {
         return query.list();
     }
 
-    public void addPerson(PersonEntity person) {
+    public PersonEntity addPerson(PersonEntity person) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -42,9 +43,11 @@ public class PersonDao {
 
         session.getTransaction().commit();
         session.close();
+
+        return person;
     }
 
-    public void updatePersonById(Long personId) {
+    public PersonEntity updatePersonById(Long personId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
@@ -54,7 +57,11 @@ public class PersonDao {
         session.update(personEntity);
         session.getTransaction().commit();
 
+        personEntity = session.load(PersonEntity.class, personId);
+
         session.close();
+
+        return personEntity;
     }
 
     public void deletePersonById(Long personId) {

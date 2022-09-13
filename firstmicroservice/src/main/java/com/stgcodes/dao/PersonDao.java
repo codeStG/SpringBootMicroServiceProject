@@ -35,16 +35,16 @@ public class PersonDao {
         return query.list();
     }
 
-    public PersonEntity addPerson(PersonEntity person) {
+    public PersonEntity addPerson(PersonEntity personEntity) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        session.persist(person);
+        session.persist(personEntity);
 
         session.getTransaction().commit();
         session.close();
 
-        return person;
+        return personEntity;
     }
 
     public PersonEntity updatePersonById(Long personId) {
@@ -64,26 +64,28 @@ public class PersonDao {
         return personEntity;
     }
 
-    public void deletePersonById(Long personId) {
+    public PersonEntity deletePerson(PersonEntity personEntity) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
-
-        PersonEntity personEntity = session.load(PersonEntity.class, personId);
 
         session.delete(personEntity);
         session.getTransaction().commit();
 
         session.close();
+
+        return personEntity;
     }
 
     @PostConstruct
     public void PostConstruct() {
+        PersonEntity personEntity = new PersonEntity("Bobbie", "Zamudio", "bozamudio", "09/12/2022", "123-45-6787", "female", "bozamudio@onenorth.com");
+
         System.out.println("In Post Construct");
-        this.addPerson(new PersonEntity("Bobbie", "Zamudio", "bozamudio", "09/12/2022", "123-45-6787", "female", "bozamudio@onenorth.com"));
+        this.addPerson(personEntity);
         this.getPeople().forEach(System.out::println);
         this.updatePersonById(6L);
         this.getPersonbyId(6L).forEach(System.out::println);
-        this.deletePersonById(6L);
+        this.deletePerson(personEntity);
         this.getPeople().forEach(System.out::println);
         System.out.println("After for each");
     }

@@ -15,6 +15,10 @@ public class Person {
     private String gender;
     private String email;
 
+    public Person() {
+
+    }
+
     public Person(String firstName, String lastName, String username, String dateOfBirth, String socialSecurityNumber, String gender, String email) {
         this.firstName = firstName;
         this.lastName = lastName;

@@ -1,6 +1,5 @@
 package com.stgcodes.endpoint;
 
-import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import lombok.extern.slf4j.Slf4j;

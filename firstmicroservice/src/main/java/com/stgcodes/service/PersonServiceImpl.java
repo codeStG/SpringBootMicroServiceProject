@@ -2,6 +2,7 @@ package com.stgcodes.service;
 
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +36,13 @@ public class PersonServiceImpl implements PersonService {
         List<PersonEntity> personEntity = dao.getPersonbyId(personId);
         Person person = new Person();
 
-        try {
-           person = PersonMapper.INSTANCE.personEntityToPerson(personEntity.get(0));
-           return person;
-        } catch(IndexOutOfBoundsException e) {
+        if(personEntity.size() == 0) {
             log.info("ID " + personId + " does not exist");
-            log.info(e.getLocalizedMessage());
-            return null;
+            throw new IdNotFoundException();
         }
+
+        person = PersonMapper.INSTANCE.personEntityToPerson(personEntity.get(0));
+        return person;
     }
 
     @Override
@@ -59,13 +59,13 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person deletePerson(Long personId) {
-        try {
-            PersonEntity personEntity = dao.getPersonbyId(personId).get(0);
-            return PersonMapper.INSTANCE.personEntityToPerson(dao.deletePerson(personEntity));
-        } catch(Exception e) {
-            log.info("Error deleting record with ID: " + personId);
-            log.info(e.getLocalizedMessage());
-            return null;
+        List<PersonEntity> personEntity = dao.getPersonbyId(personId);
+
+        if(personEntity.size() == 0) {
+            log.info("ID " + personId + " does not exist");
+            throw new IdNotFoundException();
         }
+
+        return PersonMapper.INSTANCE.personEntityToPerson(dao.deletePerson(personEntity.get(0)));
     }
 }

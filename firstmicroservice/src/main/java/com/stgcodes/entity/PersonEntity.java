@@ -1,11 +1,12 @@
 package com.stgcodes.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
@@ -13,7 +14,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @NoArgsConstructor
 public class PersonEntity {
 
@@ -23,40 +23,35 @@ public class PersonEntity {
     private Long personId;
 
     @Column(name = "first_name", nullable = false, length = 25)
-    @NonNull
-    @NotBlank(message = "First Name is required")
     private String firstName;
 
     @Column(name = "last_name", nullable = false, length = 25)
-    @NonNull
-    @NotBlank(message = "Last Name is required")
     private String lastName;
 
     @Column(name = "username", nullable = false, length = 25, unique = true)
-    @NonNull
-    @NotBlank(message = "username is required")
     private String username;
 
     @Column(name = "date_of_birth", nullable = false)
-    @NonNull
-    @NotBlank(message = "Date of Birth is required")
     private String dateOfBirth;
 
     @Column(name = "ssn", nullable = false)
-    @NonNull
-    @NotBlank(message = "Social Security Number is required")
     private String socialSecurityNumber;
 
     @Column(name = "gender")
-    @NonNull
-    @NotBlank(message = "Gender is required")
     private String gender;
 
     @Column(name = "email", nullable = false)
-    @NonNull
-    @NotBlank(message = "Email is required")
-    @Email
     private String email;
+
+    public PersonEntity(String firstName, String lastName, String username, String dateOfBirth, String socialSecurityNumber, String gender, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.dateOfBirth = dateOfBirth;
+        this.socialSecurityNumber = socialSecurityNumber;
+        this.gender = gender;
+        this.email = email;
+    }
 
     @Override
     public boolean equals(Object o) {

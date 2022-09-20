@@ -1,4 +1,4 @@
-package com.stgcodes.firstmicroservice;
+package com.stgcodes;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

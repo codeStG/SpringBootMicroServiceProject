@@ -2,8 +2,6 @@ package com.stgcodes.model;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class Person {
 

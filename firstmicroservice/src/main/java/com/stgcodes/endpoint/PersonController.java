@@ -1,15 +1,19 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.exceptions.InvalidRequestException;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
+import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/people")
@@ -32,7 +36,21 @@ public class PersonController {
     }
 
     @PutMapping(path = "/add")
-    public ResponseEntity<Person> addPerson(@Valid @RequestBody Person person) {
+    public ResponseEntity<Person> addPerson(@RequestBody Person person) {
+        DataBinder dataBinder = new DataBinder(person);
+        dataBinder.addValidators(new PersonValidator());
+        dataBinder.validate();
+
+        if(dataBinder.getBindingResult().hasErrors()) {
+            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+            messageSource.setBasename("ValidationMessages");
+
+            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
+            dataBinder.getBindingResult().getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
+
+            throw new InvalidRequestException();
+        }
+
         return new ResponseEntity<>(personService.addPerson(person), HttpStatus.OK);
     }
 

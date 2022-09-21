@@ -38,9 +38,9 @@ public class PersonValidator implements Validator {
     private void validateFirstName(Person person, Errors errors) {
         ValidationUtils.rejectIfEmpty(errors, "firstName", "name.empty");
 
-        String name = person.getFirstName();
+        String name = person.getFirstName().replaceAll("\\s+","");
 
-        if(!name.trim().matches("[a-zA-Z]+") && name.trim().length() > 0) {
+        if(!name.matches("[a-zA-Z]+") && name.trim().length() > 0) {
             errors.rejectValue("firstName", "name.lettersonly");
         }
 
@@ -52,9 +52,9 @@ public class PersonValidator implements Validator {
     private void validateLastName(Person person, Errors errors) {
         ValidationUtils.rejectIfEmpty(errors, "lastName", "name.empty");
 
-        String name = person.getLastName();
+        String name = person.getLastName().replaceAll("\\s+","");
 
-        if(!name.trim().matches("[a-zA-Z]+")) {
+        if(!name.matches("[a-zA-Z]+")) {
             errors.rejectValue("lastName", "name.lettersonly");
         }
 

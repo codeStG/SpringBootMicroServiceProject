@@ -2,8 +2,8 @@ package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -14,6 +14,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+@Component
 public class PersonValidator implements Validator {
 
     @Override
@@ -39,7 +40,7 @@ public class PersonValidator implements Validator {
 
         String name = person.getFirstName();
 
-        if(!name.trim().matches("[a-zA-Z]+")) {
+        if(!name.trim().matches("[a-zA-Z]+") && name.trim().length() > 0) {
             errors.rejectValue("firstName", "name.lettersonly");
         }
 

@@ -34,15 +34,15 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person getPersonById(Long personId) {
         List<PersonEntity> personEntity = dao.getPersonbyId(personId);
-        Person person = new Person();
+        Person person;
 
         if(personEntity.size() == 0) {
             log.info("ID " + personId + " does not exist");
-            throw new IdNotFoundException();
+            return null;
+        } else {
+            person = PersonMapper.INSTANCE.personEntityToPerson(personEntity.get(0));
+            return person;
         }
-
-        person = PersonMapper.INSTANCE.personEntityToPerson(personEntity.get(0));
-        return person;
     }
 
     @Override

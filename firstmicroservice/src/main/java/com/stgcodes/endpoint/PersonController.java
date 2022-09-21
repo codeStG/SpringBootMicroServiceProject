@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,22 +23,33 @@ import java.util.Locale;
 public class PersonController {
 
     @Autowired
-    private PersonService personService;
+    private PersonService service;
+
+    @Autowired
+    private PersonValidator validator;
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {
-        return new ResponseEntity<>(personService.getAllPeople(), HttpStatus.OK);
+        return new ResponseEntity<>(service.getAllPeople(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
     public ResponseEntity<Person> getPerson(@RequestParam Long personId) {
-        Person person = personService.getPersonById(personId);
+        Person person = service.getPersonById(personId);
 
         return person == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(person, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
+//        BindingResult bindingResult = new BindException(person, "person");
+//        validator.validate(person, bindingResult);
+//
+//        if(bindingResult.hasErrors()) {
+//            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+//            messageSource.setBasename("ValidationMessages");
+//        }
+
         DataBinder dataBinder = new DataBinder(person);
         dataBinder.addValidators(new PersonValidator());
         dataBinder.validate();
@@ -48,15 +61,14 @@ public class PersonController {
             log.error(messageSource.getMessage("person.invalid", null, Locale.US));
             dataBinder.getBindingResult().getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
-            throw new InvalidRequestException();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(personService.addPerson(person), HttpStatus.OK);
+        return new ResponseEntity<>(service.addPerson(person), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Person> deletePerson(@RequestParam Long personId) {
-
-        return new ResponseEntity<>(personService.deletePerson(personId), HttpStatus.OK);
+        return new ResponseEntity<>(service.deletePerson(personId), HttpStatus.OK);
     }
 }

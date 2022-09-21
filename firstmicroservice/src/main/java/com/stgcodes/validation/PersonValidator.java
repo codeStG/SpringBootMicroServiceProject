@@ -1,8 +1,9 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
+import com.stgcodes.validation.enums.Gender;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -11,8 +12,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
-@Slf4j
 public class PersonValidator implements Validator {
 
     @Override
@@ -28,12 +29,9 @@ public class PersonValidator implements Validator {
         validateLastName(person, errors);
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
-        validateSocialSecurityNumber(errors);
-        validateEmail(errors);
-        //Validate all required Person fields
-
-        //Make a bunch of private methods for each field
-            //What would you do if length was over max
+        validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
+        validateGender(person.getGender(), errors);
+        validateEmail(person.getEmail(), errors);
     }
 
     private void validateFirstName(Person person, Errors errors) {
@@ -43,10 +41,6 @@ public class PersonValidator implements Validator {
 
         if(!name.trim().matches("[a-zA-Z]+")) {
             errors.rejectValue("firstName", "name.lettersonly");
-        }
-
-        if(name.trim().length() == 0) {
-            errors.rejectValue("firstName", "name.short");
         }
 
         if(name.trim().length() > 25) {
@@ -92,15 +86,29 @@ public class PersonValidator implements Validator {
         }
     }
 
-    private void validateSocialSecurityNumber(Errors errors) {
+    private void validateSocialSecurityNumber(String ssn, Errors errors) {
         ValidationUtils.rejectIfEmpty(errors, "socialSecurityNumber", "socialSecurityNumber.empty");
+
+        if(!Pattern.matches("^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$", ssn)) {
+            errors.rejectValue("socialSecurityNumber", "ssn.format");
+        }
     }
 
-    private void validateGender(Errors errors) {
+    private void validateGender(String gender, Errors errors) {
         ValidationUtils.rejectIfEmpty(errors, "gender", "gender.empty");
+
+        try {
+            Gender.valueOf(gender.toUpperCase());
+        } catch(IllegalArgumentException e) {
+            errors.rejectValue("gender", "gender.invalid");
+        }
     }
 
-    private void validateEmail(Errors errors) {
+    private void validateEmail(String email, Errors errors) {
         ValidationUtils.rejectIfEmpty(errors, "email", "email.empty");
+
+        if(!EmailValidator.getInstance().isValid(email)) {
+            errors.rejectValue("email", "email.format");
+        }
     }
 }

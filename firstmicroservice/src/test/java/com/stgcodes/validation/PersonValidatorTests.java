@@ -15,7 +15,10 @@ public class PersonValidatorTests {
 
     private Person person;
     private PersonValidator personValidator;
+    private BindingResult bindingResult;
     private ResourceBundleMessageSource messageSource;
+    List<String> testCases;
+    private Map<String, String> errors;
 
     @Before
     public void setUp() {
@@ -25,137 +28,126 @@ public class PersonValidatorTests {
 
         messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
+
+        testCases = new ArrayList<>();
+        errors = new HashMap<>();
     }
 
     @Test
     public void testEmptyFirstNameIsInvalid() {
         person.setFirstName("");
-        BindingResult bindingResult = new BindException(person, "person");
-        personValidator.validate(person, bindingResult);
+        errors = getErrors("firstName", "name.empty");
 
-        String errorCode = Objects.requireNonNull(bindingResult.getFieldError("firstName")).getCode();
-
-        String expectedError = messageSource.getMessage("name.empty", null, Locale.US);
-        String actualError = messageSource.getMessage(Objects.requireNonNull(errorCode), null, Locale.US);
-
-        assertEquals(expectedError, actualError);
+        assertEquals(errors.get("expectedError"), errors.get("actualError"));
     }
 
     @Test
     public void testFirstNameWithNonLetterCharacterIsInvalid() {
-        List<String> invalidNames = new ArrayList<>(Arrays.asList("G3orge", "G/orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n "));
+        testCases = Arrays.asList("G3orge", "G/orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
 
-        for(String invalidName : invalidNames) {
-            person.setFirstName(invalidName);
-            BindingResult bindingResult = new BindException(person, "person");
-            personValidator.validate(person, bindingResult);
+        for(String testCase : testCases) {
+            person.setFirstName(testCase);
+            errors = getErrors("firstName", "name.lettersonly");
 
-            String errorCode = Objects.requireNonNull(bindingResult.getFieldError("firstName")).getCode();
-
-            String expectedError = messageSource.getMessage("name.lettersonly", null, Locale.US);
-            String actualError = messageSource.getMessage(Objects.requireNonNull(errorCode), null, Locale.US);
-
-            assertEquals(expectedError, actualError);
+            assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
     }
 
     @Test
     public void testFirstNameWithWhitespaceIsTrimmed() {
-        List<String> validNamesWithWhitespace = new ArrayList<>(Arrays.asList( "   George     ", "   G \n E \n O \n "));
+        testCases = Arrays.asList( "   George     ", "   G \n E \n O \n ");
 
-        for(String validName : validNamesWithWhitespace) {
-            person.setFirstName(validName);
-            BindingResult bindingResult = new BindException(person, "person");
-            personValidator.validate(person, bindingResult);
+        for(String testCase : testCases) {
+            person.setFirstName(testCase);
+            performValidation();
 
-            Integer numOfErrors = bindingResult.getErrorCount();
-            Integer expectedNumOfErrors = 0;
-
-            assertEquals(expectedNumOfErrors, numOfErrors);
+            assertEquals(0, bindingResult.getErrorCount());
         }
     }
 
     @Test
     public void testLongFirstNameIsTruncated() {
-        List<String> longNames = new ArrayList<>(Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[12"));
+        testCases = Arrays.asList("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[12", "ABCDE\n   FGH\nIJKLMNOPQRSTU       VWXYZ]]]");
 
-        for(String longName : longNames) {
-            person.setFirstName(longName);
-            BindingResult bindingResult = new BindException(person, "person");
-            personValidator.validate(person, bindingResult);
+        for(String testCase : testCases) {
+            person.setFirstName(testCase);
+            performValidation();
 
-            Person person = (Person) bindingResult.getTarget();
-
-            String expectedFirstName = longName.substring(0, 25);
-            String actualFirstName = person.getFirstName();
-
-            assertEquals(expectedFirstName, actualFirstName);
+            assertEquals(25, person.getFirstName().length());
         }
     }
 
     @Test
     public void testEmptyLastNameIsInvalid() {
         person.setLastName("");
-        BindingResult bindingResult = new BindException(person, "person");
-        personValidator.validate(person, bindingResult);
+        errors = getErrors("lastName", "name.empty");
 
-        String errorCode = Objects.requireNonNull(bindingResult.getFieldError("lastName")).getCode();
-
-        String expectedError = messageSource.getMessage("name.empty", null, Locale.US);
-        String actualError = messageSource.getMessage(Objects.requireNonNull(errorCode), null, Locale.US);
-
-        assertEquals(expectedError, actualError);
+        assertEquals(errors.get("expectedError"), errors.get("actualError"));
     }
 
     @Test
     public void testLastNameWithNonLetterCharacterIsInvalid() {
-        List<String> invalidNames = new ArrayList<>(Arrays.asList("G3orge", "G/orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n "));
+        testCases = Arrays.asList("G3orge", "G/orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
 
-        for(String invalidName : invalidNames) {
-            person.setLastName(invalidName);
-            BindingResult bindingResult = new BindException(person, "person");
-            personValidator.validate(person, bindingResult);
+        for(String testCase : testCases) {
+            person.setLastName(testCase);
+            errors = getErrors("lastName", "name.lettersonly");
 
-            String errorCode = Objects.requireNonNull(bindingResult.getFieldError("lastName")).getCode();
-
-            String expectedError = messageSource.getMessage("name.lettersonly", null, Locale.US);
-            String actualError = messageSource.getMessage(Objects.requireNonNull(errorCode), null, Locale.US);
-
-            assertEquals(expectedError, actualError);
+            assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
     }
 
     @Test
     public void testLastNameWithWhitespaceIsTrimmed() {
-        List<String> validNamesWithWhitespace = new ArrayList<>(Arrays.asList( "   George     ", "   G \n E \n O \n "));
+        testCases = Arrays.asList( "   George     ", "   G \n E \n O \n ");
 
-        for(String validName : validNamesWithWhitespace) {
-            person.setLastName(validName);
-            BindingResult bindingResult = new BindException(person, "person");
-            personValidator.validate(person, bindingResult);
+        for(String testCase : testCases) {
+            person.setLastName(testCase);
+            performValidation();
 
-            Integer numOfErrors = bindingResult.getErrorCount();
-            Integer expectedNumOfErrors = 0;
-
-            assertEquals(expectedNumOfErrors, numOfErrors);
+            assertEquals(0, bindingResult.getErrorCount());
         }
     }
 
     @Test
     public void testLongLastNameIsTruncated() {
-        List<String> longNames = new ArrayList<>(Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[12"));
+        testCases = Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[12");
 
-        for(String longName : longNames) {
-            person.setLastName(longName);
-            BindingResult bindingResult = new BindException(person, "person");
-            personValidator.validate(person, bindingResult);
+        for(String testCase : testCases) {
+            person.setLastName(testCase);
+            performValidation();
 
-            Person person = (Person) bindingResult.getTarget();
-
-            String expectedFirstName = longName.substring(0, 25);
-            String actualFirstName = person.getLastName();
-
-            assertEquals(expectedFirstName, actualFirstName);
+            assertEquals(25, person.getLastName().length());
         }
+    }
+
+    @Test
+    public void testWrongLengthUsernameIsInvalid() {
+        testCases = Arrays.asList("  ", "   Georg", "\n\n\n\n    George w twenty six characters", "\n\n\n\n\n    ");
+
+        for(String testCase : testCases) {
+            person.setUsername(testCase);
+            errors = getErrors("username", "username.length");
+
+            assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        }
+    }
+
+    private void performValidation() {
+        bindingResult = new BindException(person, "person");
+        personValidator.validate(person, bindingResult);
+    }
+
+    private Map<String, String> getErrors(String field, String expectedErrorCode) {
+        Map<String, String> errors = new HashMap<>();
+
+        performValidation();
+
+        String actualErrorCode = Objects.requireNonNull(bindingResult.getFieldError(field)).getCode();
+
+        errors.put("expectedError", messageSource.getMessage(expectedErrorCode, null, Locale.US));
+        errors.put("actualError", messageSource.getMessage(Objects.requireNonNull(actualErrorCode), null, Locale.US));
+
+        return errors;
     }
 }

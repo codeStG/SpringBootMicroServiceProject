@@ -72,8 +72,6 @@ public class PersonValidator implements Validator {
     }
 
     private void validateDateOfBirth(String dateOfBirth, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "dateOfBirth", "dateOfBirth.empty");
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/y", Locale.ENGLISH);
 
         try {
@@ -88,26 +86,20 @@ public class PersonValidator implements Validator {
     }
 
     private void validateSocialSecurityNumber(String ssn, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "socialSecurityNumber", "socialSecurityNumber.empty");
-
         if(!Pattern.matches("^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$", ssn)) {
             errors.rejectValue("socialSecurityNumber", "ssn.format");
         }
     }
 
     private void validateGender(String gender, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "gender", "gender.empty");
-
         try {
-            Gender.valueOf(gender.toUpperCase());
+            Gender.valueOf(gender.replaceAll("\\s+","").toUpperCase());
         } catch(IllegalArgumentException e) {
             errors.rejectValue("gender", "gender.invalid");
         }
     }
 
     private void validateEmail(String email, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "email", "email.empty");
-
         if(!EmailValidator.getInstance().isValid(email)) {
             errors.rejectValue("email", "email.format");
         }

@@ -1,6 +1,5 @@
 package com.stgcodes.endpoint;
 
-import com.stgcodes.exceptions.InvalidRequestException;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.validation.PersonValidator;
@@ -42,24 +41,15 @@ public class PersonController {
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-//        BindingResult bindingResult = new BindException(person, "person");
-//        validator.validate(person, bindingResult);
-//
-//        if(bindingResult.hasErrors()) {
-//            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//            messageSource.setBasename("ValidationMessages");
-//        }
+        BindingResult bindingResult = new BindException(person, "person");
+        validator.validate(person, bindingResult);
 
-        DataBinder dataBinder = new DataBinder(person);
-        dataBinder.addValidators(new PersonValidator());
-        dataBinder.validate();
-
-        if(dataBinder.getBindingResult().hasErrors()) {
+        if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
             messageSource.setBasename("ValidationMessages");
 
             log.error(messageSource.getMessage("person.invalid", null, Locale.US));
-            dataBinder.getBindingResult().getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
+            bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

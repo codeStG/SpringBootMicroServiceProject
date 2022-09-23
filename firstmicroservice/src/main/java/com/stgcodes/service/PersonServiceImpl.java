@@ -33,16 +33,17 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person getPersonById(Long personId) {
-        List<PersonEntity> personEntity = dao.getPersonbyId(personId);
-        Person person;
+        PersonEntity personEntity = dao.getPersonById(personId);
+        Person person = null;
 
-        if(personEntity.size() == 0) {
+        if(personEntity == null) {
             log.info("ID " + personId + " does not exist");
-            return null;
+            throw new IdNotFoundException();
         } else {
-            person = PersonMapper.INSTANCE.personEntityToPerson(personEntity.get(0));
-            return person;
+            person = PersonMapper.INSTANCE.personEntityToPerson(personEntity);
         }
+
+        return person;
     }
 
     @Override
@@ -53,19 +54,9 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person updatePerson(PersonEntity personEntity) {
-        return null;
-    }
-
-    @Override
     public Person deletePerson(Long personId) {
-        List<PersonEntity> personEntity = dao.getPersonbyId(personId);
+        PersonEntity personEntity = dao.getPersonById(personId);
 
-        if(personEntity.size() == 0) {
-            log.info("ID " + personId + " does not exist");
-            throw new IdNotFoundException();
-        }
-
-        return PersonMapper.INSTANCE.personEntityToPerson(dao.deletePerson(personEntity.get(0)));
+        return PersonMapper.INSTANCE.personEntityToPerson(dao.deletePerson(personEntity));
     }
 }

@@ -1,7 +1,6 @@
 package com.stgcodes.dao;
 
 import com.stgcodes.entity.PersonEntity;
-import com.stgcodes.model.Person;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -26,13 +25,13 @@ public class PersonDao {
         return query.list();
     }
 
-    public List<PersonEntity> getPersonbyId(Long personId) {
+    public PersonEntity getPersonById(Long personId) {
         Query query = sessionFactory
                 .openSession()
                 .createSQLQuery("SELECT * FROM PERSON_TBL WHERE person_id = " + personId)
                 .addEntity(PersonEntity.class);
 
-        return query.list();
+        return (PersonEntity) query.uniqueResult();
     }
 
     public PersonEntity addPerson(PersonEntity personEntity) {
@@ -42,23 +41,6 @@ public class PersonDao {
         session.persist(personEntity);
 
         session.getTransaction().commit();
-        session.close();
-
-        return personEntity;
-    }
-
-    public PersonEntity updatePersonById(Long personId) {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
-        PersonEntity personEntity = session.load(PersonEntity.class, personId);
-
-        personEntity.setFirstName("Roberta");
-        session.update(personEntity);
-        session.getTransaction().commit();
-
-        personEntity = session.load(PersonEntity.class, personId);
-
         session.close();
 
         return personEntity;
@@ -83,8 +65,7 @@ public class PersonDao {
         System.out.println("In Post Construct");
         this.addPerson(personEntity);
         this.getPeople().forEach(System.out::println);
-        this.updatePersonById(6L);
-        this.getPersonbyId(6L).forEach(System.out::println);
+        System.out.println(this.getPersonById(6L));
         this.deletePerson(personEntity);
         this.getPeople().forEach(System.out::println);
         System.out.println("After for each");

@@ -37,7 +37,7 @@ public class PersonValidatorTests {
     @Test
     public void testEmptyFirstNameIsInvalid() {
         person.setFirstName("");
-        errors = getErrors("firstName", "name.empty");
+        errors = getErrors("firstName", "name.format");
 
         assertEquals(errors.get("expectedError"), errors.get("actualError"));
     }
@@ -48,7 +48,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setFirstName(testCase);
-            errors = getErrors("firstName", "name.lettersonly");
+            errors = getErrors("firstName", "name.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -81,7 +81,7 @@ public class PersonValidatorTests {
     @Test
     public void testEmptyLastNameIsInvalid() {
         person.setLastName("");
-        errors = getErrors("lastName", "name.empty");
+        errors = getErrors("lastName", "name.format");
 
         assertEquals(errors.get("expectedError"), errors.get("actualError"));
     }
@@ -92,7 +92,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setLastName(testCase);
-            errors = getErrors("lastName", "name.lettersonly");
+            errors = getErrors("lastName", "name.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -128,7 +128,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setUsername(testCase);
-            errors = getErrors("username", "username.length");
+            errors = getErrors("username", "username.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -188,7 +188,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setGender(testCase);
-            errors = getErrors("gender", "gender.invalid");
+            errors = getErrors("gender", "gender.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }

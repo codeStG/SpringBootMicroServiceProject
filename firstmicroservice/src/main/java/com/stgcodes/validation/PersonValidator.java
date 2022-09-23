@@ -5,7 +5,6 @@ import com.stgcodes.validation.enums.Gender;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
@@ -16,6 +15,11 @@ import java.util.regex.Pattern;
 
 @Component
 public class PersonValidator implements Validator {
+
+    private final String WHITESPACE_MATCHER = "\\s+";
+    private final String LETTER_MATCHER = "[a-zA-Z]+";
+    private static final String SOCIAL_SECURITY_MATCHER = "^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$";
+    private final Integer MAX_NAME_LENGTH = 25;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -36,38 +40,34 @@ public class PersonValidator implements Validator {
     }
 
     private void validateFirstName(Person person, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "firstName", "name.empty");
+        String name = person.getFirstName().replaceAll(WHITESPACE_MATCHER, "");
 
-        String name = person.getFirstName().replaceAll("\\s+","");
-
-        if(!name.matches("[a-zA-Z]+") && name.trim().length() > 0) {
-            errors.rejectValue("firstName", "name.lettersonly");
+        if (!name.matches(LETTER_MATCHER)) {
+            errors.rejectValue("firstName", "name.format");
         }
 
-        if(name.length() > 25) {
-            person.setFirstName(name.substring(0, 25));
+        if (name.length() > MAX_NAME_LENGTH) {
+            person.setFirstName(name.substring(0, MAX_NAME_LENGTH));
         }
     }
 
     private void validateLastName(Person person, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "lastName", "name.empty");
+        String name = person.getLastName().replaceAll(WHITESPACE_MATCHER, "");
 
-        String name = person.getLastName().replaceAll("\\s+","");
-
-        if(!name.matches("[a-zA-Z]+")) {
-            errors.rejectValue("lastName", "name.lettersonly");
+        if (!name.matches(LETTER_MATCHER)) {
+            errors.rejectValue("lastName", "name.format");
         }
 
-        if(name.length() > 25) {
-            person.setLastName(name.substring(0, 25));
+        if (name.length() > MAX_NAME_LENGTH) {
+            person.setLastName(name.substring(0, MAX_NAME_LENGTH));
         }
     }
 
     private void validateUsername(String username, Errors errors) {
-        username = username.replaceAll("\\s+","");
+        username = username.replaceAll(WHITESPACE_MATCHER, "");
 
-        if(username.length() < 6 || username.length() > 25) {
-            errors.rejectValue("username", "username.length");
+        if (username.length() < 6 || username.length() > MAX_NAME_LENGTH) {
+            errors.rejectValue("username", "username.format");
         }
     }
 
@@ -77,30 +77,30 @@ public class PersonValidator implements Validator {
         try {
             LocalDate date = LocalDate.parse(dateOfBirth, formatter);
 
-            if(date.isAfter(LocalDate.now())) {
+            if (date.isAfter(LocalDate.now())) {
                 errors.rejectValue("dateOfBirth", "date.future");
             }
-        } catch(DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             errors.rejectValue("dateOfBirth", "date.format");
         }
     }
 
     private void validateSocialSecurityNumber(String ssn, Errors errors) {
-        if(!Pattern.matches("^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$", ssn)) {
+        if (!Pattern.matches(SOCIAL_SECURITY_MATCHER, ssn)) {
             errors.rejectValue("socialSecurityNumber", "ssn.format");
         }
     }
 
     private void validateGender(String gender, Errors errors) {
         try {
-            Gender.valueOf(gender.replaceAll("\\s+","").toUpperCase());
-        } catch(IllegalArgumentException e) {
-            errors.rejectValue("gender", "gender.invalid");
+            Gender.valueOf(gender.replaceAll(WHITESPACE_MATCHER, "").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            errors.rejectValue("gender", "gender.format");
         }
     }
 
     private void validateEmail(String email, Errors errors) {
-        if(!EmailValidator.getInstance().isValid(email)) {
+        if (!EmailValidator.getInstance().isValid(email)) {
             errors.rejectValue("email", "email.format");
         }
     }

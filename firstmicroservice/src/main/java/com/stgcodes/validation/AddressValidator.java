@@ -1,26 +1,14 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Address;
-import com.stgcodes.model.Person;
-import com.stgcodes.validation.enums.Gender;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Locale;
-import java.util.regex.Pattern;
+import static com.stgcodes.utils.constants.CustomMatchers.WHITESPACE_DASH_SLASH_MATCHER;
 
 @Component
 public class AddressValidator implements Validator {
-
-    private final String WHITESPACE_MATCHER = "\\s+";
-    private final String LETTER_MATCHER = "[a-zA-Z]+";
-    private static final String SOCIAL_SECURITY_MATCHER = "^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$";
-    private final Integer MAX_NAME_LENGTH = 25;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -31,76 +19,51 @@ public class AddressValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Address address = (Address) target;
 
-//        validateLineOne(address, errors);
-//        validateLineTwo(address, errors);
-//        validateCity(address, errors);
-//        validateState(address, errors);
-//        validateZip(address, errors);
+        validateLineOne(address, errors);
+        validateLineTwo(address, errors);
+        validateCity(address, errors);
+        validateState(address, errors);
+        validateZip(address, errors);
     }
 
-    private void validateFirstName(Person person, Errors errors) {
-        String name = person.getFirstName().replaceAll(WHITESPACE_MATCHER, "");
+    private void validateLineOne(Address address, Errors errors) {
+        String lineOne = address.getLineOne().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
-        if (!name.matches(LETTER_MATCHER)) {
-            errors.rejectValue("firstName", "name.format");
-        }
-
-        if (name.length() > MAX_NAME_LENGTH) {
-            person.setFirstName(name.substring(0, MAX_NAME_LENGTH));
+        if (lineOne.length() > 50 || lineOne.length() == 0) {
+            errors.rejectValue("lineOne", "lineone.format");
         }
     }
 
-    private void validateLastName(Person person, Errors errors) {
-        String name = person.getLastName().replaceAll(WHITESPACE_MATCHER, "");
+    private void validateLineTwo(Address address, Errors errors) {
+        String lineTwo = address.getLineTwo().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
-        if (!name.matches(LETTER_MATCHER)) {
-            errors.rejectValue("lastName", "name.format");
-        }
-
-        if (name.length() > MAX_NAME_LENGTH) {
-            person.setLastName(name.substring(0, MAX_NAME_LENGTH));
+        if (lineTwo.length() > 25 || lineTwo.length() == 0) {
+            errors.rejectValue("linetwo", "linetwo.format");
         }
     }
 
-    private void validateUsername(String username, Errors errors) {
-        username = username.replaceAll(WHITESPACE_MATCHER, "");
+    private void validateCity(Address address, Errors errors) {
+        String city = address.getCity().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
-        if (username.length() < 6 || username.length() > MAX_NAME_LENGTH) {
-            errors.rejectValue("username", "username.format");
+        if (city.length() > 50 || city.length() == 0) {
+            errors.rejectValue("city", "city.format");
         }
     }
 
-    private void validateDateOfBirth(String dateOfBirth, Errors errors) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/y", Locale.ENGLISH);
+    private void validateState(Address address, Errors errors) {
+        String state = address.getState().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
-        try {
-            LocalDate date = LocalDate.parse(dateOfBirth, formatter);
-
-            if (date.isAfter(LocalDate.now())) {
-                errors.rejectValue("dateOfBirth", "date.future");
-            }
-        } catch (DateTimeParseException e) {
-            errors.rejectValue("dateOfBirth", "date.format");
+        if (state.length() > 13 || state.length() == 0) {
+            errors.rejectValue("state", "state.format");
         }
     }
 
-    private void validateSocialSecurityNumber(String ssn, Errors errors) {
-        if (!Pattern.matches(SOCIAL_SECURITY_MATCHER, ssn)) {
-            errors.rejectValue("socialSecurityNumber", "ssn.format");
-        }
-    }
+    //TODO: Check for dashes and remove them if present
+    private void validateZip(Address address, Errors errors) {
+        String zip = address.getZip().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
-    private void validateGender(String gender, Errors errors) {
-        try {
-            Gender.valueOf(gender.replaceAll(WHITESPACE_MATCHER, "").toUpperCase());
-        } catch (IllegalArgumentException e) {
-            errors.rejectValue("gender", "gender.format");
-        }
-    }
-
-    private void validateEmail(String email, Errors errors) {
-        if (!EmailValidator.getInstance().isValid(email)) {
-            errors.rejectValue("email", "email.format");
+        if (zip.length() != 5 && zip.length() != 9) {
+            errors.rejectValue("zip", "zip.format");
         }
     }
 }

@@ -44,7 +44,7 @@ public class PersonValidatorTests {
 
     @Test
     public void testFirstNameWithNonLetterCharacterIsInvalid() {
-        testCases = Arrays.asList("G3orge", "G/orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
+        testCases = Arrays.asList("G3orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
 
         for(String testCase : testCases) {
             person.setFirstName(testCase);
@@ -88,7 +88,7 @@ public class PersonValidatorTests {
 
     @Test
     public void testLastNameWithNonLetterCharacterIsInvalid() {
-        testCases = Arrays.asList("G3orge", "G/orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
+        testCases = Arrays.asList("G3orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
 
         for(String testCase : testCases) {
             person.setLastName(testCase);

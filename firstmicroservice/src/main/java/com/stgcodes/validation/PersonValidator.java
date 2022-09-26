@@ -13,13 +13,12 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import static com.stgcodes.utils.constants.CustomMatchers.*;
+
 @Component
 public class PersonValidator implements Validator {
 
-    private final String WHITESPACE_MATCHER = "\\s+";
-    private final String LETTER_MATCHER = "[a-zA-Z]+";
-    private static final String SOCIAL_SECURITY_MATCHER = "^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$";
-    private final Integer MAX_NAME_LENGTH = 25;
+   private final Integer MAX_NAME_LENGTH = 25;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -40,7 +39,7 @@ public class PersonValidator implements Validator {
     }
 
     private void validateFirstName(Person person, Errors errors) {
-        String name = person.getFirstName().replaceAll(WHITESPACE_MATCHER, "");
+        String name = person.getFirstName().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
         if (!name.matches(LETTER_MATCHER)) {
             errors.rejectValue("firstName", "name.format");
@@ -52,7 +51,7 @@ public class PersonValidator implements Validator {
     }
 
     private void validateLastName(Person person, Errors errors) {
-        String name = person.getLastName().replaceAll(WHITESPACE_MATCHER, "");
+        String name = person.getLastName().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
         if (!name.matches(LETTER_MATCHER)) {
             errors.rejectValue("lastName", "name.format");
@@ -64,7 +63,7 @@ public class PersonValidator implements Validator {
     }
 
     private void validateUsername(String username, Errors errors) {
-        username = username.replaceAll(WHITESPACE_MATCHER, "");
+        username = username.replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
         if (username.length() < 6 || username.length() > MAX_NAME_LENGTH) {
             errors.rejectValue("username", "username.format");
@@ -93,7 +92,7 @@ public class PersonValidator implements Validator {
 
     private void validateGender(String gender, Errors errors) {
         try {
-            Gender.valueOf(gender.replaceAll(WHITESPACE_MATCHER, "").toUpperCase());
+            Gender.valueOf(gender.replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "").toUpperCase());
         } catch (IllegalArgumentException e) {
             errors.rejectValue("gender", "gender.format");
         }

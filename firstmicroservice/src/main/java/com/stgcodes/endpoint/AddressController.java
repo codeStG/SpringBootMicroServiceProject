@@ -1,10 +1,8 @@
 package com.stgcodes.endpoint;
 
 import com.stgcodes.model.Address;
-import com.stgcodes.model.Person;
 import com.stgcodes.service.AddressService;
-import com.stgcodes.service.PersonService;
-import com.stgcodes.validation.PersonValidator;
+import com.stgcodes.validation.AddressValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -25,8 +23,8 @@ public class AddressController {
     @Autowired
     private AddressService service;
 
-//    @Autowired
-//    private AddressValidator validator;
+    @Autowired
+    private AddressValidator validator;
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Address>> getAllAddresses() {
@@ -43,7 +41,7 @@ public class AddressController {
     @PutMapping(path = "/add")
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
         BindingResult bindingResult = new BindException(address, "address");
-//        validator.validate(address, bindingResult);
+        validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();

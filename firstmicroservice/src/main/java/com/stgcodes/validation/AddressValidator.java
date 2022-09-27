@@ -1,6 +1,7 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Address;
+import com.stgcodes.validation.enums.GeographicState;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -38,23 +39,23 @@ public class AddressValidator implements Validator {
         String lineTwo = address.getLineTwo().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
         if (lineTwo.length() > 25 || lineTwo.length() == 0) {
-            errors.rejectValue("linetwo", "linetwo.format");
+            errors.rejectValue("lineTwo", "linetwo.format");
         }
     }
 
     private void validateCity(Address address, Errors errors) {
         String city = address.getCity().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
 
-        if (city.length() > 50 || city.length() == 0) {
+        if (city.length() > 21 || city.length() == 0) {
             errors.rejectValue("city", "city.format");
         }
     }
 
     private void validateState(Address address, Errors errors) {
-        String state = address.getState().replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
+        String state = address.getState().trim();
 
-        if (state.length() > 13 || state.length() == 0) {
-            errors.rejectValue("state", "state.format");
+        if(GeographicState.valueOfAbbreviation(state) == null && GeographicState.valueOfName(state) == null) {
+            errors.rejectValue("state", "state.invalid");
         }
     }
 

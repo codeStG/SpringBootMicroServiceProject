@@ -11,10 +11,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+//Look into @PropertySource()
 public class ValidatorTestUtils {
 
     private Validator validator;
     private Object target;
+
+    //Change this to Error interface
     private BindingResult bindingResult;
     private ResourceBundleMessageSource messageSource;
 

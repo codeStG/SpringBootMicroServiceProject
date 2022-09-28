@@ -93,7 +93,7 @@ public class AddressValidatorTests {
 
     @Test
     public void testValidCityValues() {
-        testCases = Arrays.asList( "Arlington", "Grand Prairie", "Mooselookmeguntic", "\n\n\n\n\n    Mooselookmeguntic        \n\n\n\n\n", "Washington-on-the-Brazos", "Winchester-on-the-Severn");
+        testCases = Arrays.asList( "Arlington", "Grand Prairie", "Mooselookmeguntic", "\n\n\n\n\n    Mooselookmeguntic        \n\n\n\n\n", "Village of Grosse Pointe Shores City, A Michigan City", "Washington-on-the-Brazos", "Winchester-on-the-Severn");
 
         for(String testCase : testCases) {
             address.setCity(testCase);
@@ -113,7 +113,7 @@ public class AddressValidatorTests {
 
     @Test
     public void testCityTooLongIsInvalid() {
-        testCases = Arrays.asList("Winchester-on-the-Severn-Plus", "abcdefghijklmnopqrstuv");
+        testCases = Arrays.asList("Village of Grosse Pointe Shores City, A Michigan City Plusss", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
 
         for(String testCase : testCases) {
             address.setCity(testCase);

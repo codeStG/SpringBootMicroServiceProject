@@ -31,7 +31,7 @@ public class AddressValidator implements Validator {
     private void validateLineOne(Address address, Errors errors) {
         String lineOne = cleanString(address.getLineOne());
 
-        if (lineOne.length() > 50 || lineOne.length() == 0) {
+        if (lengthIsInvalid(1, 50, lineOne)) {
             errors.rejectValue("lineOne", "lineone.format");
         }
     }
@@ -39,7 +39,7 @@ public class AddressValidator implements Validator {
     private void validateLineTwo(Address address, Errors errors) {
         String lineTwo = cleanString(address.getLineTwo());
 
-        if (lineTwo.length() > 25 || lineTwo.length() == 0) {
+        if (lengthIsInvalid(1, 25, lineTwo)) {
             errors.rejectValue("lineTwo", "linetwo.format");
         }
     }
@@ -47,7 +47,7 @@ public class AddressValidator implements Validator {
     private void validateCity(Address address, Errors errors) {
         String city = cleanString(address.getCity());
 
-        if (city.length() > 21 || city.length() == 0) {
+        if (lengthIsInvalid(1, 50, city)) {
             errors.rejectValue("city", "city.format");
         }
     }
@@ -71,5 +71,9 @@ public class AddressValidator implements Validator {
 
     private String cleanString(String str) {
         return str.replaceAll(WHITESPACE_DASH_SLASH_MATCHER, StringUtils.EMPTY);
+    }
+
+    private boolean lengthIsInvalid(int min, int max, String value) {
+        return value.length() < min || value.length() > max;
     }
 }

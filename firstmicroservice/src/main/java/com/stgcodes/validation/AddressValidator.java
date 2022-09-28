@@ -2,7 +2,6 @@ package com.stgcodes.validation;
 
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.enums.GeographicState;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -53,14 +52,13 @@ public class AddressValidator implements Validator {
     }
 
     private void validateState(Address address, Errors errors) {
-        String state = address.getState().trim();
+        String state = address.getState();
 
-        if(GeographicState.valueOfAbbreviation(state) == null && GeographicState.valueOfName(state) == null) {
+        if(!GeographicState.isAState(state)) {
             errors.rejectValue("state", "state.invalid");
         }
     }
 
-    //TODO: Check for dashes and remove them if present
     private void validateZip(Address address, Errors errors) {
         String zip = cleanString(address.getZip());
 
@@ -70,7 +68,7 @@ public class AddressValidator implements Validator {
     }
 
     private String cleanString(String str) {
-        return str.replaceAll(WHITESPACE_DASH_SLASH_MATCHER, StringUtils.EMPTY);
+        return str.replaceAll(WHITESPACE_DASH_SLASH_MATCHER, "");
     }
 
     private boolean lengthIsInvalid(int min, int max, String value) {

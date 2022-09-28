@@ -1,5 +1,7 @@
 package com.stgcodes.validation.enums;
 
+import com.stgcodes.utils.constants.CustomMatchers;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,17 +87,23 @@ public enum GeographicState {
     }
     
     public static GeographicState valueOfAbbreviation(String abbr) {
-        return GEOGRAPHIC_STATES_BY_ABBR.get(abbr);
+        String key = abbr.toUpperCase().replaceAll(CustomMatchers.WHITESPACE_DASH_SLASH_MATCHER, "");
+
+        return GEOGRAPHIC_STATES_BY_ABBR.get(key);
     }
 
     public static GeographicState valueOfName(String name) {
-        final String enumName = name.toUpperCase().replaceAll("\\s+", "_");
+        final String enumName = name.toUpperCase().trim().replaceAll(CustomMatchers.WHITESPACE_DASH_SLASH_MATCHER, "_");
 
         try {
             return valueOf(enumName);
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    public static boolean isAState(String abbrOrName) {
+        return valueOfAbbreviation(abbrOrName) != null || valueOfName(abbrOrName) != null;
     }
 
     @Override

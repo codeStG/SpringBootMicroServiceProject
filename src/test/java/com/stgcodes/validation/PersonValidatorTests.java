@@ -3,10 +3,7 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Person;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 import java.util.*;
 
@@ -15,9 +12,8 @@ import static org.junit.Assert.assertEquals;
 public class PersonValidatorTests {
 
     private Person person;
-    private PersonValidator personValidator;
+    private ValidatorTestUtils validatorTestUtils;
     private BindingResult bindingResult;
-    private ResourceBundleMessageSource messageSource;
     List<String> testCases;
     private Map<String, String> errors;
 
@@ -25,10 +21,7 @@ public class PersonValidatorTests {
     public void setUp() {
         person = new Person("Bryan", "Byard", "brbyard", "08/13/1978", "123-45-6777", "male", "brbyard@gmail.com");
 
-        personValidator = new PersonValidator();
-
-        messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("ValidationMessages");
+        validatorTestUtils = new ValidatorTestUtils(new PersonValidator(), person);
 
         testCases = new ArrayList<>();
         errors = new HashMap<>();
@@ -37,7 +30,7 @@ public class PersonValidatorTests {
     @Test
     public void testEmptyFirstNameIsInvalid() {
         person.setFirstName("");
-        errors = getErrors("firstName", "name.format");
+        errors = validatorTestUtils.getErrors("firstName", "name.format");
 
         assertEquals(errors.get("expectedError"), errors.get("actualError"));
     }
@@ -48,7 +41,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setFirstName(testCase);
-            errors = getErrors("firstName", "name.format");
+            errors = validatorTestUtils.getErrors("firstName", "name.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -60,7 +53,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setFirstName(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(0, bindingResult.getErrorCount());
         }
@@ -72,7 +65,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setFirstName(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(25, person.getFirstName().length());
         }
@@ -81,7 +74,7 @@ public class PersonValidatorTests {
     @Test
     public void testEmptyLastNameIsInvalid() {
         person.setLastName("");
-        errors = getErrors("lastName", "name.format");
+        errors = validatorTestUtils.getErrors("lastName", "name.format");
 
         assertEquals(errors.get("expectedError"), errors.get("actualError"));
     }
@@ -92,7 +85,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setLastName(testCase);
-            errors = getErrors("lastName", "name.format");
+            errors = validatorTestUtils.getErrors("lastName", "name.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -104,7 +97,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setLastName(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(0, bindingResult.getErrorCount());
         }
@@ -116,7 +109,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setLastName(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(25, person.getLastName().length());
         }
@@ -128,7 +121,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setUsername(testCase);
-            errors = getErrors("username", "username.format");
+            errors = validatorTestUtils.getErrors("username", "username.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -140,7 +133,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setDateOfBirth(testCase);
-            errors = getErrors("dateOfBirth", "date.format");
+            errors = validatorTestUtils.getErrors("dateOfBirth", "date.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -152,7 +145,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setDateOfBirth(testCase);
-            errors = getErrors("dateOfBirth", "date.future");
+            errors = validatorTestUtils.getErrors("dateOfBirth", "date.future");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -164,7 +157,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setSocialSecurityNumber(testCase);
-            errors = getErrors("socialSecurityNumber", "ssn.format");
+            errors = validatorTestUtils.getErrors("socialSecurityNumber", "ssn.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -176,7 +169,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setSocialSecurityNumber(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(0, bindingResult.getErrorCount());
         }
@@ -188,7 +181,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setGender(testCase);
-            errors = getErrors("gender", "gender.format");
+            errors = validatorTestUtils.getErrors("gender", "gender.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -200,7 +193,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setGender(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(0, bindingResult.getErrorCount());
         }
@@ -212,7 +205,7 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setEmail(testCase);
-            errors = getErrors("email", "email.format");
+            errors = validatorTestUtils.getErrors("email", "email.format");
 
             assertEquals(errors.get("expectedError"), errors.get("actualError"));
         }
@@ -224,33 +217,9 @@ public class PersonValidatorTests {
 
         for(String testCase : testCases) {
             person.setEmail(testCase);
-            performValidation();
+            bindingResult = validatorTestUtils.performValidation();
 
             assertEquals(0, bindingResult.getErrorCount());
         }
-    }
-
-    private void performValidation() {
-        bindingResult = new BindException(person, "person");
-        personValidator.validate(person, bindingResult);
-    }
-
-    private Map<String, String> getErrors(String field, String expectedErrorCode) {
-        Map<String, String> errors = new HashMap<>();
-
-        performValidation();
-
-        FieldError fieldError = bindingResult.getFieldError(field);
-        errors.put("expectedError", messageSource.getMessage(expectedErrorCode, null, Locale.US));
-
-        if(fieldError != null) {
-            errors.put("actualError", messageSource.getMessage(Objects.requireNonNull(fieldError.getCode()), null, Locale.US));
-
-            return errors;
-        }
-
-        errors.put("actualError", "There were no errors");
-
-        return errors;
     }
 }

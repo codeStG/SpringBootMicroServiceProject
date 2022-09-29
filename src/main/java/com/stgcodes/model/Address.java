@@ -1,9 +1,11 @@
 package com.stgcodes.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 //lombok has a builder annotation - use it on POJOs
 @Data
+@Builder
 public class Address {
 
     private String lineOne;
@@ -11,12 +13,4 @@ public class Address {
     private String city;
     private String state;
     private String zip;
-
-    public Address(String lineOne, String lineTwo, String city, String state, String zip) {
-        this.lineOne = lineOne;
-        this.lineTwo = lineTwo;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-    }
 }

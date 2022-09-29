@@ -19,7 +19,15 @@ public class PersonValidatorTests {
 
     @Before
     public void setUp() {
-        person = new Person("Bryan", "Byard", "brbyard", "08/13/1978", "123-45-6777", "male", "brbyard@gmail.com");
+        person = Person.builder()
+                .firstName("Bryan")
+                .lastName("Byard")
+                .username("brbyard")
+                .dateOfBirth("08/13/1978")
+                .socialSecurityNumber("123-45-6777")
+                .gender("male")
+                .email("brbyard@gmail.com")
+                .build();
 
         validatorTestUtils = new ValidatorTestUtils(new PersonValidator(), person);
 

@@ -19,7 +19,13 @@ public class AddressValidatorTests {
 
     @Before
     public void setUp() {
-        address = new Address("5678 What St.", "Unit 8", "Atlanta", "Georgia", "78019");
+        address = Address.builder()
+                .lineOne("5678 What St.")
+                .lineTwo("Unit 8")
+                .city("Atlanta")
+                .state("Georgia")
+                .zip("78019")
+                .build();
 
         validatorTestUtils = new ValidatorTestUtils(new AddressValidator(), address);
 

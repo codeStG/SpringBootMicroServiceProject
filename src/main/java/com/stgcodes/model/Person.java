@@ -1,8 +1,10 @@
 package com.stgcodes.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class Person {
 
     private String firstName;
@@ -12,18 +14,4 @@ public class Person {
     private String socialSecurityNumber;
     private String gender;
     private String email;
-
-    public Person() {
-
-    }
-
-    public Person(String firstName, String lastName, String username, String dateOfBirth, String socialSecurityNumber, String gender, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.dateOfBirth = dateOfBirth;
-        this.socialSecurityNumber = socialSecurityNumber;
-        this.gender = gender;
-        this.email = email;
-    }
 }

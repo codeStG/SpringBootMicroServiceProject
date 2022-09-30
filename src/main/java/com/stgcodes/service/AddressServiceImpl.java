@@ -5,6 +5,7 @@ import com.stgcodes.entity.AddressEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.AddressMapper;
 import com.stgcodes.model.Address;
+import com.stgcodes.utils.FieldFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Autowired
     AddressDao dao;
+
+//    private final FieldFormatter fieldFormatter = new FieldFormatter();
 
     @Override
     public List<Address> getAllAddresses() {

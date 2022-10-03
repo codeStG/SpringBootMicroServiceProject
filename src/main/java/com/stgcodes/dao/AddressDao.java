@@ -1,6 +1,8 @@
 package com.stgcodes.dao;
 
 import com.stgcodes.entity.AddressEntity;
+import com.stgcodes.mappers.AddressMapper;
+import com.stgcodes.model.Address;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -60,7 +62,15 @@ public class AddressDao {
 
     @PostConstruct
     public void PostConstruct() {
-        AddressEntity addressEntity = new AddressEntity("1234 Vegas Blvd", "Unit 2", "Las Vegas", "Nevada", "123456789");
+        Address address = Address.builder()
+                .lineOne("1234 Vegas Blvd")
+                .lineTwo("Unit 2")
+                .city("Las Vegas")
+                .state("Nevada")
+                .zip("123456789")
+                .build();
+
+        AddressEntity addressEntity = AddressMapper.INSTANCE.addressToAddressEntity(address);
 
         System.out.println("In Post Construct");
         this.addAddress(addressEntity);

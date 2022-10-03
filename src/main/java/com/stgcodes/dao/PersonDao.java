@@ -1,6 +1,8 @@
 package com.stgcodes.dao;
 
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.mappers.PersonMapper;
+import com.stgcodes.model.Person;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -60,7 +62,17 @@ public class PersonDao {
 
     @PostConstruct
     public void PostConstruct() {
-        PersonEntity personEntity = new PersonEntity("Bobbie", "Zamudio", "bozamudio", "09/12/2022", "123-45-6787", "female", "bozamudio@onenorth.com");
+        Person person = Person.builder()
+                .firstName("Bobbie")
+                .lastName("Zamudio")
+                .username("bozamudio")
+                .dateOfBirth("09/12/2022")
+                .socialSecurityNumber("123-45-6787")
+                .gender("female")
+                .email("bozamudio@onenorth.com")
+                .build();
+
+        PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(person);
 
         System.out.println("In Post Construct");
         this.addPerson(personEntity);

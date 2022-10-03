@@ -131,7 +131,7 @@ public class AddressValidatorTests {
 
     @Test
     public void testValidStateValues() {
-        testCases = Arrays.asList( "Texas", "Michigan", "Maine", "Tx", "SC", "North       \n\n\n\n     Carolina", "\n\n\n\nSouth Dakota       ", "   N   \n\n\n\n V\n\n");
+        testCases = Arrays.asList( "Texas", "Michigan", "Maine", "Tx", "SC", "North       \n\n\n\n     Carolina", "\n\n\n\nSouth Dakota       ", "   NV\n\n");
 
         for(String testCase : testCases) {
             address.setState(testCase);

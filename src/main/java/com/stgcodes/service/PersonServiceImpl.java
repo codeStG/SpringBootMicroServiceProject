@@ -5,6 +5,7 @@ import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
+import com.stgcodes.utils.FieldFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     PersonDao dao;
+
+    private final FieldFormatter fieldFormatter = new FieldFormatter();
 
     @Override
     public List<Person> getAllPeople() {
@@ -34,7 +37,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person getPersonById(Long personId) {
         PersonEntity personEntity = dao.getPersonById(personId);
-        Person person = null;
+        Person person;
 
         if(personEntity == null) {
             log.info("ID " + personId + " does not exist");
@@ -48,7 +51,17 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person addPerson(Person person) {
-        PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(person);
+        Person cleansedPerson = Person.builder()
+                .firstName(fieldFormatter.cleanWhitespace(person.getFirstName()))
+                .lastName(fieldFormatter.cleanWhitespace(person.getLastName()))
+                .username(fieldFormatter.cleanWhitespace(person.getUsername()))
+                .dateOfBirth(fieldFormatter.separateBy(person.getDateOfBirth(), "/"))
+                .socialSecurityNumber(fieldFormatter.separateBy(person.getSocialSecurityNumber(), "-"))
+                .gender(fieldFormatter.formatAsEnum(person.getGender()))
+                .email(fieldFormatter.cleanWhitespace(person.getEmail()))
+                .build();
+
+        PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(cleansedPerson);
 
         return PersonMapper.INSTANCE.personEntityToPerson(dao.addPerson(personEntity));
     }

@@ -137,7 +137,7 @@ public class PersonValidatorTests {
 
     @Test
     public void testWrongDateFormatIsInvalid() {
-        testCases = Arrays.asList("    ", "\n\n\n\n   ", "\n    08 sldi \n", "08-19-2022", "';[]'/.;'[", "08/32/2022");
+        testCases = Arrays.asList("    ", "\n\n\n\n   ", "\n    08 sldi \n", "';[]'/.;'[", "08/32/2022");
 
         for(String testCase : testCases) {
             person.setDateOfBirth(testCase);
@@ -197,7 +197,7 @@ public class PersonValidatorTests {
 
     @Test
     public void testValidGender() {
-        testCases = Arrays.asList("male", "female", "refuse", "mAle", "f e m     a    le", "r\ne\nf\nu\ns\ne");
+        testCases = Arrays.asList("male", "female", "refuse");
 
         for(String testCase : testCases) {
             person.setGender(testCase);

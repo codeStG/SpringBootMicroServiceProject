@@ -22,7 +22,7 @@ public class PhoneDao {
 
     public List<PhoneEntity> getPhones() {
         Query query = sessionFactory
-                .openSession()
+                .getCurrentSession()
                 .createSQLQuery("SELECT * FROM PHONE_TBL")
                 .addEntity(PhoneEntity.class);
 
@@ -31,7 +31,7 @@ public class PhoneDao {
 
     public PhoneEntity getPhoneById(Long phoneId) {
         Query query = sessionFactory
-                .openSession()
+                .getCurrentSession()
                 .createSQLQuery("SELECT * FROM PHONE_TBL WHERE phone_id = " + phoneId)
                 .addEntity(PhoneEntity.class);
 
@@ -39,7 +39,7 @@ public class PhoneDao {
     }
 
     public PhoneEntity addPhone(PhoneEntity phoneEntity) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
 
         session.persist(phoneEntity);
@@ -51,7 +51,7 @@ public class PhoneDao {
     }
 
     public PhoneEntity deletePhone(PhoneEntity phoneEntity) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
 
         session.delete(phoneEntity);

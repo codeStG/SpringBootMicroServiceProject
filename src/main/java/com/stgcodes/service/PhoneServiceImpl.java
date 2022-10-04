@@ -1,6 +1,6 @@
 package com.stgcodes.service;
 
-import com.stgcodes.dao.PhoneDao;
+import com.stgcodes.dao.PhoneDaoImpl;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PhoneMapper;
@@ -11,14 +11,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 public class PhoneServiceImpl implements PhoneService {
 
     @Autowired
-    PhoneDao dao;
+    PhoneDaoImpl dao;
     
     @Override
     public List<Phone> getAllPhones() {
@@ -34,28 +33,28 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public Phone getPhoneById(Long phoneId) {
-        Optional<PhoneEntity> phoneEntity = dao.findById(phoneId);
-        Phone phone = null;
+        PhoneEntity phoneEntity = dao.findById(phoneId);
+        Phone phone;
 
-        if(phoneEntity.isEmpty()) {
+        if(phoneEntity == null) {
             log.info("ID " + phoneId + " does not exist");
             throw new IdNotFoundException();
         } else {
-            phone = PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity.get());
+            phone = PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
         }
 
         return phone;
     }
 
     @Override
-    public void addPhone(Phone phone) {
+    public Phone addPhone(Phone phone) {
         PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(phone);
-        dao.save(phoneEntity);
+        return PhoneMapper.INSTANCE.phoneEntityToPhone(dao.save(phoneEntity));
     }
 
     @Override
     public void deletePhone(Long phoneId) {
-        Optional<PhoneEntity> phoneEntity = dao.findById(phoneId);
-        dao.delete(phoneEntity.get());
+        PhoneEntity phoneEntity = dao.findById(phoneId);
+        dao.delete(phoneEntity);
     }
 }

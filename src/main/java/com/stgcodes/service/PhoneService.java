@@ -8,7 +8,7 @@ public interface PhoneService {
 
     List<Phone> getAllPhones();
     Phone getPhoneById(Long phoneId);
-    void addPhone(Phone phone);
+    Phone addPhone(Phone phone);
     void deletePhone(Long phoneId);
 }
 

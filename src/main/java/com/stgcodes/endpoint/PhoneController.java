@@ -55,8 +55,7 @@ public class PhoneController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        service.addPhone(phone);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(service.addPhone(phone), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

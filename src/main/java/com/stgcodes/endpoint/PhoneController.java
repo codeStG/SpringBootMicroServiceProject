@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/addresses")
+@RequestMapping("/phones")
 @Slf4j
 public class PhoneController {
 
@@ -55,11 +55,13 @@ public class PhoneController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(service.addPhone(phone), HttpStatus.OK);
+        service.addPhone(phone);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Phone> deletePhone(@RequestParam Long phoneId) {
-        return new ResponseEntity<>(service.deletePhone(phoneId), HttpStatus.OK);
+        service.deletePhone(phoneId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

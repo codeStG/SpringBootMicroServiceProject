@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -21,7 +22,7 @@ public class PhoneServiceImpl implements PhoneService {
     
     @Override
     public List<Phone> getAllPhones() {
-        List<PhoneEntity> phoneEntities = dao.getPhones();
+        List<PhoneEntity> phoneEntities = dao.findAll();
         List<Phone> phones = new ArrayList<>();
 
         for(PhoneEntity phoneEntity : phoneEntities) {
@@ -33,30 +34,28 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public Phone getPhoneById(Long phoneId) {
-        PhoneEntity phoneEntity = dao.getPhoneById(phoneId);
+        Optional<PhoneEntity> phoneEntity = dao.findById(phoneId);
         Phone phone = null;
 
-        if(phoneEntity == null) {
+        if(phoneEntity.isEmpty()) {
             log.info("ID " + phoneId + " does not exist");
             throw new IdNotFoundException();
         } else {
-            phone = PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
+            phone = PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity.get());
         }
 
         return phone;
     }
 
     @Override
-    public Phone addPhone(Phone phone) {
+    public void addPhone(Phone phone) {
         PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(phone);
-
-        return PhoneMapper.INSTANCE.phoneEntityToPhone(dao.addPhone(phoneEntity));
+        dao.save(phoneEntity);
     }
 
     @Override
-    public Phone deletePhone(Long phoneId) {
-        PhoneEntity phoneEntity = dao.getPhoneById(phoneId);
-
-        return PhoneMapper.INSTANCE.phoneEntityToPhone(dao.deletePhone(phoneEntity));
+    public void deletePhone(Long phoneId) {
+        Optional<PhoneEntity> phoneEntity = dao.findById(phoneId);
+        dao.delete(phoneEntity.get());
     }
 }

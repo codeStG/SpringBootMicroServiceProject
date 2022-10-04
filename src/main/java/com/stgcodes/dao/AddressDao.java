@@ -20,7 +20,7 @@ public class AddressDao {
 
     public List<AddressEntity> getAddresses() {
         Query query = sessionFactory
-                .getCurrentSession()
+                .openSession()
                 .createSQLQuery("SELECT * FROM ADDRESS_TBL")
                 .addEntity(AddressEntity.class);
 
@@ -29,7 +29,7 @@ public class AddressDao {
 
     public AddressEntity getAddressById(Long addressId) {
         Query query = sessionFactory
-                .getCurrentSession()
+                .openSession()
                 .createSQLQuery("SELECT * FROM ADDRESS_TBL WHERE address_id = " + addressId)
                 .addEntity(AddressEntity.class);
 
@@ -37,7 +37,7 @@ public class AddressDao {
     }
 
     public AddressEntity addAddress(AddressEntity addressEntity) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         session.persist(addressEntity);
@@ -49,7 +49,7 @@ public class AddressDao {
     }
 
     public AddressEntity deleteAddress(AddressEntity addressEntity) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         session.delete(addressEntity);

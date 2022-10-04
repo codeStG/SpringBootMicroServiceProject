@@ -6,60 +6,47 @@ import com.stgcodes.model.Phone;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
-public class PhoneDao {
+public class PhoneDao extends Dao<PhoneEntity> {
 
     @Autowired
     private SessionFactory sessionFactory;
 
-    public List<PhoneEntity> getPhones() {
-        Query query = sessionFactory
-                .getCurrentSession()
-                .createSQLQuery("SELECT * FROM PHONE_TBL")
-                .addEntity(PhoneEntity.class);
+    public List<PhoneEntity> findAll() {
+        List<PhoneEntity> phoneEntities = new ArrayList<>();
+        Session session = sessionFactory.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
 
-        return query.list();
+        session.createSQLQuery("SELECT * FROM PHONE_TBL")
+                .addEntity(PhoneEntity.class)
+                .list().forEach(p -> phoneEntities.add((PhoneEntity) p));
+
+        transaction.commit();
+
+        return phoneEntities;
     }
 
-    public PhoneEntity getPhoneById(Long phoneId) {
-        Query query = sessionFactory
-                .getCurrentSession()
-                .createSQLQuery("SELECT * FROM PHONE_TBL WHERE phone_id = " + phoneId)
-                .addEntity(PhoneEntity.class);
-
-        return (PhoneEntity) query.uniqueResult();
-    }
-
-    public PhoneEntity addPhone(PhoneEntity phoneEntity) {
+    public Optional<PhoneEntity> findById(Long phoneId) {
+        PhoneEntity phoneEntity;
         Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
 
-        session.persist(phoneEntity);
+        phoneEntity = (PhoneEntity) session.createSQLQuery("SELECT * FROM PHONE_TBL WHERE phone_id = " + phoneId)
+                .addEntity(PhoneEntity.class).uniqueResult();
 
         session.getTransaction().commit();
-        session.close();
 
-        return phoneEntity;
-    }
-
-    public PhoneEntity deletePhone(PhoneEntity phoneEntity) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        session.delete(phoneEntity);
-        session.getTransaction().commit();
-
-        session.close();
-
-        return phoneEntity;
+        return Optional.ofNullable(phoneEntity);
     }
 
     @PostConstruct
@@ -72,11 +59,11 @@ public class PhoneDao {
         PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(phone);
 
         log.info("TESTING PHONE SAMPLE DATA CRUD OPERATIONS IN DAO");
-        this.addPhone(phoneEntity);
-        this.getPhones().forEach(System.out::println);
-        this.getPhoneById(4L);
-        this.deletePhone(phoneEntity);
-        this.getPhones().forEach(System.out::println);
+        this.save(phoneEntity);
+        this.findAll().forEach(System.out::println);
+        this.findById(2L);
+        this.delete(phoneEntity);
+        this.findAll().forEach(System.out::println);
         log.info("COMPLETED TESTING PHONE SAMPLE DATA CRUD OPERATIONS IN DAO");
     }
 }

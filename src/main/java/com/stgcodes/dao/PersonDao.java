@@ -20,7 +20,7 @@ public class PersonDao {
 
     public List<PersonEntity> getPeople() {
         Query query = sessionFactory
-                .getCurrentSession()
+                .openSession()
                 .createSQLQuery("SELECT * FROM PERSON_TBL")
                 .addEntity(PersonEntity.class);
 
@@ -29,7 +29,7 @@ public class PersonDao {
 
     public PersonEntity getPersonById(Long personId) {
         Query query = sessionFactory
-                .getCurrentSession()
+                .openSession()
                 .createSQLQuery("SELECT * FROM PERSON_TBL WHERE person_id = " + personId)
                 .addEntity(PersonEntity.class);
 
@@ -37,7 +37,7 @@ public class PersonDao {
     }
 
     public PersonEntity addPerson(PersonEntity personEntity) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         session.persist(personEntity);
@@ -49,7 +49,7 @@ public class PersonDao {
     }
 
     public PersonEntity deletePerson(PersonEntity personEntity) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         session.delete(personEntity);

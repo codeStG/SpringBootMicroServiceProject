@@ -9,6 +9,6 @@ public interface AddressService {
     List<Address> getAllAddresses();
     Address getAddressById(Long personId);
     Address addAddress(Address address);
-    Address deleteAddress(Long addressId);
+    void deleteAddress(Long addressId);
 }
 

@@ -43,7 +43,7 @@ public class PhoneController {
     @PutMapping(path = "/add")
     public ResponseEntity<Phone> addPhone(@RequestBody Phone phone) {
         BindingResult bindingResult = new BindException(phone, "address");
-//        validator.validate(address, bindingResult);
+//        validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();

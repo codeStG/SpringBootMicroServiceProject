@@ -9,6 +9,7 @@ import com.stgcodes.utils.FieldFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class PersonServiceImpl implements PersonService {
     private final FieldFormatter fieldFormatter = new FieldFormatter();
 
     @Override
+    @Transactional
     public List<Person> getAllPeople() {
         List<PersonEntity> personEntities = dao.findAll();
         List<Person> people = new ArrayList<>();
@@ -35,6 +37,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public Person getPersonById(Long personId) {
         PersonEntity personEntity = dao.findById(personId);
         Person person;
@@ -50,6 +53,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public Person addPerson(Person person) {
         Person cleansedPerson = Person.builder()
                 .firstName(fieldFormatter.cleanWhitespace(person.getFirstName()))
@@ -67,6 +71,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public void deletePerson(Long personId) {
         PersonEntity personEntity = dao.findById(personId);
 

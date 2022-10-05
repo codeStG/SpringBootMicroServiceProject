@@ -8,6 +8,7 @@ import com.stgcodes.model.Address;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class AddressServiceImpl implements AddressService {
 //    private final FieldFormatter fieldFormatter = new FieldFormatter();
 
     @Override
+    @Transactional
     public List<Address> getAllAddresses() {
         List<AddressEntity> addressEntities = dao.findAll();
         List<Address> addresses = new ArrayList<>();
@@ -34,6 +36,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @Transactional
     public Address getAddressById(Long addressId) {
         AddressEntity addressEntity = dao.findById(addressId);
         Address address = null;
@@ -49,6 +52,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @Transactional
     public Address addAddress(Address address) {
         AddressEntity addressEntity = AddressMapper.INSTANCE.addressToAddressEntity(address);
 
@@ -56,6 +60,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @Transactional
     public void deleteAddress(Long addressId) {
         AddressEntity addressEntity = dao.findById(addressId);
 

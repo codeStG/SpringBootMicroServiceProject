@@ -48,4 +48,6 @@ public abstract class DaoImpl<T> implements Dao<T> {
     public void delete(T t) {
         entityManager.remove(t);
     }
+
+    //TODO: ADD AN UPDATE (entityManager.merge())
 }

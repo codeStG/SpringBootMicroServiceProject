@@ -1,6 +1,6 @@
 package com.stgcodes.service;
 
-import com.stgcodes.dao.PersonDaoImpl;
+import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PersonMapper;
@@ -18,7 +18,7 @@ import java.util.List;
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
-    PersonDaoImpl dao;
+    PersonDao dao;
 
     private final FieldFormatter fieldFormatter = new FieldFormatter();
 

@@ -1,6 +1,6 @@
 package com.stgcodes.service;
 
-import com.stgcodes.dao.PhoneDaoImpl;
+import com.stgcodes.dao.PhoneDao;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PhoneMapper;
@@ -17,7 +17,7 @@ import java.util.List;
 public class PhoneServiceImpl implements PhoneService {
 
     @Autowired
-    PhoneDaoImpl dao;
+    PhoneDao dao;
     
     @Override
     public List<Phone> getAllPhones() {

@@ -1,6 +1,6 @@
 package com.stgcodes.service;
 
-import com.stgcodes.dao.PersonDao;
+import com.stgcodes.dao.PersonDaoImpl;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PersonMapper;
@@ -18,13 +18,13 @@ import java.util.List;
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
-    PersonDao dao;
+    PersonDaoImpl dao;
 
     private final FieldFormatter fieldFormatter = new FieldFormatter();
 
     @Override
     public List<Person> getAllPeople() {
-        List<PersonEntity> personEntities = dao.getPeople();
+        List<PersonEntity> personEntities = dao.findAll();
         List<Person> people = new ArrayList<>();
 
         for(PersonEntity personEntity : personEntities) {
@@ -36,7 +36,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person getPersonById(Long personId) {
-        PersonEntity personEntity = dao.getPersonById(personId);
+        PersonEntity personEntity = dao.findById(personId);
         Person person;
 
         if(personEntity == null) {
@@ -63,13 +63,13 @@ public class PersonServiceImpl implements PersonService {
 
         PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(cleansedPerson);
 
-        return PersonMapper.INSTANCE.personEntityToPerson(dao.addPerson(personEntity));
+        return PersonMapper.INSTANCE.personEntityToPerson(dao.save(personEntity));
     }
 
     @Override
-    public Person deletePerson(Long personId) {
-        PersonEntity personEntity = dao.getPersonById(personId);
+    public void deletePerson(Long personId) {
+        PersonEntity personEntity = dao.findById(personId);
 
-        return PersonMapper.INSTANCE.personEntityToPerson(dao.deletePerson(personEntity));
+        dao.delete(personEntity);
     }
 }

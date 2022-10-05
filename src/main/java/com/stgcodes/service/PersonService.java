@@ -9,6 +9,6 @@ public interface PersonService {
     List<Person> getAllPeople();
     Person getPersonById(Long personId);
     Person addPerson(Person person);
-    Person deletePerson(Long personId);
+    void deletePerson(Long personId);
 }
 

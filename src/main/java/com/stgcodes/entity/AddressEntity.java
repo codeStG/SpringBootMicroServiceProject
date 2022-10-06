@@ -37,14 +37,6 @@ public class AddressEntity {
     @Column(name = "zip", nullable = false, length = 9)
     private String zip;
 
-    public AddressEntity(String lineOne, String lineTwo, String city, String state, String zip) {
-        this.lineOne = lineOne;
-        this.lineTwo = lineTwo;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

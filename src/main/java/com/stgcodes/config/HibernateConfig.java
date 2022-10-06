@@ -28,6 +28,7 @@ public class HibernateConfig {
         props.setProperty("hibernate.hbm2dll.auto", "create-drop");
         props.setProperty("hibernate.show_sql", "true");
         props.setProperty("hibernate.format_sql", "true");
+        props.setProperty("hibernate.current_session_context_class", "thread");
 
         localSessionFactoryBean.setDataSource(dataSource());
 

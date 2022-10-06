@@ -44,16 +44,6 @@ public class PersonEntity implements Serializable {
     @Column(name = "email", nullable = false)
     private String email;
 
-    public PersonEntity(String firstName, String lastName, String username, String dateOfBirth, String socialSecurityNumber, String gender, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.dateOfBirth = dateOfBirth;
-        this.socialSecurityNumber = socialSecurityNumber;
-        this.gender = gender;
-        this.email = email;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -3,7 +3,6 @@ package com.stgcodes.model;
 import lombok.Builder;
 import lombok.Data;
 
-//lombok has a builder annotation - use it on POJOs
 @Data
 @Builder
 public class Address {

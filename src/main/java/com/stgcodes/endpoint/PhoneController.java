@@ -1,7 +1,9 @@
 package com.stgcodes.endpoint;
 
 import com.stgcodes.model.Address;
+import com.stgcodes.model.Phone;
 import com.stgcodes.service.AddressService;
+import com.stgcodes.service.PhoneService;
 import com.stgcodes.validation.AddressValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,32 +18,32 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/addresses")
+@RequestMapping("/phones")
 @Slf4j
-public class AddressController {
+public class PhoneController {
 
     @Autowired
-    private AddressService service;
+    private PhoneService service;
 
-    @Autowired
-    private AddressValidator validator;
+//    @Autowired
+//    private AddressValidator validator;
 
     @GetMapping(path = "/all")
-    public ResponseEntity<List<Address>> getAllAddresses() {
-        return new ResponseEntity<>(service.getAllAddresses(), HttpStatus.OK);
+    public ResponseEntity<List<Phone>> getAllAddresses() {
+        return new ResponseEntity<>(service.getAllPhones(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
-    public ResponseEntity<Address> getAddress(@RequestParam Long addressId) {
-        Address address = service.getAddressById(addressId);
+    public ResponseEntity<Phone> getPhone(@RequestParam Long phoneId) {
+        Phone phone = service.getPhoneById(phoneId);
 
-        return address == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(address, HttpStatus.OK);
+        return phone == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(phone, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
-    public ResponseEntity<Address> addAddress(@RequestBody Address address) {
-        BindingResult bindingResult = new BindException(address, "address");
-        validator.validate(address, bindingResult);
+    public ResponseEntity<Phone> addPhone(@RequestBody Phone phone) {
+        BindingResult bindingResult = new BindException(phone, "address");
+//        validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -53,13 +55,12 @@ public class AddressController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(service.addAddress(address), HttpStatus.OK);
+        return new ResponseEntity<>(service.addPhone(phone), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
-    public ResponseEntity<Address> deleteAddress(@RequestParam Long addressId) {
-        service.deleteAddress(addressId);
-
+    public ResponseEntity<Phone> deletePhone(@RequestParam Long phoneId) {
+        service.deletePhone(phoneId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

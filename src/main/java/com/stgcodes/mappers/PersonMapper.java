@@ -3,7 +3,6 @@ package com.stgcodes.mappers;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.model.Person;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

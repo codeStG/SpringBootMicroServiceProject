@@ -1,9 +1,11 @@
 package com.stgcodes.service;
 
 import com.stgcodes.model.Phone;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface PhoneService {
 
     List<Phone> getAllPhones();

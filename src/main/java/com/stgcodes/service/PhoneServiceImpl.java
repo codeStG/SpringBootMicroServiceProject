@@ -8,6 +8,7 @@ import com.stgcodes.model.Phone;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class PhoneServiceImpl implements PhoneService {
     PhoneDao dao;
     
     @Override
+    @Transactional
     public List<Phone> getAllPhones() {
         List<PhoneEntity> phoneEntities = dao.findAll();
         List<Phone> phones = new ArrayList<>();
@@ -32,6 +34,7 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
+    @Transactional
     public Phone getPhoneById(Long phoneId) {
         PhoneEntity phoneEntity = dao.findById(phoneId);
         Phone phone;
@@ -47,12 +50,14 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
+    @Transactional
     public Phone addPhone(Phone phone) {
         PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(phone);
         return PhoneMapper.INSTANCE.phoneEntityToPhone(dao.save(phoneEntity));
     }
 
     @Override
+    @Transactional
     public void deletePhone(Long phoneId) {
         PhoneEntity phoneEntity = dao.findById(phoneId);
         dao.delete(phoneEntity);

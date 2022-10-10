@@ -2,7 +2,8 @@ package com.stgcodes.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import static com.stgcodes.utils.constants.CustomMatchers.*;
+import static com.stgcodes.utils.constants.CustomMatchers.WHITESPACE;
+import static com.stgcodes.utils.constants.CustomMatchers.WHITESPACE_COMMON_SEPARATORS;
 
 public class FieldFormatter {
 

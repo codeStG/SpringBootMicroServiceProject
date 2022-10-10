@@ -1,19 +1,20 @@
 package com.stgcodes.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
+@Transactional
 public abstract class DaoImpl<T> implements Dao<T> {
 
-    @Autowired
-    SessionFactory sessionFactory;
+    @PersistenceContext
+    EntityManager entityManager;
 
     private Class<T> type;
 
@@ -25,49 +26,28 @@ public abstract class DaoImpl<T> implements Dao<T> {
 
     @Override
     public T findById(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        T data = session.find(type, id);
-
-        session.getTransaction().commit();
-
-        return data;
+        return entityManager.find(type, id);
     }
 
     @Override
     public List<T> findAll() {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> criteria = builder.createQuery(type);
         criteria.from(type);
 
-        List<T> data = session.createQuery(criteria).getResultList();
-
-        session.getTransaction().commit();
-
-        return data;
+        return entityManager.createQuery(criteria).getResultList();
     }
 
     @Override
     public T save(final T t) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        session.saveOrUpdate(t);
-        session.getTransaction().commit();
-
+        entityManager.persist(t);
         return t;
     }
 
     @Override
     public void delete(T t) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        session.delete(t);
-        session.getTransaction().commit();
+        entityManager.remove(t);
     }
+
+    //TODO: ADD AN UPDATE (entityManager.merge())
 }

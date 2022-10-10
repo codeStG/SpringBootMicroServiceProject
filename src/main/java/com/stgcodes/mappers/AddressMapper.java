@@ -1,9 +1,7 @@
 package com.stgcodes.mappers;
 
 import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.model.Address;
-import com.stgcodes.model.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

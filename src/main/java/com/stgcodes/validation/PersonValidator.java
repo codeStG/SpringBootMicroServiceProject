@@ -14,7 +14,8 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import static com.stgcodes.utils.constants.CustomMatchers.*;
+import static com.stgcodes.utils.constants.CustomMatchers.LETTER;
+import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
 
 @Component
 public class PersonValidator implements Validator {

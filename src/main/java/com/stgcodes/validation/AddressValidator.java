@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import static com.stgcodes.utils.constants.CustomMatchers.*;
+import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
 
 @Component
 public class AddressValidator implements Validator {

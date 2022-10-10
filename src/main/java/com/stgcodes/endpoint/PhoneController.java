@@ -1,10 +1,7 @@
 package com.stgcodes.endpoint;
 
-import com.stgcodes.model.Address;
 import com.stgcodes.model.Phone;
-import com.stgcodes.service.AddressService;
 import com.stgcodes.service.PhoneService;
-import com.stgcodes.validation.AddressValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;

@@ -2,7 +2,6 @@ package com.stgcodes.service;
 
 import com.stgcodes.model.Person;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

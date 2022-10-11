@@ -11,14 +11,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 @Transactional
-public abstract class DaoImpl<T> implements Dao<T> {
+public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 
     @PersistenceContext
     EntityManager entityManager;
 
     private Class<T> type;
 
-    public DaoImpl() {
+    public GenericDaoImpl() {
         Type t = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) t;
         type = (Class) pt.getActualTypeArguments()[0];
@@ -46,7 +46,7 @@ public abstract class DaoImpl<T> implements Dao<T> {
 
     @Override
     public void delete(T t) {
-        entityManager.remove(t);
+        entityManager.remove(entityManager.contains(t) ? t : entityManager.merge(t));
     }
 
     //TODO: ADD AN UPDATE (entityManager.merge())

@@ -1,5 +1,7 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.entity.AddressEntity;
+import com.stgcodes.mappers.AddressMapper;
 import com.stgcodes.model.Address;
 import com.stgcodes.service.AddressService;
 import com.stgcodes.validation.AddressValidator;
@@ -12,6 +14,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,14 +31,21 @@ public class AddressController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Address>> getAllAddresses() {
-        return new ResponseEntity<>(service.getAllAddresses(), HttpStatus.OK);
+        List<Address> addresses = new ArrayList<>();
+
+        for(AddressEntity addressEntity : service.findAll()) {
+            addresses.add(AddressMapper.INSTANCE.addressEntityToAddress(addressEntity));
+        }
+
+        return new ResponseEntity<>(addresses, HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
     public ResponseEntity<Address> getAddress(@RequestParam Long addressId) {
-        Address address = service.getAddressById(addressId);
+        AddressEntity addressEntity = service.findById(addressId);
+        Address address = AddressMapper.INSTANCE.addressEntityToAddress(addressEntity);
 
-        return address == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(address, HttpStatus.OK);
+        return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
@@ -53,12 +63,13 @@ public class AddressController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(service.addAddress(address), HttpStatus.OK);
+        service.save(AddressMapper.INSTANCE.addressToAddressEntity(address));
+        return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Address> deleteAddress(@RequestParam Long addressId) {
-        service.deleteAddress(addressId);
+        service.delete(addressId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

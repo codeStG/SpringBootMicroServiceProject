@@ -32,9 +32,7 @@ public class AddressController {
     public ResponseEntity<List<Address>> getAllAddresses() {
         List<Address> addresses = new ArrayList<>();
 
-        for(AddressEntity addressEntity : service.findAll()) {
-            addresses.add(service.mapToModel(addressEntity));
-        }
+        service.findAll().forEach(e -> addresses.add(service.mapToModel(e)));
 
         return new ResponseEntity<>(addresses, HttpStatus.OK);
     }

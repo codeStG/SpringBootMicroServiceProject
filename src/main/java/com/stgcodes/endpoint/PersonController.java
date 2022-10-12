@@ -1,6 +1,5 @@
 package com.stgcodes.endpoint;
 
-import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.validation.PersonValidator;
@@ -32,9 +31,7 @@ public class PersonController {
     public ResponseEntity<List<Person>> getAllPeople() {
         List<Person> people = new ArrayList<>();
 
-        for(PersonEntity personEntity : service.findAll()) {
-            people.add(service.mapToModel(personEntity));
-        }
+        service.findAll().forEach(e -> people.add(service.mapToModel(e)));
 
         return new ResponseEntity<>(people, HttpStatus.OK);
     }

@@ -1,5 +1,7 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
 import com.stgcodes.service.PhoneService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,24 +25,31 @@ public class PhoneController {
     @Autowired
     private PhoneService service;
 
+    //TODO: create a PhoneValidator
 //    @Autowired
-//    private AddressValidator validator;
+//    private PhoneValidator validator;
 
     @GetMapping(path = "/all")
-    public ResponseEntity<List<Phone>> getAllAddresses() {
-        return new ResponseEntity<>(service.getAllPhones(), HttpStatus.OK);
+    public ResponseEntity<List<Phone>> getAllPhones() {
+        List<Phone> phones = new ArrayList<>();
+
+        service.findAll().forEach(e -> phones.add(service.mapToModel(e)));
+
+        return new ResponseEntity<>(phones, HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
     public ResponseEntity<Phone> getPhone(@RequestParam Long phoneId) {
-        Phone phone = service.getPhoneById(phoneId);
+        Phone phone = service.mapToModel(service.findById(phoneId));
 
-        return phone == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(phone, HttpStatus.OK);
+        return new ResponseEntity<>(phone, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
     public ResponseEntity<Phone> addPhone(@RequestBody Phone phone) {
         BindingResult bindingResult = new BindException(phone, "address");
+
+        //TODO: Once validator and cleanPhone method are complete, fix this to use a cleansedPhone
 //        validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
@@ -52,12 +62,14 @@ public class PhoneController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(service.addPhone(phone), HttpStatus.OK);
+        service.save(service.mapToEntity(phone));
+        return new ResponseEntity<>(phone, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Phone> deletePhone(@RequestParam Long phoneId) {
-        service.deletePhone(phoneId);
+        service.delete(phoneId);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

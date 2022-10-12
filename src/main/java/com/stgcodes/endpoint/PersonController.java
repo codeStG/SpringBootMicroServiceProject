@@ -1,5 +1,6 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.validation.PersonValidator;
@@ -12,6 +13,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,20 +30,28 @@ public class PersonController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {
-        return new ResponseEntity<>(service.getAllPeople(), HttpStatus.OK);
+        List<Person> people = new ArrayList<>();
+
+        for(PersonEntity personEntity : service.findAll()) {
+            people.add(service.mapToModel(personEntity));
+        }
+
+        return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
     public ResponseEntity<Person> getPerson(@RequestParam Long personId) {
-        Person person = service.getPersonById(personId);
+        Person person = service.mapToModel(service.findById(personId));
 
-        return person == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(person, HttpStatus.OK);
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        BindingResult bindingResult = new BindException(person, "person");
-        validator.validate(person, bindingResult);
+        Person cleansedPerson = service.cleanPerson(person);
+
+        BindingResult bindingResult = new BindException(cleansedPerson, "person");
+        validator.validate(cleansedPerson, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -53,12 +63,14 @@ public class PersonController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(service.addPerson(person), HttpStatus.OK);
+        service.save(service.mapToEntity(person));
+        return new ResponseEntity<>(cleansedPerson, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Person> deletePerson(@RequestParam Long personId) {
-        service.deletePerson(personId);
+        service.delete(personId);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

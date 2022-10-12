@@ -1,61 +1,21 @@
 package com.stgcodes.service;
 
-import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
-import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.utils.FieldFormatter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Service
+@Component("personService")
 @Slf4j
-public class PersonServiceImpl implements PersonService {
-
-    @Autowired
-    PersonDao dao;
-
-    private final FieldFormatter fieldFormatter = new FieldFormatter();
+public class PersonServiceImpl extends GenericServiceImpl<PersonEntity> implements PersonService {
 
     @Override
-    @Transactional
-    public List<Person> getAllPeople() {
-        List<PersonEntity> personEntities = dao.findAll();
-        List<Person> people = new ArrayList<>();
+    public Person cleanPerson(Person person) {
+        FieldFormatter fieldFormatter = new FieldFormatter();
 
-        for(PersonEntity personEntity : personEntities) {
-            people.add(PersonMapper.INSTANCE.personEntityToPerson(personEntity));
-        }
-
-        return people;
-    }
-
-    @Override
-    @Transactional
-    public Person getPersonById(Long personId) {
-        PersonEntity personEntity = dao.findById(personId);
-        Person person;
-
-        if(personEntity == null) {
-            log.info("ID " + personId + " does not exist");
-            throw new IdNotFoundException();
-        } else {
-            person = PersonMapper.INSTANCE.personEntityToPerson(personEntity);
-        }
-
-        return person;
-    }
-
-    @Override
-    @Transactional
-    public Person addPerson(Person person) {
-        Person cleansedPerson = Person.builder()
+        return Person.builder()
                 .firstName(fieldFormatter.cleanWhitespace(person.getFirstName()))
                 .lastName(fieldFormatter.cleanWhitespace(person.getLastName()))
                 .username(fieldFormatter.cleanWhitespace(person.getUsername()))
@@ -64,17 +24,14 @@ public class PersonServiceImpl implements PersonService {
                 .gender(fieldFormatter.formatAsEnum(person.getGender()))
                 .email(fieldFormatter.cleanWhitespace(person.getEmail()))
                 .build();
-
-        PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(cleansedPerson);
-
-        return PersonMapper.INSTANCE.personEntityToPerson(dao.save(personEntity));
     }
 
     @Override
-    @Transactional
-    public void deletePerson(Long personId) {
-        PersonEntity personEntity = dao.findById(personId);
+    public PersonEntity mapToEntity(Person person) {
+        return PersonMapper.INSTANCE.personToPersonEntity(person);
+    }
 
-        dao.delete(personEntity);
+    public Person mapToModel(PersonEntity personEntity) {
+        return PersonMapper.INSTANCE.personEntityToPerson(personEntity);
     }
 }

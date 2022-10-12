@@ -1,7 +1,6 @@
 package com.stgcodes.endpoint;
 
 import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.mappers.AddressMapper;
 import com.stgcodes.model.Address;
 import com.stgcodes.service.AddressService;
 import com.stgcodes.validation.AddressValidator;
@@ -34,7 +33,7 @@ public class AddressController {
         List<Address> addresses = new ArrayList<>();
 
         for(AddressEntity addressEntity : service.findAll()) {
-            addresses.add(AddressMapper.INSTANCE.addressEntityToAddress(addressEntity));
+            addresses.add(service.mapToModel(addressEntity));
         }
 
         return new ResponseEntity<>(addresses, HttpStatus.OK);
@@ -42,16 +41,17 @@ public class AddressController {
 
     @GetMapping(path = "/id")
     public ResponseEntity<Address> getAddress(@RequestParam Long addressId) {
-        AddressEntity addressEntity = service.findById(addressId);
-        Address address = AddressMapper.INSTANCE.addressEntityToAddress(addressEntity);
+        Address address = service.mapToModel(service.findById(addressId));
 
         return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
-        BindingResult bindingResult = new BindException(address, "address");
-        validator.validate(address, bindingResult);
+        Address cleansedAddress = service.cleanAddress(address);
+
+        BindingResult bindingResult = new BindException(cleansedAddress, "address");
+        validator.validate(cleansedAddress, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -63,8 +63,8 @@ public class AddressController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        service.save(AddressMapper.INSTANCE.addressToAddressEntity(address));
-        return new ResponseEntity<>(address, HttpStatus.OK);
+        service.save(service.mapToEntity(cleansedAddress));
+        return new ResponseEntity<>(cleansedAddress, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

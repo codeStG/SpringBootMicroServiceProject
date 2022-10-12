@@ -21,7 +21,6 @@ import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
 public class PersonValidator implements Validator {
 
    private final Integer MAX_NAME_LENGTH = 25;
-   private final FieldFormatter fieldFormatter = new FieldFormatter();
    private Person person;
 
     @Override
@@ -43,8 +42,6 @@ public class PersonValidator implements Validator {
     }
 
     private void validateFirstName(String firstName, Errors errors) {
-        firstName = fieldFormatter.cleanWhitespace(firstName);
-
         if (!firstName.matches(LETTER)) {
             errors.rejectValue("firstName", "name.format");
         }
@@ -55,8 +52,6 @@ public class PersonValidator implements Validator {
     }
 
     private void validateLastName(String lastName, Errors errors) {
-        lastName = fieldFormatter.cleanWhitespace(lastName);
-
         if (!lastName.matches(LETTER)) {
             errors.rejectValue("lastName", "name.format");
         }
@@ -67,15 +62,12 @@ public class PersonValidator implements Validator {
     }
 
     private void validateUsername(String username, Errors errors) {
-        username = fieldFormatter.cleanWhitespace(username);
-
         if (username.length() < 6 || username.length() > MAX_NAME_LENGTH) {
             errors.rejectValue("username", "username.format");
         }
     }
 
     private void validateDateOfBirth(String dateOfBirth, Errors errors) {
-        dateOfBirth = fieldFormatter.separateBy(dateOfBirth, "/");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/y", Locale.ENGLISH);
 
         try {
@@ -90,8 +82,6 @@ public class PersonValidator implements Validator {
     }
 
     private void validateSocialSecurityNumber(String ssn, Errors errors) {
-        ssn = fieldFormatter.separateBy(ssn, "-");
-
         if(!Pattern.matches(SOCIAL_SECURITY, ssn)) {
             errors.rejectValue("socialSecurityNumber", "ssn.format");
         }
@@ -99,7 +89,7 @@ public class PersonValidator implements Validator {
 
     private void validateGender(String gender, Errors errors) {
         try {
-            Gender.valueOf(fieldFormatter.formatAsEnum(gender));
+            Gender.valueOf(gender);
         } catch (IllegalArgumentException e) {
             errors.rejectValue("gender", "gender.format");
         }

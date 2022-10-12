@@ -37,6 +37,8 @@ public abstract class GenericServiceImpl<T> implements GenericService<T> {
 
     @Override
     public void delete(Long id) {
-        dao.delete(dao.findById(id));
+        T t = findById(id);
+
+        dao.delete(t);
     }
 }

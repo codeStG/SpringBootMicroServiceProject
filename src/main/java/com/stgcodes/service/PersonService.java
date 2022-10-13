@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface PersonService extends GenericService<PersonEntity> {
-    Person cleanPerson(Person person);
+    void cleanPerson(Person person);
     PersonEntity mapToEntity(Person person);
     Person mapToModel(PersonEntity personEntity);
 }

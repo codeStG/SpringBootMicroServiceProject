@@ -3,6 +3,7 @@ package com.stgcodes.endpoint;
 import com.stgcodes.entity.AddressEntity;
 import com.stgcodes.model.Address;
 import com.stgcodes.service.AddressService;
+import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.AddressValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,23 +47,23 @@ public class AddressController {
 
     @PutMapping(path = "/add")
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
-        Address cleansedAddress = service.cleanAddress(address);
+        BindingResult bindingResult = new BindException(address, "address");
 
-        BindingResult bindingResult = new BindException(cleansedAddress, "address");
-        validator.validate(cleansedAddress, bindingResult);
+        service.cleanAddress(address);
+        validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
             messageSource.setBasename("ValidationMessages");
 
-            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
+            log.error(messageSource.getMessage("address.invalid", null, Locale.US));
             bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        service.save(service.mapToEntity(cleansedAddress));
-        return new ResponseEntity<>(cleansedAddress, HttpStatus.OK);
+        service.save(service.mapToEntity(address));
+        return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

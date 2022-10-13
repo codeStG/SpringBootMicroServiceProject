@@ -1,6 +1,7 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Address;
+import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.enums.GeographicState;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -28,7 +29,7 @@ public class AddressValidator implements Validator {
     }
 
     private void validateLineOne(String lineOne, Errors errors) {
-        if (lengthIsInvalid(1, 50, lineOne)) {
+        if (lengthIsInvalid(1, 75, lineOne)) {
             errors.rejectValue("lineOne", "lineone.format");
         }
     }
@@ -40,13 +41,15 @@ public class AddressValidator implements Validator {
     }
 
     private void validateCity(String city, Errors errors) {
-        if (lengthIsInvalid(1, 50, city)) {
+        if (lengthIsInvalid(1, 75, city)) {
             errors.rejectValue("city", "city.format");
         }
     }
 
     private void validateState(String state, Errors errors) {
-        if(!GeographicState.isAState(state)) {
+        FieldFormatter fieldFormatter = new FieldFormatter();
+
+        if(!GeographicState.isAState(fieldFormatter.formatAsEnum(state))) {
             errors.rejectValue("state", "state.invalid");
         }
     }

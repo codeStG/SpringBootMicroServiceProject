@@ -14,12 +14,10 @@ import java.util.Objects;
 //Look into @PropertySource()
 public class ValidatorTestUtils {
 
-    private Validator validator;
-    private Object target;
+    private final Validator validator;
+    private final Object target;
 
-    //Change this to Error interface
-    private BindingResult bindingResult;
-    private ResourceBundleMessageSource messageSource;
+    private final ResourceBundleMessageSource messageSource;
 
     public ValidatorTestUtils(Validator validator, Object target) {
         this.validator = validator;
@@ -28,17 +26,12 @@ public class ValidatorTestUtils {
         messageSource.setBasename("ValidationMessages");
     }
 
-    public BindingResult performValidation() {
-        bindingResult = new BindException(target, String.valueOf(target));
-        validator.validate(target, bindingResult);
-
-        return  bindingResult;
-    }
-
     public Map<String, String> getErrors(String field, String expectedErrorCode) {
         Map<String, String> errors = new HashMap<>();
 
-        performValidation();
+        //Change this to Error interface
+        BindingResult bindingResult = new BindException(target, String.valueOf(target));
+        validator.validate(target, bindingResult);
 
         FieldError fieldError = bindingResult.getFieldError(field);
         errors.put("expectedError", messageSource.getMessage(expectedErrorCode, null, Locale.US));

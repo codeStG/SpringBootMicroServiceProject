@@ -12,18 +12,16 @@ import org.springframework.stereotype.Component;
 public class PersonServiceImpl extends GenericServiceImpl<PersonEntity> implements PersonService {
 
     @Override
-    public Person cleanPerson(Person person) {
+    public void cleanPerson(Person person) {
         FieldFormatter fieldFormatter = new FieldFormatter();
 
-        return Person.builder()
-                .firstName(fieldFormatter.cleanWhitespace(person.getFirstName()))
-                .lastName(fieldFormatter.cleanWhitespace(person.getLastName()))
-                .username(fieldFormatter.cleanWhitespace(person.getUsername()))
-                .dateOfBirth(fieldFormatter.separateBy(person.getDateOfBirth(), "/"))
-                .socialSecurityNumber(fieldFormatter.separateBy(person.getSocialSecurityNumber(), "-"))
-                .gender(fieldFormatter.formatAsEnum(person.getGender()))
-                .email(fieldFormatter.cleanWhitespace(person.getEmail()))
-                .build();
+        person.setFirstName(person.getFirstName().trim());
+        person.setLastName(person.getLastName().trim());
+        person.setUsername(person.getUsername().trim());
+        person.setDateOfBirth(fieldFormatter.formatAsDate(person.getDateOfBirth()));
+        person.setSocialSecurityNumber(fieldFormatter.separateBy(person.getSocialSecurityNumber(), "-"));
+        person.setGender(fieldFormatter.formatAsEnum(person.getGender()));
+        person.setEmail(person.getEmail().trim());
     }
 
     @Override

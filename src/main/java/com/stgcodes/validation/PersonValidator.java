@@ -1,7 +1,6 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.enums.Gender;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
 public class PersonValidator implements Validator {
 
    private final Integer MAX_NAME_LENGTH = 25;
-   private Person person;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -30,10 +28,10 @@ public class PersonValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        person = (Person) target;
+        Person person = (Person) target;
 
-        validateFirstName(person.getFirstName(), errors);
-        validateLastName(person.getLastName(), errors);
+        validateFirstName(person, errors);
+        validateLastName(person, errors);
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
@@ -41,7 +39,9 @@ public class PersonValidator implements Validator {
         validateEmail(person.getEmail(), errors);
     }
 
-    private void validateFirstName(String firstName, Errors errors) {
+    private void validateFirstName(Person person, Errors errors) {
+        String firstName = person.getFirstName();
+
         if (!firstName.matches(LETTER)) {
             errors.rejectValue("firstName", "name.format");
         }
@@ -51,7 +51,9 @@ public class PersonValidator implements Validator {
         }
     }
 
-    private void validateLastName(String lastName, Errors errors) {
+    private void validateLastName(Person person, Errors errors) {
+        String lastName = person.getLastName();
+
         if (!lastName.matches(LETTER)) {
             errors.rejectValue("lastName", "name.format");
         }

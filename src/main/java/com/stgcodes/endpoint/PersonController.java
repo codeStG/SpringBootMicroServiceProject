@@ -2,6 +2,7 @@ package com.stgcodes.endpoint;
 
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
+import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +46,10 @@ public class PersonController {
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        Person cleansedPerson = service.cleanPerson(person);
+        BindingResult bindingResult = new BindException(person, "person");
 
-        BindingResult bindingResult = new BindException(cleansedPerson, "person");
-        validator.validate(cleansedPerson, bindingResult);
+        service.cleanPerson(person);
+        validator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -61,7 +62,7 @@ public class PersonController {
         }
 
         service.save(service.mapToEntity(person));
-        return new ResponseEntity<>(cleansedPerson, HttpStatus.OK);
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

@@ -10,16 +10,14 @@ import org.springframework.stereotype.Component;
 public class AddressServiceImpl extends GenericServiceImpl<AddressEntity> implements AddressService {
 
     @Override
-    public Address cleanAddress(Address address) {
+    public void cleanAddress(Address address) {
         FieldFormatter fieldFormatter = new FieldFormatter();
 
-        return Address.builder()
-                .lineOne(fieldFormatter.cleanWhitespace(address.getLineOne()))
-                .lineTwo(fieldFormatter.cleanWhitespace(address.getLineTwo()))
-                .city(fieldFormatter.cleanWhitespace(address.getCity()))
-                .state(fieldFormatter.formatAsEnum(address.getState()))
-                .zip(fieldFormatter.separateBy(address.getZip(), "-"))
-                .build();
+        address.setLineOne(address.getLineOne().trim());
+        address.setLineTwo(address.getLineTwo().trim());
+        address.setCity(address.getCity().trim());
+        address.setState(fieldFormatter.formatAsState(address.getState()));
+        address.setZip(fieldFormatter.separateBy(address.getZip(), "-"));
     }
 
     @Override

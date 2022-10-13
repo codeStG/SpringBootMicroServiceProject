@@ -22,19 +22,19 @@ public class AddressEntity {
     @Column(name = "address_id")
     private Long addressId;
 
-    @Column(name = "line_one", nullable = false, length = 50)
+    @Column(name = "line_one", nullable = false, length = 75)
     private String lineOne;
 
     @Column(name = "line_two", length = 25)
     private String lineTwo;
 
-    @Column(name = "city", nullable = false, length = 50)
+    @Column(name = "city", nullable = false, length = 75)
     private String city;
 
-    @Column(name = "state", nullable = false, length = 13)
+    @Column(name = "state", nullable = false, length = 20)
     private String state;
 
-    @Column(name = "zip", nullable = false, length = 9)
+    @Column(name = "zip", nullable = false, length = 10)
     private String zip;
 
     @Override

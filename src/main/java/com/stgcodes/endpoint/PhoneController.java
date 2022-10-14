@@ -1,7 +1,5 @@
 package com.stgcodes.endpoint;
 
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
 import com.stgcodes.service.PhoneService;
 import com.stgcodes.validation.PhoneValidator;

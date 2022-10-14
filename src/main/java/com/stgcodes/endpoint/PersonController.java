@@ -2,7 +2,6 @@ package com.stgcodes.endpoint;
 
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

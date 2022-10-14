@@ -22,7 +22,7 @@ public class PhoneEntity {
     @Column(name = "phone_id")
     private Long phoneId;
 
-    @Column(name = "phone_number", nullable = false, length = 11)
+    @Column(name = "phone_number", nullable = false, length = 12)
     private String phoneNumber;
 
     @Column(name = "phone_type", nullable = false, length = 8)

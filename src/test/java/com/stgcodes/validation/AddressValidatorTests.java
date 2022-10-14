@@ -3,9 +3,9 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Address;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.validation.BindingResult;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 

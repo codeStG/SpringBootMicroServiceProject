@@ -3,15 +3,18 @@ package com.stgcodes.service;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
+import com.stgcodes.utils.FieldFormatter;
 import org.springframework.stereotype.Component;
 
 @Component("phoneService")
 public class PhoneServiceImpl extends GenericServiceImpl<PhoneEntity> implements PhoneService {
 
-    //TODO: implement cleanPhone method
     @Override
-    public Phone cleanPhone(Phone phone) {
-        return phone;
+    public void cleanPhone(Phone phone) {
+        FieldFormatter fieldFormatter = new FieldFormatter();
+
+        phone.setPhoneNumber(phone.getPhoneNumber().trim());
+        phone.setPhoneType(fieldFormatter.formatAsEnum(phone.getPhoneType()));
     }
 
     @Override

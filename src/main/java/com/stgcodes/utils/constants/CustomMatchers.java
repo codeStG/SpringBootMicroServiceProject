@@ -9,6 +9,6 @@ public final class CustomMatchers {
     public static final String WHITESPACE_COMMON_SEPARATORS = "[\\s-/,.*]+";
     public static final String LETTER = "[a-zA-Z]+";
     public static final String SOCIAL_SECURITY = "^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$";
-
     public static final String US_ZIP_CODE =  "\\d{5}(-\\d{4})?";
+    public static final String US_PHONE = "^[2-9]\\d{2}-\\d{3}-\\d{4}$";
 }

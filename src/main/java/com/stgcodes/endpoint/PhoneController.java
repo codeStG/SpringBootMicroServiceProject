@@ -4,6 +4,7 @@ import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
 import com.stgcodes.service.PhoneService;
+import com.stgcodes.validation.PhoneValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -25,9 +26,8 @@ public class PhoneController {
     @Autowired
     private PhoneService service;
 
-    //TODO: create a PhoneValidator
-//    @Autowired
-//    private PhoneValidator validator;
+    @Autowired
+    private PhoneValidator validator;
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Phone>> getAllPhones() {
@@ -49,14 +49,14 @@ public class PhoneController {
     public ResponseEntity<Phone> addPhone(@RequestBody Phone phone) {
         BindingResult bindingResult = new BindException(phone, "address");
 
-        //TODO: Once validator and cleanPhone method are complete, fix this to use a cleansedPhone
-//        validator.validate(phone, bindingResult);
+        service.cleanPhone(phone);
+        validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
             messageSource.setBasename("ValidationMessages");
 
-            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
+            log.error(messageSource.getMessage("phone.invalid", null, Locale.US));
             bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

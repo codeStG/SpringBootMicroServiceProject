@@ -1,12 +1,12 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Address;
 import com.stgcodes.model.Phone;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,65 +14,79 @@ public class PhoneValidatorTests {
 
     private Phone phone;
     private ValidatorTestUtils validatorTestUtils;
-    private Map<String, String> errors;
+    private ResourceBundleMessageSource messageSource;
+    private List<String> errors;
+
 
     @Before
     public void setUp() {
         phone = Phone.builder()
-                .phoneNumber("123-456-7890")
+                .phoneNumber("223-456-7890")
                 .phoneType("MOBILE")
                 .build();
 
         validatorTestUtils = new ValidatorTestUtils(new PhoneValidator(), phone);
-
-        errors = new HashMap<>();
+        messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("ValidationMessages");
     }
 
     @Test
     public void testValidPhoneNumber() {
         phone.setPhoneNumber("234-567-8901");
-        errors = validatorTestUtils.getErrors("phoneNumber", "errors.none");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyPhoneNumberIsInvalid() {
         phone.setPhoneNumber("");
-        errors = validatorTestUtils.getErrors("phoneNumber", "phonenumber.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("phonenumber.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testInvalidPhoneNumber() {
-        phone.setPhoneNumber("123-456-78901");
-        errors = validatorTestUtils.getErrors("phoneNumber", "phonenumber.format");
+        phone.setPhoneNumber("223-456-78901");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("phonenumber.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testValidPhoneType() {
         phone.setPhoneType("HOME");
-        errors = validatorTestUtils.getErrors("phoneType", "errors.none");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyPhoneTypeIsInvalid() {
         phone.setPhoneType("");
-        errors = validatorTestUtils.getErrors("phoneType", "phonetype.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("phonetype.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testInvalidPhoneType() {
         phone.setPhoneType("Office");
-        errors = validatorTestUtils.getErrors("phoneType", "phonetype.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("phonetype.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 }

@@ -1,6 +1,5 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Address;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.enums.PhoneType;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ public class PhoneValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return Address.class.equals(clazz);
+        return Phone.class.equals(clazz);
     }
 
     @Override

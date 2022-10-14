@@ -1,15 +1,9 @@
 package com.stgcodes.validation;
 
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.Validator;
+import org.springframework.validation.*;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 //Look into @PropertySource()
 public class ValidatorTestUtils {
@@ -26,24 +20,18 @@ public class ValidatorTestUtils {
         messageSource.setBasename("ValidationMessages");
     }
 
-    public Map<String, String> getErrors(String field, String expectedErrorCode) {
-        Map<String, String> errors = new HashMap<>();
+    public List<String> getErrors() {
+        Errors errors = new BeanPropertyBindingResult(target, String.valueOf(target));
+        validator.validate(target, errors);
 
-        //Change this to Error interface
-        BindingResult bindingResult = new BindException(target, String.valueOf(target));
-        validator.validate(target, bindingResult);
+        List<String> errorMessages = new ArrayList<>();
 
-        FieldError fieldError = bindingResult.getFieldError(field);
-        errors.put("expectedError", messageSource.getMessage(expectedErrorCode, null, Locale.US));
-
-        if(fieldError != null) {
-            errors.put("actualError", messageSource.getMessage(Objects.requireNonNull(fieldError.getCode()), null, Locale.US));
-
-            return errors;
+        if(errors.hasErrors()) {
+            errors.getAllErrors().forEach(e -> errorMessages.add(messageSource.getMessage(e.getCode(), null, Locale.US)));
+        } else {
+            errorMessages.add(messageSource.getMessage("errors.none", null, Locale.US));
         }
 
-        errors.put("actualError", "There were no errors");
-
-        return errors;
+        return errorMessages;
     }
 }

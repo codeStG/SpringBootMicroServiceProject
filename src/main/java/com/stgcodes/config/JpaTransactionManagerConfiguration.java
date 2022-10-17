@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@PropertySource({"application.properties"})
+@PropertySource({"classpath:/application.properties"})
 @ComponentScan(basePackages = "com.stgcodes")
 @EnableTransactionManagement
 @Slf4j

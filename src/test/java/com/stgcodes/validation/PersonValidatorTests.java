@@ -3,9 +3,10 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Person;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.validation.BindingResult;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,9 +14,8 @@ public class PersonValidatorTests {
 
     private Person person;
     private ValidatorTestUtils validatorTestUtils;
-    private BindingResult bindingResult;
-    List<String> testCases;
-    private Map<String, String> errors;
+    private ResourceBundleMessageSource messageSource;
+    private List<String> errors;
 
     @Before
     public void setUp() {
@@ -25,209 +25,252 @@ public class PersonValidatorTests {
                 .username("brbyard")
                 .dateOfBirth("08/13/1978")
                 .socialSecurityNumber("123-45-6777")
-                .gender("male")
+                .gender("MALE")
                 .email("brbyard@gmail.com")
                 .build();
 
         validatorTestUtils = new ValidatorTestUtils(new PersonValidator(), person);
+        messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("ValidationMessages");
+    }
 
-        testCases = new ArrayList<>();
-        errors = new HashMap<>();
+    @Test
+    public void testValidFirstName() {
+        person.setFirstName("George");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testLongFirstNameIsTruncatedToMakeValid() {
+        person.setFirstName("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyFirstNameIsInvalid() {
         person.setFirstName("");
-        errors = validatorTestUtils.getErrors("firstName", "name.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("name.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testFirstNameWithNonLetterCharacterIsInvalid() {
-        testCases = Arrays.asList("G3orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
+        person.setFirstName("G3orge");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setFirstName(testCase);
-            errors = validatorTestUtils.getErrors("firstName", "name.format");
+        String expected = messageSource.getMessage("name.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testFirstNameWithWhitespaceIsTrimmed() {
-        testCases = Arrays.asList( "   George     ", "   G \n E \n O \n ");
+    public void testValidLastName() {
+        person.setFirstName("Flores");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setFirstName(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testLongFirstNameIsTruncated() {
-        testCases = Arrays.asList("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[12", "ABCDE\n   FGH\nIJKLMNOPQRSTU       VWXYZ]]]");
+    public void testLongLastNameIsTruncatedToMakeValid() {
+        person.setLastName("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setFirstName(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(25, person.getFirstName().length());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyLastNameIsInvalid() {
         person.setLastName("");
-        errors = validatorTestUtils.getErrors("lastName", "name.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("name.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testLastNameWithNonLetterCharacterIsInvalid() {
-        testCases = Arrays.asList("G3orge", "\\Ge;'[", "   George     *", "  > G \n E \n O \n ");
+        person.setLastName("Flor3s");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setLastName(testCase);
-            errors = validatorTestUtils.getErrors("lastName", "name.format");
+        String expected = messageSource.getMessage("name.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testLastNameWithWhitespaceIsTrimmed() {
-        testCases = Arrays.asList( "   George     ", "   G \n E \n O \n ");
+    public void testValidUsername() {
+        person.setUsername("Georgieboy");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setLastName(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testLongLastNameIsTruncated() {
-        testCases = Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[12");
+    public void testUsernameTooLong() {
+        person.setUsername("George but make it too long");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setLastName(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("username.format", null, Locale.US);
 
-            assertEquals(25, person.getLastName().length());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testWrongLengthUsernameIsInvalid() {
-        testCases = Arrays.asList("  ", "   Georg", "\n\n\n\n    George w twenty six characters", "\n\n\n\n\n    ");
+    public void testUsernameTooShort() {
+        person.setUsername("Georg");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setUsername(testCase);
-            errors = validatorTestUtils.getErrors("username", "username.format");
+        String expected = messageSource.getMessage("username.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testWrongDateFormatIsInvalid() {
-        testCases = Arrays.asList("    ", "\n\n\n\n   ", "\n    08 sldi \n", "';[]'/.;'[", "08/32/2022");
+    public void testValidDate() {
+        person.setDateOfBirth("08/30/2022");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setDateOfBirth(testCase);
-            errors = validatorTestUtils.getErrors("dateOfBirth", "date.format");
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testEmptyDate() {
+        person.setDateOfBirth("");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("date.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testInvalidDateFormat() {
+        person.setDateOfBirth("8 29 22");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("date.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testMonthOutOfBounds() {
+        person.setDateOfBirth("13/13/1995");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("date.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testDayOfMonthOutOfBounds() {
+        person.setDateOfBirth("08/32/2022");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("date.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testFutureDateIsInvalid() {
-        testCases = Arrays.asList("10/31/3200", "12/13/9600", "07/11/2096");
+        person.setDateOfBirth("10/31/3200");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setDateOfBirth(testCase);
-            errors = validatorTestUtils.getErrors("dateOfBirth", "date.future");
+        String expected = messageSource.getMessage("date.future", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testWrongSocialSecurityFormatIsInvalid() {
-        testCases = Arrays.asList("000-00-0000", "999-99-9999", "      ", "\n\n\n\n\n      ", "03975395873250928559", "123456789");
+    public void testValidSocialSecurity() {
+        person.setSocialSecurityNumber("123-45-6789");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setSocialSecurityNumber(testCase);
-            errors = validatorTestUtils.getErrors("socialSecurityNumber", "ssn.format");
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testValidSocialSecurityNumbers() {
-        testCases = Arrays.asList("845-67-8923", "682-67-4598", "523-91-4835", "401-83-2968");
+    public void testInvalidSocialSecurityFormat() {
+        person.setSocialSecurityNumber("123456789");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setSocialSecurityNumber(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("ssn.format", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
-    }
-
-    @Test
-    public void testGenderOtherThanEnumIsInvalid() {
-        testCases = Arrays.asList("man", "woman", "i dont know", "    ", "\n\n\n\n\n   sjdkhd", "\n\n\n");
-
-        for(String testCase : testCases) {
-            person.setGender(testCase);
-            errors = validatorTestUtils.getErrors("gender", "gender.format");
-
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testValidGender() {
-        testCases = Arrays.asList("male", "female", "refuse");
+        person.setGender("MALE");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setGender(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testWrongEmailFormatIsInvalid() {
-        testCases = Arrays.asList("getorres@teksystems", "getorresteksystems.com", "georgie@localhost", "georgie@127.0.0.1");
+    public void testInvalidGender() {
+        person.setGender("Man");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setEmail(testCase);
-            errors = validatorTestUtils.getErrors("email", "email.format");
+        String expected = messageSource.getMessage("gender.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testValidEmail() {
-        testCases = Arrays.asList("getorres@teksystems.com", "who@what.org", "me@gmail.com", "someone@somewhere.net", "torres@school.edu");
+        person.setEmail("who@what.com");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            person.setEmail(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testEmailWithoutAtSymbolInvalid() {
+        person.setEmail("who.com");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("email.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testEmailWithoutTopLevelDomainIsInvalid() {
+        person.setEmail("who@what");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("email.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 }

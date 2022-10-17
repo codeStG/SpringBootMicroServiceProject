@@ -1,16 +1,11 @@
 package com.stgcodes.service;
 
+import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.model.Phone;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-@Service
-public interface PhoneService {
-
-    List<Phone> getAllPhones();
-    Phone getPhoneById(Long phoneId);
-    Phone addPhone(Phone phone);
-    void deletePhone(Long phoneId);
+public interface PhoneService extends GenericService<PhoneEntity> {
+    void cleanPhone(Phone phone);
+    PhoneEntity mapToEntity(Phone phone);
+    Phone mapToModel(PhoneEntity phoneEntity);
 }
 

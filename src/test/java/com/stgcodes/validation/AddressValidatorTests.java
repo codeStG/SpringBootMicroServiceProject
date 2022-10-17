@@ -3,9 +3,10 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Address;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.validation.BindingResult;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,9 +14,8 @@ public class AddressValidatorTests {
 
     private Address address;
     private ValidatorTestUtils validatorTestUtils;
-    private BindingResult bindingResult;
-    List<String> testCases;
-    private Map<String, String> errors;
+    private ResourceBundleMessageSource messageSource;
+    private List<String> errors;
 
     @Before
     public void setUp() {
@@ -28,168 +28,197 @@ public class AddressValidatorTests {
                 .build();
 
         validatorTestUtils = new ValidatorTestUtils(new AddressValidator(), address);
-
-        testCases = new ArrayList<>();
-        errors = new HashMap<>();
+        messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("ValidationMessages");
     }
 
     @Test
-    public void testValidLineOneValues() {
-        testCases = Arrays.asList( "   1234 Davis St.     ", "   1\n8\n9 Lakewood Ave. ", "Driveoiqi398038y5utoiwa");
+    public void testValidLineOne() {
+        address.setLineOne("1234 David St.");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setLineOne(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyLineOneIsInvalid() {
         address.setLineOne("");
-        errors = validatorTestUtils.getErrors("lineOne", "lineone.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("lineone.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testLineOneTooLongIsInvalid() {
-        testCases = Arrays.asList("Some Random Line One That Does Not Exist With A Bunch Of Letters", "\n\n\n\n\n\nSome Random Line One That Does Not Exist       abcdefghijklmnopqrstu");
+        address.setLineOne("Some Random Line One That Does Not Exist With A Bunch Of Lettersssssssssssss");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setLineOne(testCase);
-            errors = validatorTestUtils.getErrors("lineOne", "lineone.format");
+        String expected = messageSource.getMessage("lineone.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testValidLineTwoValues() {
-        testCases = Arrays.asList( "   Unit 4     ", "   A\np\nt\n 7 ", "abcdefghijklmnopqrstuvwxy");
+    public void testValidLineTwo() {
+        address.setLineTwo("Unit 4");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setLineTwo(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyLineTwoIsInvalid() {
         address.setLineTwo("");
-        errors = validatorTestUtils.getErrors("lineTwo", "linetwo.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("linetwo.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testLineTwoTooLongIsInvalid() {
-        testCases = Arrays.asList("abcdefghijklmnopqrstuvwxyz", "\n\n\n\n\n\nSome Random Line Two That Is Too Long");
+        address.setLineTwo("abcdefghijklmnopqrstuvwxyz");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setLineTwo(testCase);
-            errors = validatorTestUtils.getErrors("lineTwo", "linetwo.format");
+        String expected = messageSource.getMessage("linetwo.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testValidCityValues() {
-        testCases = Arrays.asList( "Arlington", "Grand Prairie", "Mooselookmeguntic", "\n\n\n\n\n    Mooselookmeguntic        \n\n\n\n\n", "Village of Grosse Pointe Shores City, A Michigan City", "Washington-on-the-Brazos", "Winchester-on-the-Severn");
+    public void testValidCity() {
+        address.setCity("Austin");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setCity(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyCityIsInvalid() {
         address.setCity("");
-        errors = validatorTestUtils.getErrors("city", "city.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("city.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testCityTooLongIsInvalid() {
-        testCases = Arrays.asList("Village of Grosse Pointe Shores City, A Michigan City Plusss", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+        address.setCity("Village of Grosse Pointe Shores City, A Michigan City Plussssssssssssssssssssssss");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setCity(testCase);
-            errors = validatorTestUtils.getErrors("city", "city.format");
+        String expected = messageSource.getMessage("city.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testValidStateValues() {
-        testCases = Arrays.asList( "Texas", "Michigan", "Maine", "Tx", "SC", "North       \n\n\n\n     Carolina", "\n\n\n\nSouth Dakota       ", "   NV\n\n");
+    public void testValidStateName() {
+        address.setState("Texas");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setState(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testValidStateAbbreviation() {
+        address.setState("Tx");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyStateIsInvalid() {
         address.setState("");
-        errors = validatorTestUtils.getErrors("state", "state.invalid");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("state.invalid", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testFakeStateIsInvalid() {
-        testCases = Arrays.asList("Georgeland", "Crumpet", "Fall   ");
+    public void testInvalidState() {
+        address.setState("Oklahom");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setState(testCase);
-            errors = validatorTestUtils.getErrors("state", "state.invalid");
+        String expected = messageSource.getMessage("state.invalid", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testValidZipValues() {
-        testCases = Arrays.asList( "75017", "12345", "12345-6789", "\n\n\n\n\n    75013        \n\n\n\n\n", "84567", "99950-1234");
+    public void testValid5DigitZip() {
+        address.setZip("12345");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setZip(testCase);
-            bindingResult = validatorTestUtils.performValidation();
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
 
-            assertEquals(0, bindingResult.getErrorCount());
-        }
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testValid9DigitZip() {
+        address.setZip("12345-6789");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("errors.none", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
     public void testEmptyZipIsInvalid() {
         address.setZip("");
-        errors = validatorTestUtils.getErrors("zip", "zip.format");
+        errors = validatorTestUtils.getErrors();
 
-        assertEquals(errors.get("expectedError"), errors.get("actualError"));
+        String expected = messageSource.getMessage("zip.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 
     @Test
-    public void testWrongLengthZipIsInvalid() {
-        testCases = Arrays.asList("7601", "760175", "12345-678", "12345-67890");
+    public void testZipLessThan5Digits() {
+        address.setZip("7601");
+        errors = validatorTestUtils.getErrors();
 
-        for(String testCase : testCases) {
-            address.setZip(testCase);
-            errors = validatorTestUtils.getErrors("zip", "zip.format");
+        String expected = messageSource.getMessage("zip.format", null, Locale.US);
 
-            assertEquals(errors.get("expectedError"), errors.get("actualError"));
-        }
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testZipLongerThan9Digits() {
+        address.setZip("12345-67890");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("zip.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
+    }
+
+    @Test
+    public void testZipBetween5And9Digits() {
+        address.setZip("12345-678");
+        errors = validatorTestUtils.getErrors();
+
+        String expected = messageSource.getMessage("zip.format", null, Locale.US);
+
+        assertEquals(expected, errors.get(0));
     }
 }

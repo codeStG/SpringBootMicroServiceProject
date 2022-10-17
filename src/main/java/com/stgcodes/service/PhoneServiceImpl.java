@@ -1,65 +1,29 @@
 package com.stgcodes.service;
 
-import com.stgcodes.dao.PhoneDao;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.stgcodes.utils.FieldFormatter;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+@Component("phoneService")
+public class PhoneServiceImpl extends GenericServiceImpl<PhoneEntity> implements PhoneService {
 
-@Service
-@Slf4j
-public class PhoneServiceImpl implements PhoneService {
-
-    @Autowired
-    PhoneDao dao;
-    
     @Override
-    @Transactional
-    public List<Phone> getAllPhones() {
-        List<PhoneEntity> phoneEntities = dao.findAll();
-        List<Phone> phones = new ArrayList<>();
+    public void cleanPhone(Phone phone) {
+        FieldFormatter fieldFormatter = new FieldFormatter();
 
-        for(PhoneEntity phoneEntity : phoneEntities) {
-            phones.add(PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity));
-        }
-
-        return phones;
+        phone.setPhoneNumber(phone.getPhoneNumber().trim());
+        phone.setPhoneType(fieldFormatter.formatAsEnum(phone.getPhoneType()));
     }
 
     @Override
-    @Transactional
-    public Phone getPhoneById(Long phoneId) {
-        PhoneEntity phoneEntity = dao.findById(phoneId);
-        Phone phone;
-
-        if(phoneEntity == null) {
-            log.info("ID " + phoneId + " does not exist");
-            throw new IdNotFoundException();
-        } else {
-            phone = PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
-        }
-
-        return phone;
+    public PhoneEntity mapToEntity(Phone phone) {
+        return PhoneMapper.INSTANCE.phoneToPhoneEntity(phone);
     }
 
     @Override
-    @Transactional
-    public Phone addPhone(Phone phone) {
-        PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(phone);
-        return PhoneMapper.INSTANCE.phoneEntityToPhone(dao.save(phoneEntity));
-    }
-
-    @Override
-    @Transactional
-    public void deletePhone(Long phoneId) {
-        PhoneEntity phoneEntity = dao.findById(phoneId);
-        dao.delete(phoneEntity);
+    public Phone mapToModel(PhoneEntity phoneEntity) {
+        return PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
     }
 }

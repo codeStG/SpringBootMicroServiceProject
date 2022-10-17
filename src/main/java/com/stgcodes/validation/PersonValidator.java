@@ -1,7 +1,6 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.enums.Gender;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
@@ -21,8 +20,6 @@ import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
 public class PersonValidator implements Validator {
 
    private final Integer MAX_NAME_LENGTH = 25;
-   private final FieldFormatter fieldFormatter = new FieldFormatter();
-   private Person person;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -31,10 +28,10 @@ public class PersonValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        person = (Person) target;
+        Person person = (Person) target;
 
-        validateFirstName(person.getFirstName(), errors);
-        validateLastName(person.getLastName(), errors);
+        validateFirstName(person, errors);
+        validateLastName(person, errors);
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
@@ -42,8 +39,8 @@ public class PersonValidator implements Validator {
         validateEmail(person.getEmail(), errors);
     }
 
-    private void validateFirstName(String firstName, Errors errors) {
-        firstName = fieldFormatter.cleanWhitespace(firstName);
+    private void validateFirstName(Person person, Errors errors) {
+        String firstName = person.getFirstName();
 
         if (!firstName.matches(LETTER)) {
             errors.rejectValue("firstName", "name.format");
@@ -54,8 +51,8 @@ public class PersonValidator implements Validator {
         }
     }
 
-    private void validateLastName(String lastName, Errors errors) {
-        lastName = fieldFormatter.cleanWhitespace(lastName);
+    private void validateLastName(Person person, Errors errors) {
+        String lastName = person.getLastName();
 
         if (!lastName.matches(LETTER)) {
             errors.rejectValue("lastName", "name.format");
@@ -67,15 +64,12 @@ public class PersonValidator implements Validator {
     }
 
     private void validateUsername(String username, Errors errors) {
-        username = fieldFormatter.cleanWhitespace(username);
-
         if (username.length() < 6 || username.length() > MAX_NAME_LENGTH) {
             errors.rejectValue("username", "username.format");
         }
     }
 
     private void validateDateOfBirth(String dateOfBirth, Errors errors) {
-        dateOfBirth = fieldFormatter.separateBy(dateOfBirth, "/");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/y", Locale.ENGLISH);
 
         try {
@@ -90,8 +84,6 @@ public class PersonValidator implements Validator {
     }
 
     private void validateSocialSecurityNumber(String ssn, Errors errors) {
-        ssn = fieldFormatter.separateBy(ssn, "-");
-
         if(!Pattern.matches(SOCIAL_SECURITY, ssn)) {
             errors.rejectValue("socialSecurityNumber", "ssn.format");
         }
@@ -99,7 +91,7 @@ public class PersonValidator implements Validator {
 
     private void validateGender(String gender, Errors errors) {
         try {
-            Gender.valueOf(fieldFormatter.formatAsEnum(gender));
+            Gender.valueOf(gender);
         } catch (IllegalArgumentException e) {
             errors.rejectValue("gender", "gender.format");
         }

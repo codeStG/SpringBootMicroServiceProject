@@ -12,6 +12,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,37 +29,44 @@ public class AddressController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Address>> getAllAddresses() {
-        return new ResponseEntity<>(service.getAllAddresses(), HttpStatus.OK);
+        List<Address> addresses = new ArrayList<>();
+
+        service.findAll().forEach(e -> addresses.add(service.mapToModel(e)));
+
+        return new ResponseEntity<>(addresses, HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
     public ResponseEntity<Address> getAddress(@RequestParam Long addressId) {
-        Address address = service.getAddressById(addressId);
+        Address address = service.mapToModel(service.findById(addressId));
 
-        return address == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(address, HttpStatus.OK);
+        return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
         BindingResult bindingResult = new BindException(address, "address");
+
+        service.cleanAddress(address);
         validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
             messageSource.setBasename("ValidationMessages");
 
-            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
+            log.error(messageSource.getMessage("address.invalid", null, Locale.US));
             bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(service.addAddress(address), HttpStatus.OK);
+        service.save(service.mapToEntity(address));
+        return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Address> deleteAddress(@RequestParam Long addressId) {
-        service.deleteAddress(addressId);
+        service.delete(addressId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

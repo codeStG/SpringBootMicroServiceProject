@@ -45,9 +45,13 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     }
 
     @Override
+    public T update(T t) {
+        entityManager.merge(t);
+        return t;
+    }
+
+    @Override
     public void delete(T t) {
         entityManager.remove(entityManager.contains(t) ? t : entityManager.merge(t));
     }
-
-    //TODO: ADD AN UPDATE (entityManager.merge())
 }

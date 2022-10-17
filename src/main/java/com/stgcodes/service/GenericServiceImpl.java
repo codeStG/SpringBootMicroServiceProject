@@ -36,6 +36,11 @@ public abstract class GenericServiceImpl<T> implements GenericService<T> {
     }
 
     @Override
+    public T update(T t ) {
+        return dao.update(t);
+    }
+
+    @Override
     public void delete(Long id) {
         T t = findById(id);
 

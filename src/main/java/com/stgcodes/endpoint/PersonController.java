@@ -1,5 +1,6 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.validation.PersonValidator;
@@ -45,7 +46,36 @@ public class PersonController {
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        BindingResult bindingResult = new BindException(person, "person");
+        if(isValidRequestBody(person)) {
+            service.save(service.mapToEntity(person));
+            return new ResponseEntity<>(person, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping(path = "/update")
+    public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) {
+        if(isValidRequestBody(person)) {
+            service.findById(personId);
+            PersonEntity personEntity = service.mapToEntity(person);
+            personEntity.setPersonId(personId);
+            service.update(personEntity);
+            return new ResponseEntity<>(person, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping(path = "/remove")
+    public ResponseEntity<Person> deletePerson(@RequestParam Long personId) {
+        service.delete(personId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private boolean isValidRequestBody(Person person) {
+        BindingResult bindingResult = new BindException(person, "address");
 
         service.cleanPerson(person);
         validator.validate(person, bindingResult);
@@ -57,17 +87,9 @@ public class PersonController {
             log.error(messageSource.getMessage("person.invalid", null, Locale.US));
             bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return false;
         }
 
-        service.save(service.mapToEntity(person));
-        return new ResponseEntity<>(person, HttpStatus.OK);
-    }
-
-    @DeleteMapping(path = "/remove")
-    public ResponseEntity<Person> deletePerson(@RequestParam Long personId) {
-        service.delete(personId);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return true;
     }
 }

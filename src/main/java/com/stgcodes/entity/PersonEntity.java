@@ -37,13 +37,13 @@ public class PersonEntity implements Serializable {
     @Column(name = "date_of_birth", nullable = false)
     private String dateOfBirth;
 
-    @Column(name = "ssn", nullable = false)
+    @Column(name = "ssn", nullable = false, unique = true)
     private String socialSecurityNumber;
 
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @OneToMany(mappedBy = "personEntity")

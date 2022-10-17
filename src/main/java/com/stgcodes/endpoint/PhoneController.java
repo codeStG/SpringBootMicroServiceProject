@@ -1,5 +1,6 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.model.Phone;
 import com.stgcodes.service.PhoneService;
 import com.stgcodes.validation.PhoneValidator;
@@ -45,7 +46,36 @@ public class PhoneController {
 
     @PutMapping(path = "/add")
     public ResponseEntity<Phone> addPhone(@RequestBody Phone phone) {
-        BindingResult bindingResult = new BindException(phone, "address");
+        if(isValidRequestBody(phone)) {
+            service.save(service.mapToEntity(phone));
+            return new ResponseEntity<>(phone, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping(path = "/update")
+    public ResponseEntity<Phone> updatePhone(@RequestBody Phone phone, @RequestParam Long phoneId) {
+        if(isValidRequestBody(phone)) {
+            service.findById(phoneId);
+            PhoneEntity phoneEntity = service.mapToEntity(phone);
+            phoneEntity.setPhoneId(phoneId);
+            service.update(phoneEntity);
+            return new ResponseEntity<>(phone, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping(path = "/remove")
+    public ResponseEntity<Phone> deletePhone(@RequestParam Long phoneId) {
+        service.delete(phoneId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private boolean isValidRequestBody(Phone phone) {
+        BindingResult bindingResult = new BindException(phone, "phone");
 
         service.cleanPhone(phone);
         validator.validate(phone, bindingResult);
@@ -57,17 +87,9 @@ public class PhoneController {
             log.error(messageSource.getMessage("phone.invalid", null, Locale.US));
             bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
 
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return false;
         }
 
-        service.save(service.mapToEntity(phone));
-        return new ResponseEntity<>(phone, HttpStatus.OK);
-    }
-
-    @DeleteMapping(path = "/remove")
-    public ResponseEntity<Phone> deletePhone(@RequestParam Long phoneId) {
-        service.delete(phoneId);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return true;
     }
 }

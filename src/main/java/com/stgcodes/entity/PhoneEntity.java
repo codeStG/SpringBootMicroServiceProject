@@ -22,11 +22,14 @@ public class PhoneEntity {
     @Column(name = "phone_id")
     private Long phoneId;
 
-    @Column(name = "phone_number", nullable = false, length = 12)
+    @Column(name = "phone_number", nullable = false, length = 12, unique = true)
     private String phoneNumber;
 
     @Column(name = "phone_type", nullable = false, length = 8)
     private String phoneType;
+
+    @ManyToOne
+    private PersonEntity personEntity;
 
     @Override
     public boolean equals(Object o) {

@@ -8,6 +8,8 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -43,6 +45,9 @@ public class PersonEntity implements Serializable {
 
     @Column(name = "email", nullable = false)
     private String email;
+
+    @OneToMany(mappedBy = "personEntity")
+    private List<PhoneEntity> phones = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

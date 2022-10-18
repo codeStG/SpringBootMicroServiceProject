@@ -9,11 +9,9 @@ public class Phone {
     enum PhoneType {
         MOBILE,
         HOME,
-        BUSINESS,
-        OTHER
+        BUSINESS
     }
 
-    //Should this be split into area code and phone number
     private String phoneNumber;
     private String phoneType;
 }

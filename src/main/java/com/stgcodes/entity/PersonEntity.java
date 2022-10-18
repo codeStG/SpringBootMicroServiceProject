@@ -46,7 +46,7 @@ public class PersonEntity implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "personEntity")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<PhoneEntity> phones = new ArrayList<>();
 
     @Override

@@ -1,7 +1,10 @@
 package com.stgcodes.model;
 
+import com.stgcodes.entity.PhoneEntity;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -14,4 +17,5 @@ public class Person {
     private String socialSecurityNumber;
     private String gender;
     private String email;
+    private List<PhoneEntity> phones;
 }

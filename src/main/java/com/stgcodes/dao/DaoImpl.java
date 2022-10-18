@@ -11,14 +11,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 @Transactional
-public abstract class GenericDaoImpl<T> implements GenericDao<T> {
+public abstract class DaoImpl<T> implements Dao<T> {
 
     @PersistenceContext
     EntityManager entityManager;
 
     private Class<T> type;
 
-    public GenericDaoImpl() {
+    public DaoImpl() {
         Type t = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) t;
         type = (Class) pt.getActualTypeArguments()[0];

@@ -1,9 +1,6 @@
 package com.stgcodes.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -14,7 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class PhoneEntity {
 
     @Id
@@ -28,8 +25,9 @@ public class PhoneEntity {
     @Column(name = "phone_type", nullable = false, length = 8)
     private String phoneType;
 
-    @ManyToOne
-    private PersonEntity personEntity;
+//    @ManyToOne
+//    @JoinColumn(name="person_fk")
+//    private PersonEntity personEntity;
 
     @Override
     public boolean equals(Object o) {

@@ -2,5 +2,5 @@ package com.stgcodes.dao;
 
 import com.stgcodes.entity.AddressEntity;
 
-public interface AddressDao extends GenericDao<AddressEntity> {
+public interface AddressDao extends Dao<AddressEntity> {
 }

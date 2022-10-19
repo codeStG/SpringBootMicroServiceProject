@@ -36,8 +36,8 @@ public class PersonController {
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        service.save(person);
-        return new ResponseEntity<>(person, HttpStatus.OK);
+        Person refreshedPerson = service.save(person);
+        return new ResponseEntity<>(refreshedPerson, HttpStatus.OK);
     }
 
     @PutMapping(path = "/update")

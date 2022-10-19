@@ -2,13 +2,10 @@ package com.stgcodes.service;
 
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
-import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
-import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Person;
-import com.stgcodes.model.Phone;
 import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -55,16 +52,9 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person save(Person person) {
         if(isValidRequestBody(person)) {
-            Phone phone = Phone.builder()
-                    .phoneNumber("456-789-1234")
-                    .phoneType("HOME")
-                    .build();
-
             PersonEntity personEntity = mapToEntity(person);
 
-            personEntity.getPhones().add(PhoneMapper.INSTANCE.phoneToPhoneEntity(phone));
-            dao.save(personEntity);
-            return mapToModel(personEntity);
+            return mapToModel(dao.save(personEntity));
         }
 
         throw new InvalidRequestBodyException();

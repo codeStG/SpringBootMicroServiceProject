@@ -47,6 +47,9 @@ public class PersonEntity implements Serializable {
     private String email;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name="PERSON_PHONE_ASSOCIATION_TBL",
+            joinColumns = @JoinColumn(name="person_id"),
+            inverseJoinColumns = @JoinColumn(name="phone_id"))
     private List<PhoneEntity> phones = new ArrayList<>();
 
     @Override

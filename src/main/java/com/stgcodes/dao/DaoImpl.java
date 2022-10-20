@@ -41,7 +41,6 @@ public abstract class DaoImpl<T> implements Dao<T> {
     @Override
     public T save(final T t) {
         entityManager.persist(t);
-        entityManager.merge(t);
         return t;
     }
 

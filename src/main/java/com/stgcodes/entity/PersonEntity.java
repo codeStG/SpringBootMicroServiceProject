@@ -16,7 +16,7 @@ import java.util.Objects;
 @Table(name = "PERSON_TBL")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"phones"})
 @NoArgsConstructor
 public class PersonEntity implements Serializable {
 
@@ -46,10 +46,7 @@ public class PersonEntity implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name="PERSON_PHONE_ASSOCIATION_TBL",
-            joinColumns = @JoinColumn(name="person_id"),
-            inverseJoinColumns = @JoinColumn(name="phone_id"))
+    @OneToMany(mappedBy="personEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneEntity> phones = new ArrayList<>();
 
     @Override

@@ -2,6 +2,7 @@ package com.stgcodes.service;
 
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
@@ -16,8 +17,10 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 @Slf4j
 @Component("personService")
@@ -53,6 +56,7 @@ public class PersonServiceImpl implements PersonService {
     public Person save(Person person) {
         if(isValidRequestBody(person)) {
             PersonEntity personEntity = mapToEntity(person);
+            person.getPhones().forEach(p -> p.setPersonEntity(personEntity));
 
             return mapToModel(dao.save(personEntity));
         }

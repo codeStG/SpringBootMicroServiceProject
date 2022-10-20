@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public class Person {
 
-    private String personId;
+    private Long personId;
     private String firstName;
     private String lastName;
     private String username;

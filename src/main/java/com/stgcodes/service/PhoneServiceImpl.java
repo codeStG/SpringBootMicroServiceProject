@@ -1,7 +1,6 @@
 package com.stgcodes.service;
 
 import com.stgcodes.dao.PhoneDao;
-import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.IllegalPhoneDeletionException;

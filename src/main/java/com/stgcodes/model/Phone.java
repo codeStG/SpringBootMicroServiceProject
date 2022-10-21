@@ -1,7 +1,6 @@
 package com.stgcodes.model;
 
 import com.stgcodes.entity.PersonEntity;
-import com.stgcodes.entity.PhoneEntity;
 import lombok.Builder;
 import lombok.Data;
 

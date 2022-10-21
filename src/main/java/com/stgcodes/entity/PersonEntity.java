@@ -16,7 +16,7 @@ import java.util.Objects;
 @Table(name = "PERSON_TBL")
 @Getter
 @Setter
-@ToString(exclude = {"phones"})
+@ToString
 @NoArgsConstructor
 public class PersonEntity implements Serializable {
 

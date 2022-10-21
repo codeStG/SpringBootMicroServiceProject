@@ -12,7 +12,7 @@ import java.util.Objects;
 @Table(name = "PHONE_TBL")
 @Getter
 @Setter
-@ToString(exclude = {"personEntity"})
+@ToString
 @NoArgsConstructor
 public class PhoneEntity {
 
@@ -29,7 +29,9 @@ public class PhoneEntity {
     private String phoneType;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "person_id")
     private PersonEntity personEntity;
 
     @Override

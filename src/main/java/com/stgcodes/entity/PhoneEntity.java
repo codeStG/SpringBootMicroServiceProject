@@ -1,10 +1,9 @@
 package com.stgcodes.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -13,8 +12,8 @@ import java.util.Objects;
 @Table(name = "PHONE_TBL")
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
+@ToString(exclude = {"personEntity"})
+@NoArgsConstructor
 public class PhoneEntity {
 
     @Id
@@ -22,22 +21,27 @@ public class PhoneEntity {
     @Column(name = "phone_id")
     private Long phoneId;
 
-    @Column(name = "phone_number", nullable = false, length = 12)
+    @NaturalId
+    @Column(name = "phone_number", nullable = false, length = 12, unique = true)
     private String phoneNumber;
 
     @Column(name = "phone_type", nullable = false, length = 8)
     private String phoneType;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    private PersonEntity personEntity;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        PhoneEntity that = (PhoneEntity) o;
-        return phoneId != null && Objects.equals(phoneId, that.phoneId);
+        PhoneEntity phoneEntity = (PhoneEntity) o;
+        return phoneId != null && Objects.equals(phoneNumber, phoneEntity.phoneNumber);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash( phoneNumber );
     }
 }

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component("phoneDao")
 @Slf4j
-public class PhoneDaoImpl extends GenericDaoImpl<PhoneEntity> implements PhoneDao {
+public class PhoneDaoImpl extends DaoImpl<PhoneEntity> implements PhoneDao {
 
 }

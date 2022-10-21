@@ -1,17 +1,86 @@
 package com.stgcodes.service;
 
+import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.utils.FieldFormatter;
+import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
-@Component("personService")
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
+
 @Slf4j
-public class PersonServiceImpl extends GenericServiceImpl<PersonEntity> implements PersonService {
+@Component("personService")
+public class PersonServiceImpl implements PersonService {
+
+    @Autowired
+    PersonDao dao;
+
+    @Autowired
+    private PersonValidator validator;
 
     @Override
+    public List<Person> findAll() {
+        List<Person> people = new ArrayList<>();
+        dao.findAll().forEach(e -> people.add(mapToModel(e)));
+
+        return people;
+    }
+
+    @Override
+    public Person findById(Long personId) {
+        PersonEntity personEntity = dao.findById(personId);
+
+        if(personEntity == null) {
+            log.info("ID " + personId + " does not exist");
+            throw new IdNotFoundException();
+        }
+
+        return mapToModel(personEntity);
+    }
+
+    @Override
+    public Person save(Person person) {
+        if(isValidRequestBody(person)) {
+            PersonEntity personEntity = mapToEntity(person);
+            person.getPhones().forEach(p -> p.setPersonEntity(personEntity));
+
+            return mapToModel(dao.save(personEntity));
+        }
+
+        throw new InvalidRequestBodyException();
+    }
+
+    @Override
+    public Person update(Person person, Long personId) {
+        findById(personId);
+
+        PersonEntity personEntity = mapToEntity(person);
+        personEntity.setPersonId(personId);
+        dao.update(personEntity);
+
+        return person;
+    }
+
+    @Override
+    public void delete(Long personId) {
+        Person person = findById(personId);
+        dao.delete(mapToEntity(person));
+    }
+
     public void cleanPerson(Person person) {
         FieldFormatter fieldFormatter = new FieldFormatter();
 
@@ -24,7 +93,25 @@ public class PersonServiceImpl extends GenericServiceImpl<PersonEntity> implemen
         person.setEmail(person.getEmail().trim());
     }
 
-    @Override
+    private boolean isValidRequestBody(Person person) {
+        BindingResult bindingResult = new BindException(person, "person");
+
+        cleanPerson(person);
+        validator.validate(person, bindingResult);
+
+        if(bindingResult.hasErrors()) {
+            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+            messageSource.setBasename("ValidationMessages");
+
+            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
+            bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
+
+            return false;
+        }
+
+        return true;
+    }
+
     public PersonEntity mapToEntity(Person person) {
         return PersonMapper.INSTANCE.personToPersonEntity(person);
     }

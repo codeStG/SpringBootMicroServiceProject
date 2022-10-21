@@ -8,13 +8,15 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "PERSON_TBL")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"phones"})
 @NoArgsConstructor
 public class PersonEntity implements Serializable {
 
@@ -35,14 +37,17 @@ public class PersonEntity implements Serializable {
     @Column(name = "date_of_birth", nullable = false)
     private String dateOfBirth;
 
-    @Column(name = "ssn", nullable = false)
+    @Column(name = "ssn", nullable = false, unique = true)
     private String socialSecurityNumber;
 
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy="personEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PhoneEntity> phones = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

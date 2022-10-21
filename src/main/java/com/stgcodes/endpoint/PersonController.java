@@ -42,8 +42,8 @@ public class PersonController {
 
     @PutMapping(path = "/update")
     public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) {
-        service.update(person, personId);
-        return new ResponseEntity<>(person, HttpStatus.OK);
+        Person refreshedPerson = service.update(person, personId);
+        return new ResponseEntity<>(refreshedPerson, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

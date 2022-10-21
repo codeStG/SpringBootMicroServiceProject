@@ -49,6 +49,15 @@ public class PersonEntity implements Serializable {
     @OneToMany(mappedBy="personEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneEntity> phones = new ArrayList<>();
 
+    public void addPhone(PhoneEntity phone) {
+        phone.setPersonEntity(this);
+        phones.add(phone);
+    }
+
+    public void removePhone(PhoneEntity phone) {
+        phones.remove(phone);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

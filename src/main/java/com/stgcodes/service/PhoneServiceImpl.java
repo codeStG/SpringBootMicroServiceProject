@@ -1,6 +1,8 @@
 package com.stgcodes.service;
 
+import com.stgcodes.dao.PersonDao;
 import com.stgcodes.dao.PhoneDao;
+import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.IllegalPhoneDeletionException;
@@ -19,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Slf4j
 @Component("phoneService")
@@ -26,6 +29,9 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Autowired
     PhoneDao dao;
+
+    @Autowired
+    PersonDao personDao;
 
     @Autowired
     private PhoneValidator validator;
@@ -51,10 +57,18 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
-    public Phone save(Phone phone) {
+    public Phone save(Phone phone, Long personId) {
+        PersonEntity personEntity = personDao.findById(personId);
+
+        if(personEntity == null) {
+            log.info("ID " + personId + " does not exist");
+            throw new IdNotFoundException();
+        }
+
         if(isValidRequestBody(phone)) {
-            dao.save(mapToEntity(phone));
-            return phone;
+            PhoneEntity phoneEntity = mapToEntity(phone);
+            personEntity.addPhone(phoneEntity);
+            return mapToModel(dao.save(phoneEntity));
         }
 
         throw new InvalidRequestBodyException();
@@ -62,24 +76,26 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public Phone update(Phone phone, Long phoneId) {
-        findById(phoneId);
+        PersonEntity personEntity = findById(phoneId).getPersonEntity();
 
         PhoneEntity phoneEntity = mapToEntity(phone);
         phoneEntity.setPhoneId(phoneId);
-        dao.update(phoneEntity);
+        phoneEntity.setPersonEntity(personEntity);
 
-        return phone;
+        return mapToModel(dao.update(phoneEntity));
     }
 
     @Override
     public void delete(Long phoneId) {
-        if (personHasMoreThanOnePhone(phoneId)) {
-            Phone phone = findById(phoneId);
-            dao.delete(mapToEntity(phone));
+        if (!personHasMoreThanOnePhone(phoneId)) {
+            log.info("Must have at least one phone attached to user account");
+            throw new IllegalPhoneDeletionException();
         }
 
-        log.info("Must have at least one phone attached to user account");
-        throw new IllegalPhoneDeletionException();
+        PhoneEntity phoneEntity = mapToEntity(findById(phoneId));
+        PersonEntity personEntity = phoneEntity.getPersonEntity();
+        personEntity.removePhone(phoneEntity);
+        personDao.update(personEntity);
     }
 
     private PhoneEntity mapToEntity(Phone phone) {
@@ -118,10 +134,9 @@ public class PhoneServiceImpl implements PhoneService {
 
     private boolean personHasMoreThanOnePhone(Long phoneId) {
         Phone phone = findById(phoneId);
-//        PersonEntity personEntity = mapToEntity(phone).getPersonEntity();
+        PersonEntity personEntity = mapToEntity(phone).getPersonEntity();
 
-//        return personEntity.getPhones().size() > 1;
-        return true;
+        return personEntity.getPhones().size() > 1;
     }
 
 }

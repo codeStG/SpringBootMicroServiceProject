@@ -24,7 +24,7 @@ public class PhoneEntity {
     @Column(name = "phone_id")
     private Long phoneId;
 
-    @NaturalId
+    @NaturalId(mutable = true)
     @Column(name = "phone_number", nullable = false, length = 12, unique = true)
     private String phoneNumber;
 

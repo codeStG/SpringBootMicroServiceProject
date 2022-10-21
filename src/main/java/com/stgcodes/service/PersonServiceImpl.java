@@ -2,6 +2,7 @@ package com.stgcodes.service;
 
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
@@ -63,13 +64,13 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person update(Person person, Long personId) {
-        findById(personId);
+        List<PhoneEntity> phones = findById(personId).getPhones();
 
         PersonEntity personEntity = mapToEntity(person);
+        personEntity.setPhones(phones);
         personEntity.setPersonId(personId);
-        dao.update(personEntity);
 
-        return person;
+        return mapToModel(dao.update(personEntity));
     }
 
     @Override

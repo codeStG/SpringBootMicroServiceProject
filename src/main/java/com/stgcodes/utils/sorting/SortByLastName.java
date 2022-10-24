@@ -2,9 +2,7 @@ package com.stgcodes.utils.sorting;
 
 import com.stgcodes.model.Person;
 
-import java.util.Comparator;
-
-public class SortByLastName implements Comparator<Person> {
+public class SortByLastName implements PersonSorter {
 
     @Override
     public int compare(Person personOne, Person personTwo) {

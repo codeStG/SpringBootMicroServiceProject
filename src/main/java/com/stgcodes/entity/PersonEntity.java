@@ -37,6 +37,9 @@ public class PersonEntity implements Serializable {
     @Column(name = "date_of_birth", nullable = false)
     private String dateOfBirth;
 
+    @Column(name = "age")
+    private int age;
+
     @Column(name = "ssn", nullable = false, unique = true)
     private String socialSecurityNumber;
 

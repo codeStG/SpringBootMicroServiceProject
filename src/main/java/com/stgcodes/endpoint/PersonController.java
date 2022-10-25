@@ -2,6 +2,7 @@ package com.stgcodes.endpoint;
 
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
+import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class PersonController {
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {
         List<Person> people = service.findAll();
+        people.sort(new PersonComparator());
+
         return new ResponseEntity<>(people, HttpStatus.OK);
     }
 

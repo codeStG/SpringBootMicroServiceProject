@@ -17,14 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.stgcodes.specifications.PersonSpecs.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
 @Component("personService")
@@ -40,6 +41,19 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> findAll() {
         List<Person> people = new ArrayList<>();
         dao.findAll().forEach(e -> people.add(mapToModel(e)));
+
+        return people;
+    }
+
+    @Override
+    public List<Person> findByCriteria(PersonCriteria criteria) {
+        List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+                .and(containsTextInLastName(criteria.getLastName()))
+                .and(ofAge(criteria.getAge()))
+                .and(ofGender(criteria.getGender())));
+
+        List<Person> people = new ArrayList<>();
+        found.forEach(p -> people.add(mapToModel(p)));
 
         return people;
     }
@@ -83,16 +97,6 @@ public class PersonServiceImpl implements PersonService {
     public void delete(Long personId) {
         Person person = findById(personId);
         dao.delete(mapToEntity(person));
-    }
-
-    @Override
-    public List<Person> findByCriteria(PersonCriteria criteria) {
-        List<PersonEntity> peopleEntities = dao.findByCriteria(criteria);
-        List<Person> people = new ArrayList<>();
-
-        peopleEntities.forEach(p -> people.add(mapToModel(p)));
-
-        return people;
     }
 
     private boolean isValidRequestBody(Person person) {

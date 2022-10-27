@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,15 +48,20 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> findByCriteria(PersonCriteria criteria) {
-        List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
-                .and(containsTextInLastName(criteria.getLastName()))
-                .and(ofAge(criteria.getAge()))
-                .and(ofGender(criteria.getGender())));
+        try {
+            List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+                    .and(containsTextInLastName(criteria.getLastName()))
+                    .and(ofAge(criteria.getAge()))
+                    .and(ofGender(criteria.getGender())));
 
-        List<Person> people = new ArrayList<>();
-        found.forEach(p -> people.add(mapToModel(p)));
+            List<Person> people = new ArrayList<>();
+            found.forEach(p -> people.add(mapToModel(p)));
 
-        return people;
+            return people;
+        } catch (IllegalArgumentException e) {
+            log.info("No people found with provided search criteria");
+            return Collections.emptyList();
+        }
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.stgcodes.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.stgcodes.validation.enums.Gender;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -17,7 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class PersonEntity implements Serializable {
 
     @Id
@@ -43,8 +41,9 @@ public class PersonEntity implements Serializable {
     @Column(name = "ssn", nullable = false, unique = true)
     private String socialSecurityNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;

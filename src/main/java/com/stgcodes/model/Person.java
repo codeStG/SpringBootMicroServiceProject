@@ -1,6 +1,7 @@
 package com.stgcodes.model;
 
 import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.validation.enums.Gender;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class Person {
     private String dateOfBirth;
     private int age;
     private String socialSecurityNumber;
-    private String gender;
+    private Gender gender;
     private String email;
     private List<PhoneEntity> phones;
 }

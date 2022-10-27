@@ -35,7 +35,6 @@ public class PersonValidator implements Validator {
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
-        validateGender(person.getGender(), errors);
         validateEmail(person.getEmail(), errors);
     }
 
@@ -86,14 +85,6 @@ public class PersonValidator implements Validator {
     private void validateSocialSecurityNumber(String ssn, Errors errors) {
         if(!Pattern.matches(SOCIAL_SECURITY, ssn)) {
             errors.rejectValue("socialSecurityNumber", "ssn.format");
-        }
-    }
-
-    private void validateGender(String gender, Errors errors) {
-        try {
-            Gender.valueOf(gender);
-        } catch (IllegalArgumentException e) {
-            errors.rejectValue("gender", "gender.format");
         }
     }
 

@@ -18,7 +18,7 @@ public class PersonSpecs {
                 if(StringUtils.isBlank(text)) {
                     return criteriaBuilder.like(root.get("firstName"), "%");
                 }
-                return criteriaBuilder.like(root.get("firstName"), "%" + text + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + text.toLowerCase() + "%");
             }
         };
     }
@@ -30,7 +30,7 @@ public class PersonSpecs {
                 if(StringUtils.isBlank(text)) {
                     return criteriaBuilder.like(root.get("lastName"), "%");
                 }
-                return criteriaBuilder.like(root.get("lastName"), "%" + text + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + text.toLowerCase() + "%");
             }
         };
     }
@@ -54,7 +54,7 @@ public class PersonSpecs {
                 if(StringUtils.isBlank(text)) {
                     return criteriaBuilder.like(root.get("gender"), "%");
                 }
-                return criteriaBuilder.equal(root.get("gender"), text);
+                return criteriaBuilder.equal(root.get("gender"), text.toUpperCase());
             }
         };
     }

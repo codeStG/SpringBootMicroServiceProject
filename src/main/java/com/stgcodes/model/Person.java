@@ -15,6 +15,7 @@ public class Person {
     private String lastName;
     private String username;
     private String dateOfBirth;
+    private int age;
     private String socialSecurityNumber;
     private String gender;
     private String email;

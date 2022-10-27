@@ -1,5 +1,6 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.utils.sorting.PersonComparator;
@@ -35,6 +36,13 @@ public class PersonController {
     public ResponseEntity<Person> getPerson(@RequestParam Long personId) {
         Person person = service.findById(personId);
         return new ResponseEntity<>(person, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity <List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
+        List<Person> people = service.findByCriteria(criteria);
+
+        return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")

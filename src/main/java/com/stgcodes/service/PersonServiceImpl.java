@@ -1,5 +1,6 @@
 package com.stgcodes.service;
 
+import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
@@ -16,9 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.stgcodes.specifications.PersonSpecs.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
 @Component("personService")
@@ -34,6 +41,19 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> findAll() {
         List<Person> people = new ArrayList<>();
         dao.findAll().forEach(e -> people.add(mapToModel(e)));
+
+        return people;
+    }
+
+    @Override
+    public List<Person> findByCriteria(PersonCriteria criteria) {
+        List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+                .and(containsTextInLastName(criteria.getLastName()))
+                .and(ofAge(criteria.getAge()))
+                .and(ofGender(criteria.getGender())));
+
+        List<Person> people = new ArrayList<>();
+        found.forEach(p -> people.add(mapToModel(p)));
 
         return people;
     }
@@ -79,18 +99,6 @@ public class PersonServiceImpl implements PersonService {
         dao.delete(mapToEntity(person));
     }
 
-    public void cleanPerson(Person person) {
-        FieldFormatter fieldFormatter = new FieldFormatter();
-
-        person.setFirstName(person.getFirstName().trim());
-        person.setLastName(person.getLastName().trim());
-        person.setUsername(person.getUsername().trim());
-        person.setDateOfBirth(fieldFormatter.formatAsDate(person.getDateOfBirth()));
-        person.setSocialSecurityNumber(fieldFormatter.separateBy(person.getSocialSecurityNumber(), "-"));
-        person.setGender(fieldFormatter.formatAsEnum(person.getGender()));
-        person.setEmail(person.getEmail().trim());
-    }
-
     private boolean isValidRequestBody(Person person) {
         BindingResult bindingResult = new BindException(person, "person");
 
@@ -108,6 +116,28 @@ public class PersonServiceImpl implements PersonService {
         }
 
         return true;
+    }
+
+    private void cleanPerson(Person person) {
+        FieldFormatter fieldFormatter = new FieldFormatter();
+
+        /**
+         * TODO: apache common StringUtils class provides a null safe way to handle trimming.
+         * I recommend the String manipulation be done using the Apache Commons class
+         * (the dependency is already defined in the pom file)
+         */
+
+        person.setFirstName(person.getFirstName().trim());
+        person.setLastName(person.getLastName().trim());
+        person.setUsername(person.getUsername().trim());
+        person.setAge(calculateAge(person.getDateOfBirth()));
+        person.setSocialSecurityNumber(fieldFormatter.separateBy(person.getSocialSecurityNumber(), "-"));
+        person.setEmail(person.getEmail().trim());
+    }
+
+    private int calculateAge(String dateOfBirth) {
+        LocalDate dob = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        return Period.between(dob, LocalDate.now()).getYears();
     }
 
     public PersonEntity mapToEntity(Person person) {

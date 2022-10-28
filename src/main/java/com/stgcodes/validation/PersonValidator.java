@@ -1,16 +1,12 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
-import com.stgcodes.validation.enums.Gender;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import static com.stgcodes.utils.constants.CustomMatchers.LETTER;

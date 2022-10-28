@@ -141,9 +141,8 @@ public class PersonServiceImpl implements PersonService {
         person.setEmail(person.getEmail().trim());
     }
 
-    private int calculateAge(String dateOfBirth) {
-        LocalDate dob = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        return Period.between(dob, LocalDate.now()).getYears();
+    private int calculateAge(LocalDate dateOfBirth) {
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     public PersonEntity mapToEntity(Person person) {

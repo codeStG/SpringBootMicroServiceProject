@@ -5,6 +5,7 @@ import com.stgcodes.validation.enums.Gender;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class Person {
     private String firstName;
     private String lastName;
     private String username;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private int age;
     private String socialSecurityNumber;
     private Gender gender;

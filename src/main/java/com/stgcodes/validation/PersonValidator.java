@@ -68,17 +68,9 @@ public class PersonValidator implements Validator {
         }
     }
 
-    private void validateDateOfBirth(String dateOfBirth, Errors errors) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/y", Locale.ENGLISH);
-
-        try {
-            LocalDate date = LocalDate.parse(dateOfBirth, formatter);
-
-            if (date.isAfter(LocalDate.now())) {
-                errors.rejectValue("dateOfBirth", "date.future");
-            }
-        } catch (DateTimeParseException e) {
-            errors.rejectValue("dateOfBirth", "date.format");
+    private void validateDateOfBirth(LocalDate dateOfBirth, Errors errors) {
+        if (dateOfBirth.isAfter(LocalDate.now())) {
+            errors.rejectValue("dateOfBirth", "date.future");
         }
     }
 

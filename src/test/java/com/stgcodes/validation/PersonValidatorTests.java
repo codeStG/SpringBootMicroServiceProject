@@ -1,10 +1,13 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
+import com.stgcodes.validation.enums.Gender;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,9 +26,9 @@ public class PersonValidatorTests {
                 .firstName("Bryan")
                 .lastName("Byard")
                 .username("brbyard")
-                .dateOfBirth("08/13/1978")
+                .dateOfBirth(LocalDate.of(1978, 7, 11))
                 .socialSecurityNumber("123-45-6777")
-                .gender("MALE")
+                .gender(Gender.MALE)
                 .email("brbyard@gmail.com")
                 .build();
 
@@ -146,7 +149,7 @@ public class PersonValidatorTests {
 
     @Test
     public void testValidDate() {
-        person.setDateOfBirth("08/30/2022");
+        person.setDateOfBirth(LocalDate.parse("08/30/2022", DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -155,48 +158,8 @@ public class PersonValidatorTests {
     }
 
     @Test
-    public void testEmptyDate() {
-        person.setDateOfBirth("");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("date.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testInvalidDateFormat() {
-        person.setDateOfBirth("8 29 22");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("date.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testMonthOutOfBounds() {
-        person.setDateOfBirth("13/13/1995");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("date.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testDayOfMonthOutOfBounds() {
-        person.setDateOfBirth("08/32/2022");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("date.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
     public void testFutureDateIsInvalid() {
-        person.setDateOfBirth("10/31/3200");
+        person.setDateOfBirth(LocalDate.parse("10/31/3200", DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("date.future", null, Locale.US);
@@ -226,20 +189,10 @@ public class PersonValidatorTests {
 
     @Test
     public void testValidGender() {
-        person.setGender("MALE");
+        person.setGender(Gender.MALE);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testInvalidGender() {
-        person.setGender("Man");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("gender.format", null, Locale.US);
 
         assertEquals(expected, errors.get(0));
     }

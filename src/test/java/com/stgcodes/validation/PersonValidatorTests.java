@@ -2,8 +2,8 @@ package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PersonValidatorTests {
 
@@ -20,7 +20,7 @@ public class PersonValidatorTests {
     private ResourceBundleMessageSource messageSource;
     private List<String> errors;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         person = Person.builder()
                 .firstName("Bryan")

@@ -2,14 +2,14 @@ package com.stgcodes.validation;
 
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.enums.GeographicState;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AddressValidatorTests {
 
@@ -18,13 +18,13 @@ public class AddressValidatorTests {
     private ResourceBundleMessageSource messageSource;
     private List<String> errors;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         address = Address.builder()
                 .lineOne("5678 What St.")
                 .lineTwo("Unit 8")
                 .city("Atlanta")
-                .state(GeographicState.GEORGIA)
+                .state(GeographicState.GA)
                 .zip("78019")
                 .build();
 

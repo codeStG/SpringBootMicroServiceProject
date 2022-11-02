@@ -1,14 +1,15 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Phone;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class PhoneValidatorTests {
 
@@ -18,7 +19,7 @@ public class PhoneValidatorTests {
     private List<String> errors;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         phone = Phone.builder()
                 .phoneNumber("223-456-7890")

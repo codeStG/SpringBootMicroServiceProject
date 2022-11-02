@@ -90,7 +90,6 @@ public class AddressServiceImpl implements AddressService {
         address.setLineOne(address.getLineOne().trim());
         address.setLineTwo(address.getLineTwo().trim());
         address.setCity(address.getCity().trim());
-        address.setState(fieldFormatter.formatAsState(address.getState()));
         address.setZip(fieldFormatter.separateBy(address.getZip(), "-"));
     }
 

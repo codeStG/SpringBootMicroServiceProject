@@ -1,13 +1,17 @@
 package com.stgcodes.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.stgcodes.validation.enums.Gender;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +21,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class PersonEntity implements Serializable {
 
     @Id
@@ -34,8 +38,9 @@ public class PersonEntity implements Serializable {
     @Column(name = "username", nullable = false, length = 25, unique = true)
     private String username;
 
+    @JsonDeserialize(using= LocalDateDeserializer.class)
     @Column(name = "date_of_birth", nullable = false)
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "age")
     private int age;
@@ -43,8 +48,9 @@ public class PersonEntity implements Serializable {
     @Column(name = "ssn", nullable = false, unique = true)
     private String socialSecurityNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;

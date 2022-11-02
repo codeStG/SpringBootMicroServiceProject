@@ -1,6 +1,5 @@
 package com.stgcodes.service;
 
-import com.stgcodes.model.Address;
 import com.stgcodes.model.Phone;
 
 import java.util.List;

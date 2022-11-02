@@ -5,24 +5,22 @@ import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
+import javax.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static com.stgcodes.specifications.PersonSpecs.*;
 import static org.springframework.data.jpa.domain.Specification.where;
@@ -47,15 +45,20 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> findByCriteria(PersonCriteria criteria) {
-        List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
-                .and(containsTextInLastName(criteria.getLastName()))
-                .and(ofAge(criteria.getAge()))
-                .and(ofGender(criteria.getGender())));
+        try {
+            List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+                    .and(containsTextInLastName(criteria.getLastName()))
+                    .and(ofAge(criteria.getAge()))
+                    .and(ofGender(criteria.getGender())));
 
-        List<Person> people = new ArrayList<>();
-        found.forEach(p -> people.add(mapToModel(p)));
+            List<Person> people = new ArrayList<>();
+            found.forEach(p -> people.add(mapToModel(p)));
 
-        return people;
+            return people;
+        } catch (IllegalArgumentException e) {
+            log.info("No people found with provided search criteria");
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -71,15 +74,40 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person save(Person person) {
+    public Optional<Person> save(Person person) {
         if(isValidRequestBody(person)) {
             PersonEntity personEntity = mapToEntity(person);
             person.getPhones().forEach(p -> p.setPersonEntity(personEntity));
 
-            return mapToModel(dao.save(personEntity));
+            return saveEntity(personEntity);
         }
 
-        throw new InvalidRequestBodyException();
+        return Optional.empty();
+    }
+
+    private Optional<Person> saveEntity(PersonEntity pe) {
+        /**
+         * George - one school of thought on exception handling.
+         *
+         * My rule of thumb has been catch these types of cases at the service/domain level,
+         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
+         * perhaps by some specific error handler that displays the appropriate web page view
+         * based on exception types, etc.
+         *
+         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
+         *
+         */
+        Person savedPerson = null;
+
+        try {
+            PersonEntity result = dao.save(pe);
+            savedPerson = mapToModel(result);
+            return Optional.of(savedPerson);
+        }
+        catch(PersistenceException e) {
+            log.error("PersistenceException caught saving person - ", e);
+            return Optional.ofNullable(savedPerson);
+        }
     }
 
     @Override
@@ -127,17 +155,16 @@ public class PersonServiceImpl implements PersonService {
          * (the dependency is already defined in the pom file)
          */
 
-        person.setFirstName(person.getFirstName().trim());
-        person.setLastName(person.getLastName().trim());
-        person.setUsername(person.getUsername().trim());
+        person.setFirstName(StringUtils.trim(person.getFirstName()));
+        person.setLastName(StringUtils.trim(person.getLastName()));
+        person.setUsername(StringUtils.trim(person.getUsername()));
         person.setAge(calculateAge(person.getDateOfBirth()));
-        person.setSocialSecurityNumber(fieldFormatter.separateBy(person.getSocialSecurityNumber(), "-"));
-        person.setEmail(person.getEmail().trim());
+        person.setSocialSecurityNumber(StringUtils.trim(person.getSocialSecurityNumber()));
+        person.setEmail(StringUtils.trim(person.getEmail()));
     }
 
-    private int calculateAge(String dateOfBirth) {
-        LocalDate dob = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        return Period.between(dob, LocalDate.now()).getYears();
+    private int calculateAge(LocalDate dateOfBirth) {
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     public PersonEntity mapToEntity(Person person) {

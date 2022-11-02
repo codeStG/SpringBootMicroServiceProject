@@ -1,16 +1,12 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
-import com.stgcodes.validation.enums.Gender;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import static com.stgcodes.utils.constants.CustomMatchers.LETTER;
@@ -35,7 +31,6 @@ public class PersonValidator implements Validator {
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
-        validateGender(person.getGender(), errors);
         validateEmail(person.getEmail(), errors);
     }
 
@@ -69,31 +64,15 @@ public class PersonValidator implements Validator {
         }
     }
 
-    private void validateDateOfBirth(String dateOfBirth, Errors errors) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/y", Locale.ENGLISH);
-
-        try {
-            LocalDate date = LocalDate.parse(dateOfBirth, formatter);
-
-            if (date.isAfter(LocalDate.now())) {
-                errors.rejectValue("dateOfBirth", "date.future");
-            }
-        } catch (DateTimeParseException e) {
-            errors.rejectValue("dateOfBirth", "date.format");
+    private void validateDateOfBirth(LocalDate dateOfBirth, Errors errors) {
+        if (dateOfBirth.isAfter(LocalDate.now())) {
+            errors.rejectValue("dateOfBirth", "date.future");
         }
     }
 
     private void validateSocialSecurityNumber(String ssn, Errors errors) {
         if(!Pattern.matches(SOCIAL_SECURITY, ssn)) {
             errors.rejectValue("socialSecurityNumber", "ssn.format");
-        }
-    }
-
-    private void validateGender(String gender, Errors errors) {
-        try {
-            Gender.valueOf(gender);
-        } catch (IllegalArgumentException e) {
-            errors.rejectValue("gender", "gender.format");
         }
     }
 

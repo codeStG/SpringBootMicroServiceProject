@@ -1,5 +1,6 @@
 package com.stgcodes.model;
 
+import com.stgcodes.validation.enums.GeographicState;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +11,6 @@ public class Address {
     private String lineOne;
     private String lineTwo;
     private String city;
-    private String state;
+    private GeographicState state;
     private String zip;
 }

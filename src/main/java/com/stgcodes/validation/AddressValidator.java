@@ -24,7 +24,6 @@ public class AddressValidator implements Validator {
         validateLineOne(address.getLineOne(), errors);
         validateLineTwo(address.getLineTwo(), errors);
         validateCity(address.getCity(), errors);
-        validateState(address.getState(), errors);
         validateZip(address.getZip(), errors);
     }
 
@@ -43,14 +42,6 @@ public class AddressValidator implements Validator {
     private void validateCity(String city, Errors errors) {
         if (lengthIsInvalid(1, 75, city)) {
             errors.rejectValue("city", "city.format");
-        }
-    }
-
-    private void validateState(String state, Errors errors) {
-        FieldFormatter fieldFormatter = new FieldFormatter();
-
-        if(!GeographicState.isAState(fieldFormatter.formatAsEnum(state))) {
-            errors.rejectValue("state", "state.invalid");
         }
     }
 

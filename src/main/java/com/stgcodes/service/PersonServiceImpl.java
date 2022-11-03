@@ -4,7 +4,7 @@ import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.utils.FieldFormatter;
@@ -18,6 +18,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 import javax.persistence.PersistenceException;
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
@@ -36,56 +37,67 @@ public class PersonServiceImpl implements PersonService {
     private PersonValidator validator;
 
     @Override
-    public List<Person> findAll() {
+    public Optional<List<Person>> findAll() {
         List<Person> people = new ArrayList<>();
-        dao.findAll().forEach(e -> people.add(mapToModel(e)));
 
-        return people;
+        try {
+            dao.findAll().forEach(e -> people.add(mapToModel(e)));
+        } catch (Exception e) {
+            log.info(e.getLocalizedMessage());
+            return Optional.empty();
+        }
+
+        return Optional.of(people);
     }
 
     @Override
-    public List<Person> findByCriteria(PersonCriteria criteria) {
+    public Optional<List<Person>> findByCriteria(PersonCriteria criteria) {
+        List<Person> result = new ArrayList<>();
+
         try {
-            List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+            dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
                     .and(containsTextInLastName(criteria.getLastName()))
                     .and(ofAge(criteria.getAge()))
-                    .and(ofGender(criteria.getGender())));
-
-            List<Person> people = new ArrayList<>();
-            found.forEach(p -> people.add(mapToModel(p)));
-
-            return people;
+                    .and(ofGender(criteria.getGender())))
+                    .forEach(entity -> result.add(mapToModel(entity)));
         } catch (IllegalArgumentException e) {
-            log.info("No people found with provided search criteria");
-            return Collections.emptyList();
+            log.info("Invalid parameter provided - search yielded no results");
+            return Optional.empty();
         }
+
+        return Optional.of(result);
     }
 
     @Override
-    public Person findById(Long personId) {
-        PersonEntity personEntity = dao.findById(personId);
+    public Optional<Person> findById(Long personId) {
+        PersonEntity personEntity;
 
-        if(personEntity == null) {
-            log.info("ID " + personId + " does not exist");
-            throw new IdNotFoundException();
+        try {
+           personEntity = dao.findById(personId);
+        } catch(Exception e) {
+            log.info("No person found with provided ID");
+            return Optional.empty();
         }
 
-        return mapToModel(personEntity);
+        if (personEntity == null) {
+            return Optional.empty();
+        }
+
+        Person result = mapToModel(personEntity);
+
+        return Optional.of(result);
     }
 
     @Override
     public Optional<Person> save(Person person) {
         if(isValidRequestBody(person)) {
-            PersonEntity personEntity = mapToEntity(person);
-            person.getPhones().forEach(p -> p.setPersonEntity(personEntity));
-
-            return saveEntity(personEntity);
+            return savePerson(person);
         }
 
         return Optional.empty();
     }
 
-    private Optional<Person> saveEntity(PersonEntity pe) {
+    private Optional<Person> savePerson(Person person) {
         /**
          * George - one school of thought on exception handling.
          *
@@ -97,34 +109,56 @@ public class PersonServiceImpl implements PersonService {
          * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
          *
          */
-        Person savedPerson = null;
+        PersonEntity personEntity = mapToEntity(person);
+        PersonEntity result;
+        Person savedPerson;
+
+        person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
 
         try {
-            PersonEntity result = dao.save(pe);
-            savedPerson = mapToModel(result);
-            return Optional.of(savedPerson);
+            result = dao.save(personEntity);
         }
         catch(PersistenceException e) {
             log.error("PersistenceException caught saving person - ", e);
-            return Optional.ofNullable(savedPerson);
+            return Optional.empty();
         }
+
+        savedPerson = mapToModel(result);
+        return Optional.of(savedPerson);
     }
 
     @Override
-    public Person update(Person person, Long personId) {
-        List<PhoneEntity> phones = findById(personId).getPhones();
+    public Optional<Person> update(Person person, Long personId) {
+        PersonEntity result;
+        Optional<Person> personToUpdate = findById(personId);
 
-        PersonEntity personEntity = mapToEntity(person);
-        personEntity.setPhones(phones);
-        personEntity.setPersonId(personId);
+        if(personToUpdate.isPresent()) {
+            List<PhoneEntity> phones = personToUpdate.get().getPhones();
+            PersonEntity personEntity = mapToEntity(person);
+            personEntity.setPhones(phones);
+            personEntity.setPersonId(personId);
 
-        return mapToModel(dao.update(personEntity));
+            try {
+                result = dao.update(personEntity);
+            } catch(PersistenceException e) {
+                log.error("PersistenceException caught updating person - ", e);
+                return Optional.empty();
+            }
+
+            Person updatedPerson = mapToModel(result);
+            return Optional.of(updatedPerson);
+        }
+
+        return Optional.empty();
     }
 
     @Override
     public void delete(Long personId) {
-        Person person = findById(personId);
-        dao.delete(mapToEntity(person));
+        Optional<Person> person = findById(personId);
+        if(person.isPresent()) {
+            PersonEntity personEntity = mapToEntity(person.get());
+            dao.delete(personEntity);
+        }
     }
 
     private boolean isValidRequestBody(Person person) {
@@ -147,8 +181,6 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private void cleanPerson(Person person) {
-        FieldFormatter fieldFormatter = new FieldFormatter();
-
         /**
          * TODO: apache common StringUtils class provides a null safe way to handle trimming.
          * I recommend the String manipulation be done using the Apache Commons class
@@ -167,11 +199,11 @@ public class PersonServiceImpl implements PersonService {
         return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
-    public PersonEntity mapToEntity(Person person) {
+    private PersonEntity mapToEntity(Person person) {
         return PersonMapper.INSTANCE.personToPersonEntity(person);
     }
 
-    public Person mapToModel(PersonEntity personEntity) {
+    private Person mapToModel(PersonEntity personEntity) {
         return PersonMapper.INSTANCE.personEntityToPerson(personEntity);
     }
 }

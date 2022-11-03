@@ -27,36 +27,38 @@ public class PersonController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {
-        List<Person> people = service.findAll();
-        people.sort(new PersonComparator());
+        Optional<List<Person>> people = service.findAll();
 
-        return new ResponseEntity<>(people, HttpStatus.OK);
+        if(people.isPresent()) {
+            people.get().sort(new PersonComparator());
+            return new ResponseEntity<>(people.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping(path = "/id")
     public ResponseEntity<Person> getPerson(@RequestParam Long personId) {
-        Person person = service.findById(personId);
-        return new ResponseEntity<>(person, HttpStatus.OK);
+        Optional<Person> person = service.findById(personId);
+        return person.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(path = "/search")
     public ResponseEntity <List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
-        List<Person> people = service.findByCriteria(criteria);
-
-        return new ResponseEntity<>(people, HttpStatus.OK);
+        Optional<List<Person>> people = service.findByCriteria(criteria);
+        return people.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping(path = "/add")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
         Optional<Person> result = service.save(person);
-
-        return result.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+        return result.map(value -> new ResponseEntity<>(value, HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @PutMapping(path = "/update")
     public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) {
-        Person refreshedPerson = service.update(person, personId);
-        return new ResponseEntity<>(refreshedPerson, HttpStatus.OK);
+        Optional<Person> refreshedPerson = service.update(person, personId);
+        return refreshedPerson.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(path = "/remove")

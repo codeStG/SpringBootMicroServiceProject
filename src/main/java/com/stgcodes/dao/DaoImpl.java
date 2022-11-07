@@ -1,5 +1,6 @@
 package com.stgcodes.dao;
 
+import com.stgcodes.exceptions.IdNotFoundException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 
 @Transactional
@@ -29,7 +31,13 @@ public abstract class DaoImpl<T> implements Dao<T> {
 
     @Override
     public T findById(Long id) {
-        return entityManager.find(type, id);
+        T t = entityManager.find(type, id);
+
+        if(t == null) {
+            throw new IdNotFoundException();
+        }
+
+        return t;
     }
 
     @Override
@@ -38,7 +46,8 @@ public abstract class DaoImpl<T> implements Dao<T> {
         CriteriaQuery<T> criteria = builder.createQuery(type);
         criteria.from(type);
 
-        return entityManager.createQuery(criteria).getResultList();
+        List<T> result = entityManager.createQuery(criteria).getResultList();
+        return result.isEmpty() ? Collections.emptyList() : result;
     }
 
     public List<T> findAll(Specification<T> specs) {
@@ -50,7 +59,8 @@ public abstract class DaoImpl<T> implements Dao<T> {
 
         criteria.select(root).where(predicate);
 
-        return entityManager.createQuery(criteria).getResultList();
+        List<T> result = entityManager.createQuery(criteria).getResultList();
+        return result.isEmpty() ? Collections.emptyList() : result;
     }
 
     @Override

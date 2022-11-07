@@ -5,9 +5,10 @@ import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exception.DataAccessException;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +19,11 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 import javax.persistence.PersistenceException;
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import static com.stgcodes.specifications.PersonSpecs.*;
 import static org.springframework.data.jpa.domain.Specification.where;
@@ -37,131 +39,61 @@ public class PersonServiceImpl implements PersonService {
     private PersonValidator validator;
 
     @Override
-    public Optional<List<Person>> findAll() {
+    public List<Person> findAll() {
         List<Person> people = new ArrayList<>();
+        dao.findAll().forEach(e -> people.add(mapToModel(e)));
 
-        try {
-            dao.findAll().forEach(e -> people.add(mapToModel(e)));
-        } catch (Exception e) {
-            log.info(e.getLocalizedMessage());
-            return Optional.empty();
-        }
-
-        return Optional.of(people);
+        return people;
     }
 
     @Override
-    public Optional<List<Person>> findByCriteria(PersonCriteria criteria) {
+    public List<Person> findByCriteria(PersonCriteria criteria) {
         List<Person> result = new ArrayList<>();
+        dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+                .and(containsTextInLastName(criteria.getLastName()))
+                .and(ofAge(criteria.getAge()))
+                .and(ofGender(criteria.getGender())))
+                .forEach(entity -> result.add(mapToModel(entity)));
 
-        try {
-            dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
-                    .and(containsTextInLastName(criteria.getLastName()))
-                    .and(ofAge(criteria.getAge()))
-                    .and(ofGender(criteria.getGender())))
-                    .forEach(entity -> result.add(mapToModel(entity)));
-        } catch (IllegalArgumentException e) {
-            log.info("Invalid parameter provided - search yielded no results");
-            return Optional.empty();
-        }
-
-        return Optional.of(result);
+        return result;
     }
 
     @Override
-    public Optional<Person> findById(Long personId) {
+    public Person findById(Long personId) {
         PersonEntity personEntity;
 
         try {
            personEntity = dao.findById(personId);
-        } catch(Exception e) {
-            log.info("No person found with provided ID");
-            return Optional.empty();
+        } catch(IdNotFoundException e) {
+            log.error("No person exists with ID: " + personId);
+            throw new IdNotFoundException("No person exists with ID: " + personId);
         }
 
-        if (personEntity == null) {
-            return Optional.empty();
-        }
-
-        Person result = mapToModel(personEntity);
-
-        return Optional.of(result);
+        return mapToModel(personEntity);
     }
 
     @Override
-    public Optional<Person> save(Person person) {
-        if(isValidRequestBody(person)) {
-            return savePerson(person);
-        }
-
-        return Optional.empty();
-    }
-
-    private Optional<Person> savePerson(Person person) {
-        /**
-         * George - one school of thought on exception handling.
-         *
-         * My rule of thumb has been catch these types of cases at the service/domain level,
-         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
-         * perhaps by some specific error handler that displays the appropriate web page view
-         * based on exception types, etc.
-         *
-         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
-         *
-         */
-        PersonEntity personEntity = mapToEntity(person);
-        PersonEntity result;
+    public Person save(Person person) {
         Person savedPerson;
 
-        person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
+        try {
+            isValidRequestBody(person);
+        } catch(IllegalArgumentException e) {
+            log.error(e.getMessage());
+            throw new InvalidRequestBodyException(e.getMessage());
+        }
 
         try {
-            result = dao.save(personEntity);
-        }
-        catch(PersistenceException e) {
-            log.error("PersistenceException caught saving person - ", e);
-            return Optional.empty();
+            savedPerson = savePerson(person);
+        } catch(PersistenceException e) {
+            log.error(e.getMessage());
+            throw new DataAccessException("There was an internal error while trying to save the Person");
         }
 
-        savedPerson = mapToModel(result);
-        return Optional.of(savedPerson);
+        return savedPerson;
     }
 
-    @Override
-    public Optional<Person> update(Person person, Long personId) {
-        PersonEntity result;
-        Optional<Person> personToUpdate = findById(personId);
-
-        if(personToUpdate.isPresent()) {
-            List<PhoneEntity> phones = personToUpdate.get().getPhones();
-            PersonEntity personEntity = mapToEntity(person);
-            personEntity.setPhones(phones);
-            personEntity.setPersonId(personId);
-
-            try {
-                result = dao.update(personEntity);
-            } catch(PersistenceException e) {
-                log.error("PersistenceException caught updating person - ", e);
-                return Optional.empty();
-            }
-
-            Person updatedPerson = mapToModel(result);
-            return Optional.of(updatedPerson);
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public void delete(Long personId) {
-        Optional<Person> person = findById(personId);
-        if(person.isPresent()) {
-            PersonEntity personEntity = mapToEntity(person.get());
-            dao.delete(personEntity);
-        }
-    }
-
-    private boolean isValidRequestBody(Person person) {
+    private void isValidRequestBody(Person person) {
         BindingResult bindingResult = new BindException(person, "person");
 
         cleanPerson(person);
@@ -170,14 +102,13 @@ public class PersonServiceImpl implements PersonService {
         if(bindingResult.hasErrors()) {
             ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
             messageSource.setBasename("ValidationMessages");
+            StringBuilder errorMessage = new StringBuilder();
 
-            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
-            bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
+            errorMessage.append(messageSource.getMessage("person.invalid", new Object[]{bindingResult.getErrorCount()}, Locale.US));
+            bindingResult.getAllErrors().forEach(error -> errorMessage.append("\n").append(messageSource.getMessage(error, Locale.US)));
 
-            return false;
+            throw new IllegalArgumentException(errorMessage.toString());
         }
-
-        return true;
     }
 
     private void cleanPerson(Person person) {
@@ -193,6 +124,62 @@ public class PersonServiceImpl implements PersonService {
         person.setAge(calculateAge(person.getDateOfBirth()));
         person.setSocialSecurityNumber(StringUtils.trim(person.getSocialSecurityNumber()));
         person.setEmail(StringUtils.trim(person.getEmail()));
+    }
+
+    private Person savePerson(Person person) {
+        /**
+         * George - one school of thought on exception handling.
+         *
+         * My rule of thumb has been catch these types of cases at the service/domain level,
+         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
+         * perhaps by some specific error handler that displays the appropriate web page view
+         * based on exception types, etc.
+         *
+         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
+         *
+         */
+        PersonEntity personEntity = mapToEntity(person);
+        PersonEntity result;
+
+        person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
+
+        try {
+            result = dao.save(personEntity);
+        } catch(PersistenceException e) {
+            log.error(e.getLocalizedMessage());
+            throw new PersistenceException("PersistenceException caught saving person - translating into DataAccessException");
+        }
+
+        return mapToModel(result);
+    }
+
+    @Override
+    public Person update(Person person, Long personId) {
+        Person personToUpdate = findById(personId);
+        PersonEntity result;
+
+        List<PhoneEntity> phones = personToUpdate.getPhones();
+        PersonEntity personEntity = mapToEntity(person);
+        personEntity.setPhones(phones);
+        personEntity.setPersonId(personId);
+
+        try {
+            result = dao.update(personEntity);
+        } catch(PersistenceException e) {
+            log.error(e.getLocalizedMessage());
+            throw new PersistenceException("PersistenceException caught updating person - translating into DataAccessException");
+        }
+
+        return mapToModel(result);
+    }
+
+    @Override
+    public void delete(Long personId) {
+        Person person = findById(personId);
+
+        PersonEntity personEntity = mapToEntity(person);
+
+        dao.delete(personEntity);
     }
 
     private int calculateAge(LocalDate dateOfBirth) {

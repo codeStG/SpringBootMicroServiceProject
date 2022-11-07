@@ -1,6 +1,8 @@
 package com.stgcodes.endpoint;
 
 import com.stgcodes.criteria.PersonCriteria;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.utils.sorting.PersonComparator;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,38 +30,59 @@ public class PersonController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {
-        Optional<List<Person>> people = service.findAll();
+        List<Person> people = service.findAll();
+        people.sort(new PersonComparator());
 
-        if(people.isPresent()) {
-            people.get().sort(new PersonComparator());
-            return new ResponseEntity<>(people.get(), HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
-    public ResponseEntity<Person> getPerson(@RequestParam Long personId) {
-        Optional<Person> person = service.findById(personId);
-        return person.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity getPerson(@RequestParam Long personId) {
+        Person person;
+
+        try {
+            person = service.findById(personId);
+        } catch (IdNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity <List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
-        Optional<List<Person>> people = service.findByCriteria(criteria);
-        return people.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
+        List<Person> people = service.findByCriteria(criteria);
+        return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
-    public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        Optional<Person> result = service.save(person);
-        return result.map(value -> new ResponseEntity<>(value, HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    public ResponseEntity addPerson(@RequestBody Person person) {
+        HttpStatus status = HttpStatus.OK;
+        Person result;
+
+        try{
+            result = service.save(person);
+        } catch(InvalidRequestBodyException | PersistenceException e) {
+            status = e.getClass().equals(PersistenceException.class) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(e.getMessage(), status);
+        }
+
+        return new ResponseEntity<>(result, status);
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) {
-        Optional<Person> refreshedPerson = service.update(person, personId);
-        return refreshedPerson.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity updatePerson(@RequestBody Person person, @RequestParam Long personId) {
+        HttpStatus status = HttpStatus.OK;
+        Person result;
+
+        try {
+            result = service.update(person, personId);
+        } catch(IdNotFoundException | PersistenceException e) {
+            status = e.getClass().equals(PersistenceException.class) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(e.getMessage(), status);
+        }
+
+        return new ResponseEntity<>(result, status);
     }
 
     @DeleteMapping(path = "/remove")

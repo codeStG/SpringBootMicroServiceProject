@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PersonService {
-    Optional<List<Person>> findAll();
-    Optional<List<Person>> findByCriteria(PersonCriteria criteria);
-    Optional<Person> findById(Long personId);
-    Optional<Person> save(Person person);
-    Optional<Person> update(Person person, Long personId);
+    List<Person> findAll();
+    List<Person> findByCriteria(PersonCriteria criteria);
+    Person findById(Long personId);
+    Person save(Person person);
+    Person update(Person person, Long personId);
     void delete(Long addressId);
 }

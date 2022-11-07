@@ -13,7 +13,6 @@ import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -23,7 +22,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static com.stgcodes.specifications.PersonSpecs.*;
 import static org.springframework.data.jpa.domain.Specification.where;
@@ -61,36 +59,16 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person findById(Long personId) {
         PersonEntity personEntity;
-
-        try {
-           personEntity = dao.findById(personId);
-        } catch(IdNotFoundException e) {
-            log.error("No person exists with ID: " + personId);
-            throw new IdNotFoundException("No person exists with ID: " + personId);
-        }
+        personEntity = dao.findById(personId);
 
         return mapToModel(personEntity);
     }
 
     @Override
     public Person save(Person person) {
-        Person savedPerson;
+        isValidRequestBody(person);
 
-        try {
-            isValidRequestBody(person);
-        } catch(IllegalArgumentException e) {
-            log.error(e.getMessage());
-            throw new InvalidRequestBodyException(e.getMessage());
-        }
-
-        try {
-            savedPerson = savePerson(person);
-        } catch(PersistenceException e) {
-            log.error(e.getMessage());
-            throw new DataAccessException("There was an internal error while trying to save the Person");
-        }
-
-        return savedPerson;
+        return savePerson(person);
     }
 
     private void isValidRequestBody(Person person) {
@@ -100,14 +78,7 @@ public class PersonServiceImpl implements PersonService {
         validator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors()) {
-            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-            messageSource.setBasename("ValidationMessages");
-            StringBuilder errorMessage = new StringBuilder();
-
-            errorMessage.append(messageSource.getMessage("person.invalid", new Object[]{bindingResult.getErrorCount()}, Locale.US));
-            bindingResult.getAllErrors().forEach(error -> errorMessage.append("\n").append(messageSource.getMessage(error, Locale.US)));
-
-            throw new IllegalArgumentException(errorMessage.toString());
+            throw new InvalidRequestBodyException(Person.class, bindingResult);
         }
     }
 
@@ -139,16 +110,9 @@ public class PersonServiceImpl implements PersonService {
          *
          */
         PersonEntity personEntity = mapToEntity(person);
-        PersonEntity result;
-
         person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
 
-        try {
-            result = dao.save(personEntity);
-        } catch(PersistenceException e) {
-            log.error(e.getLocalizedMessage());
-            throw new PersistenceException("PersistenceException caught saving person - translating into DataAccessException");
-        }
+        PersonEntity result = dao.save(personEntity);
 
         return mapToModel(result);
     }
@@ -156,19 +120,14 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person update(Person person, Long personId) {
         Person personToUpdate = findById(personId);
-        PersonEntity result;
-
         List<PhoneEntity> phones = personToUpdate.getPhones();
+        isValidRequestBody(person);
+
         PersonEntity personEntity = mapToEntity(person);
         personEntity.setPhones(phones);
         personEntity.setPersonId(personId);
 
-        try {
-            result = dao.update(personEntity);
-        } catch(PersistenceException e) {
-            log.error(e.getLocalizedMessage());
-            throw new PersistenceException("PersistenceException caught updating person - translating into DataAccessException");
-        }
+        PersonEntity result = dao.update(personEntity);
 
         return mapToModel(result);
     }
@@ -176,7 +135,6 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void delete(Long personId) {
         Person person = findById(personId);
-
         PersonEntity personEntity = mapToEntity(person);
 
         dao.delete(personEntity);

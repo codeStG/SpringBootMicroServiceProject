@@ -1,13 +1,16 @@
 package com.stgcodes.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.apache.commons.lang3.StringUtils;
 
 public class IdNotFoundException extends RuntimeException {
 
-    public IdNotFoundException(String message) {
-        super(message);
+    public IdNotFoundException(Class clazz, String id) {
+        super(generateMessage(clazz.getSimpleName(), id));
     }
 
-    public IdNotFoundException() {}
+    private static String generateMessage(String entity, String value) {
+        return StringUtils.capitalize(entity) +
+                " was not found with ID " +
+                value;
+    }
 }

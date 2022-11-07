@@ -1,11 +1,14 @@
 package com.stgcodes.dao;
 
+import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.exceptions.IdNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -15,15 +18,16 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Transactional
 public abstract class DaoImpl<T> implements Dao<T> {
 
     @PersistenceContext
     EntityManager entityManager;
 
-    private Class<T> type;
+    private final Class<T> type;
 
-    public DaoImpl() {
+    protected DaoImpl() {
         Type t = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) t;
         type = (Class) pt.getActualTypeArguments()[0];
@@ -34,7 +38,7 @@ public abstract class DaoImpl<T> implements Dao<T> {
         T t = entityManager.find(type, id);
 
         if(t == null) {
-            throw new IdNotFoundException();
+            throw new IdNotFoundException(type, id.toString());
         }
 
         return t;
@@ -65,13 +69,24 @@ public abstract class DaoImpl<T> implements Dao<T> {
 
     @Override
     public T save(final T t) {
-        entityManager.persist(t);
+        try {
+            entityManager.persist(t);
+        } catch(PersistenceException ex) {
+            log.error(ex.getMessage());
+            throw new DataAccessException("Encountered an error while attempting to save");
+        }
         return t;
     }
 
     @Override
     public T update(T t) {
-        entityManager.merge(t);
+        try {
+            entityManager.merge(t);
+        } catch(PersistenceException ex) {
+            log.error(ex.getMessage());
+            throw new DataAccessException("Encountered an error while attempting to update");
+        }
+
         return t;
     }
 

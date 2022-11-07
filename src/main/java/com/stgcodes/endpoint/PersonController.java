@@ -1,6 +1,7 @@
 package com.stgcodes.endpoint;
 
 import com.stgcodes.criteria.PersonCriteria;
+import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Person;
@@ -13,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/people")
@@ -36,53 +35,25 @@ public class PersonController {
         return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/id")
-    public ResponseEntity getPerson(@RequestParam Long personId) {
-        Person person;
-
-        try {
-            person = service.findById(personId);
-        } catch (IdNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>(person, HttpStatus.OK);
-    }
-
     @GetMapping(path = "/search")
     public ResponseEntity<List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
         List<Person> people = service.findByCriteria(criteria);
         return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/id")
+    public ResponseEntity<Person> getPerson(@RequestParam Long personId) throws IdNotFoundException {
+        return new ResponseEntity<>(service.findById(personId), HttpStatus.OK);
+    }
+
     @PutMapping(path = "/add")
-    public ResponseEntity addPerson(@RequestBody Person person) {
-        HttpStatus status = HttpStatus.OK;
-        Person result;
-
-        try{
-            result = service.save(person);
-        } catch(InvalidRequestBodyException | PersistenceException e) {
-            status = e.getClass().equals(PersistenceException.class) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(e.getMessage(), status);
-        }
-
-        return new ResponseEntity<>(result, status);
+    public ResponseEntity<Person> addPerson(@RequestBody Person person) throws InvalidRequestBodyException, DataAccessException {
+        return new ResponseEntity<>(service.save(person), HttpStatus.OK);
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity updatePerson(@RequestBody Person person, @RequestParam Long personId) {
-        HttpStatus status = HttpStatus.OK;
-        Person result;
-
-        try {
-            result = service.update(person, personId);
-        } catch(IdNotFoundException | PersistenceException e) {
-            status = e.getClass().equals(PersistenceException.class) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(e.getMessage(), status);
-        }
-
-        return new ResponseEntity<>(result, status);
+    public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) throws InvalidRequestBodyException, DataAccessException {
+        return new ResponseEntity<>(service.update(person, personId), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

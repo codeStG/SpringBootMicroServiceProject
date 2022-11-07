@@ -1,13 +1,22 @@
 package com.stgcodes.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.BindingResult;
 
 public class InvalidRequestBodyException extends RuntimeException {
 
-    public InvalidRequestBodyException(String message) {
-        super(message);
+    private final BindingResult bindingResult;
+
+    public InvalidRequestBodyException(Class<?> clazz, BindingResult bindingResult) {
+        super(generateMessage(clazz.getSimpleName(), bindingResult.getErrorCount()));
+        this.bindingResult = bindingResult;
     }
 
-    public InvalidRequestBodyException() {}
+    private static String generateMessage(String entity, int errorCount) {
+        return "There were " + errorCount + " error(s) saving the " + StringUtils.capitalize(entity);
+    }
+
+    public BindingResult getBindingResult() {
+        return bindingResult;
+    }
 }

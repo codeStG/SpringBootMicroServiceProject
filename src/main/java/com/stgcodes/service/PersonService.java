@@ -1,11 +1,9 @@
 package com.stgcodes.service;
 
 import com.stgcodes.criteria.PersonCriteria;
-import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.model.Person;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface PersonService {
     List<Person> findAll();

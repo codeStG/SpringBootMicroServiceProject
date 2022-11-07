@@ -1,8 +1,6 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Address;
-import com.stgcodes.utils.FieldFormatter;
-import com.stgcodes.validation.enums.GeographicState;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

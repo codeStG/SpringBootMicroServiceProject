@@ -47,30 +47,19 @@ public class PhoneServiceImpl implements PhoneService {
     public Phone findById(Long phoneId) {
         PhoneEntity phoneEntity = dao.findById(phoneId);
 
-        if(phoneEntity == null) {
-            log.info("ID " + phoneId + " does not exist");
-            throw new IdNotFoundException();
-        }
-
         return mapToModel(phoneEntity);
     }
 
     @Override
     public Phone save(Phone phone, Long personId) {
         PersonEntity personEntity = personDao.findById(personId);
+        isValidRequestBody(phone);
 
-        if(personEntity == null) {
-            log.info("ID " + personId + " does not exist");
-            throw new IdNotFoundException();
-        }
+        PhoneEntity phoneEntity = mapToEntity(phone);
+        personEntity.addPhone(phoneEntity);
+        PhoneEntity result = dao.save(phoneEntity);
 
-        if(isValidRequestBody(phone)) {
-            PhoneEntity phoneEntity = mapToEntity(phone);
-            personEntity.addPhone(phoneEntity);
-            return mapToModel(dao.save(phoneEntity));
-        }
-
-        throw new InvalidRequestBodyException();
+        return mapToModel(result);
     }
 
     @Override
@@ -119,13 +108,7 @@ public class PhoneServiceImpl implements PhoneService {
         validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
-            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-            messageSource.setBasename("ValidationMessages");
-
-            log.error(messageSource.getMessage("phone.invalid", null, Locale.US));
-            bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
-
-            return false;
+            throw new InvalidRequestBodyException(Phone.class, bindingResult);
         }
 
         return true;

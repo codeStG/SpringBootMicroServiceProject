@@ -4,15 +4,15 @@ import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -20,7 +20,8 @@ import org.springframework.validation.BindingResult;
 import javax.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.stgcodes.specifications.PersonSpecs.*;
 import static org.springframework.data.jpa.domain.Specification.where;
@@ -45,110 +46,43 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> findByCriteria(PersonCriteria criteria) {
-        try {
-            List<PersonEntity> found = dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
-                    .and(containsTextInLastName(criteria.getLastName()))
-                    .and(ofAge(criteria.getAge()))
-                    .and(ofGender(criteria.getGender())));
+        List<Person> result = new ArrayList<>();
+        dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
+                .and(containsTextInLastName(criteria.getLastName()))
+                .and(ofAge(criteria.getAge()))
+                .and(ofGender(criteria.getGender())))
+                .forEach(entity -> result.add(mapToModel(entity)));
 
-            List<Person> people = new ArrayList<>();
-            found.forEach(p -> people.add(mapToModel(p)));
-
-            return people;
-        } catch (IllegalArgumentException e) {
-            log.info("No people found with provided search criteria");
-            return Collections.emptyList();
-        }
+        return result;
     }
 
     @Override
     public Person findById(Long personId) {
-        PersonEntity personEntity = dao.findById(personId);
-
-        if(personEntity == null) {
-            log.info("ID " + personId + " does not exist");
-            throw new IdNotFoundException();
-        }
+        PersonEntity personEntity;
+        personEntity = dao.findById(personId);
 
         return mapToModel(personEntity);
     }
 
     @Override
-    public Optional<Person> save(Person person) {
-        if(isValidRequestBody(person)) {
-            PersonEntity personEntity = mapToEntity(person);
-            person.getPhones().forEach(p -> p.setPersonEntity(personEntity));
+    public Person save(Person person) {
+        isValidRequestBody(person);
 
-            return saveEntity(personEntity);
-        }
-
-        return Optional.empty();
+        return savePerson(person);
     }
 
-    private Optional<Person> saveEntity(PersonEntity pe) {
-        /**
-         * George - one school of thought on exception handling.
-         *
-         * My rule of thumb has been catch these types of cases at the service/domain level,
-         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
-         * perhaps by some specific error handler that displays the appropriate web page view
-         * based on exception types, etc.
-         *
-         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
-         *
-         */
-        Person savedPerson = null;
-
-        try {
-            PersonEntity result = dao.save(pe);
-            savedPerson = mapToModel(result);
-            return Optional.of(savedPerson);
-        }
-        catch(PersistenceException e) {
-            log.error("PersistenceException caught saving person - ", e);
-            return Optional.ofNullable(savedPerson);
-        }
-    }
-
-    @Override
-    public Person update(Person person, Long personId) {
-        List<PhoneEntity> phones = findById(personId).getPhones();
-
-        PersonEntity personEntity = mapToEntity(person);
-        personEntity.setPhones(phones);
-        personEntity.setPersonId(personId);
-
-        return mapToModel(dao.update(personEntity));
-    }
-
-    @Override
-    public void delete(Long personId) {
-        Person person = findById(personId);
-        dao.delete(mapToEntity(person));
-    }
-
-    private boolean isValidRequestBody(Person person) {
+    private void isValidRequestBody(Person person) {
         BindingResult bindingResult = new BindException(person, "person");
 
         cleanPerson(person);
         validator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors()) {
-            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-            messageSource.setBasename("ValidationMessages");
-
-            log.error(messageSource.getMessage("person.invalid", null, Locale.US));
-            bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
-
-            return false;
+            throw new InvalidRequestBodyException(Person.class, bindingResult);
         }
-
-        return true;
     }
 
     private void cleanPerson(Person person) {
-        FieldFormatter fieldFormatter = new FieldFormatter();
-
         /**
          * TODO: apache common StringUtils class provides a null safe way to handle trimming.
          * I recommend the String manipulation be done using the Apache Commons class
@@ -163,15 +97,58 @@ public class PersonServiceImpl implements PersonService {
         person.setEmail(StringUtils.trim(person.getEmail()));
     }
 
+    private Person savePerson(Person person) {
+        /**
+         * George - one school of thought on exception handling.
+         *
+         * My rule of thumb has been catch these types of cases at the service/domain level,
+         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
+         * perhaps by some specific error handler that displays the appropriate web page view
+         * based on exception types, etc.
+         *
+         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
+         *
+         */
+        PersonEntity personEntity = mapToEntity(person);
+        person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
+
+        PersonEntity result = dao.save(personEntity);
+
+        return mapToModel(result);
+    }
+
+    @Override
+    public Person update(Person person, Long personId) {
+        Person personToUpdate = findById(personId);
+        List<PhoneEntity> phones = personToUpdate.getPhones();
+        isValidRequestBody(person);
+
+        PersonEntity personEntity = mapToEntity(person);
+        personEntity.setPhones(phones);
+        personEntity.setPersonId(personId);
+
+        PersonEntity result = dao.update(personEntity);
+
+        return mapToModel(result);
+    }
+
+    @Override
+    public void delete(Long personId) {
+        Person person = findById(personId);
+        PersonEntity personEntity = mapToEntity(person);
+
+        dao.delete(personEntity);
+    }
+
     private int calculateAge(LocalDate dateOfBirth) {
         return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
-    public PersonEntity mapToEntity(Person person) {
+    private PersonEntity mapToEntity(Person person) {
         return PersonMapper.INSTANCE.personToPersonEntity(person);
     }
 
-    public Person mapToModel(PersonEntity personEntity) {
+    private Person mapToModel(PersonEntity personEntity) {
         return PersonMapper.INSTANCE.personEntityToPerson(personEntity);
     }
 }

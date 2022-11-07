@@ -1,6 +1,7 @@
 package com.stgcodes.validation;
 
 import com.stgcodes.model.Person;
+import lombok.NoArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -13,9 +14,10 @@ import static com.stgcodes.utils.constants.CustomMatchers.LETTER;
 import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
 
 @Component
+@NoArgsConstructor
 public class PersonValidator implements Validator {
 
-   private final Integer MAX_NAME_LENGTH = 25;
+    private static final Integer MAX_NAME_LENGTH = 25;
 
     @Override
     public boolean supports(Class<?> clazz) {

@@ -1,9 +1,10 @@
 package com.stgcodes.utils.sorting;
 
 import com.stgcodes.model.Person;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.assertj.core.api.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,7 @@ public class PersonComparatorTests {
 
     List<Person> people;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         people = new ArrayList<>();
 
@@ -65,7 +66,7 @@ public class PersonComparatorTests {
                 }
             }
 
-            Assert.assertTrue(result < 0);
+            Assertions.assertTrue(result < 0);
         }
     }
 }

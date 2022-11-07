@@ -10,14 +10,12 @@ import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.AddressValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Slf4j
 @Component("addressService")
@@ -41,22 +39,15 @@ public class AddressServiceImpl implements AddressService {
     public Address findById(Long addressId) {
         AddressEntity addressEntity = dao.findById(addressId);
 
-        if (addressEntity == null) {
-            log.info("ID " + addressId + " does not exist");
-            throw new IdNotFoundException();
-        }
-
         return mapToModel(addressEntity);
     }
 
     @Override
     public Address save(Address address) {
-        if(isValidRequestBody(address)) {
-            dao.save(mapToEntity(address));
-            return address;
-        }
+        AddressEntity addressEntity = mapToEntity(address);
+        AddressEntity result = dao.save(addressEntity);
 
-        throw new InvalidRequestBodyException();
+        return mapToModel(result);
     }
 
     @Override
@@ -100,13 +91,7 @@ public class AddressServiceImpl implements AddressService {
         validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
-            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-            messageSource.setBasename("ValidationMessages");
-
-            log.error(messageSource.getMessage("address.invalid", null, Locale.US));
-            bindingResult.getAllErrors().forEach(e -> log.info(messageSource.getMessage(e, Locale.US)));
-
-            return false;
+            throw new InvalidRequestBodyException(Address.class, bindingResult);
         }
 
         return true;

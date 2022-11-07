@@ -1,9 +1,22 @@
 package com.stgcodes.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.BindingResult;
 
-@ResponseStatus(value= HttpStatus.BAD_REQUEST, reason = "Request body contained invalid parameters")
 public class InvalidRequestBodyException extends RuntimeException {
 
+    private final BindingResult bindingResult;
+
+    public InvalidRequestBodyException(Class<?> clazz, BindingResult bindingResult) {
+        super(generateMessage(clazz.getSimpleName(), bindingResult.getErrorCount()));
+        this.bindingResult = bindingResult;
+    }
+
+    private static String generateMessage(String entity, int errorCount) {
+        return "There were " + errorCount + " error(s) saving the " + StringUtils.capitalize(entity);
+    }
+
+    public BindingResult getBindingResult() {
+        return bindingResult;
+    }
 }

@@ -1,9 +1,16 @@
 package com.stgcodes.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.apache.commons.lang3.StringUtils;
 
-@ResponseStatus(value= HttpStatus.BAD_REQUEST, reason = "ID does not exist")
 public class IdNotFoundException extends RuntimeException {
 
+    public IdNotFoundException(Class clazz, String id) {
+        super(generateMessage(clazz.getSimpleName(), id));
+    }
+
+    private static String generateMessage(String entity, String value) {
+        return StringUtils.capitalize(entity) +
+                " was not found with ID " +
+                value;
+    }
 }

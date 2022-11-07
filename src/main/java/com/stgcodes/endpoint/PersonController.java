@@ -1,6 +1,9 @@
 package com.stgcodes.endpoint;
 
 import com.stgcodes.criteria.PersonCriteria;
+import com.stgcodes.exception.DataAccessException;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
 import com.stgcodes.utils.sorting.PersonComparator;
@@ -12,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/people")
@@ -27,38 +29,31 @@ public class PersonController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {
-        Optional<List<Person>> people = service.findAll();
+        List<Person> people = service.findAll();
+        people.sort(new PersonComparator());
 
-        if(people.isPresent()) {
-            people.get().sort(new PersonComparator());
-            return new ResponseEntity<>(people.get(), HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @GetMapping(path = "/id")
-    public ResponseEntity<Person> getPerson(@RequestParam Long personId) {
-        Optional<Person> person = service.findById(personId);
-        return person.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity <List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
-        Optional<List<Person>> people = service.findByCriteria(criteria);
-        return people.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<List<Person>> searchForPeople(@RequestBody PersonCriteria criteria) {
+        List<Person> people = service.findByCriteria(criteria);
+        return new ResponseEntity<>(people, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/id")
+    public ResponseEntity<Person> getPerson(@RequestParam Long personId) throws IdNotFoundException {
+        return new ResponseEntity<>(service.findById(personId), HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
-    public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        Optional<Person> result = service.save(person);
-        return result.map(value -> new ResponseEntity<>(value, HttpStatus.CREATED)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    public ResponseEntity<Person> addPerson(@RequestBody Person person) throws InvalidRequestBodyException, DataAccessException {
+        return new ResponseEntity<>(service.save(person), HttpStatus.OK);
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) {
-        Optional<Person> refreshedPerson = service.update(person, personId);
-        return refreshedPerson.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) throws InvalidRequestBodyException, DataAccessException {
+        return new ResponseEntity<>(service.update(person, personId), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

@@ -4,6 +4,8 @@ import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.time.LocalDate;
@@ -13,7 +15,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PersonValidatorTests {
+class PersonValidatorTests {
 
     private Person person;
     private ValidatorTestUtils validatorTestUtils;
@@ -21,7 +23,7 @@ public class PersonValidatorTests {
     private List<String> errors;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         person = Person.builder()
                 .firstName("Bryan")
                 .lastName("Byard")
@@ -37,9 +39,10 @@ public class PersonValidatorTests {
         messageSource.setBasename("ValidationMessages");
     }
 
-    @Test
-    public void testValidFirstName() {
-        person.setFirstName("George");
+    @ParameterizedTest
+    @ValueSource(strings = {"George", "Bobbie", "Somerandomguy", "Frederick", "Thisisanacceptableinput", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"})
+    void testValidFirstName(String value) {
+        person.setFirstName(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -47,19 +50,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testLongFirstNameIsTruncatedToMakeValid() {
-        person.setFirstName("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testEmptyFirstNameIsInvalid() {
-        person.setFirstName("");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "G$%^&", "Ge0rge"})
+    void testInvalidFirstName(String value) {
+        person.setFirstName(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("name.format", null, Locale.US);
@@ -67,19 +61,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testFirstNameWithNonLetterCharacterIsInvalid() {
-        person.setFirstName("G3orge");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("name.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testValidLastName() {
-        person.setFirstName("Flores");
+    @ParameterizedTest
+    @ValueSource(strings = {"Flores", "Saskatchewan", "Somerandomlastname", "Areallyunnecesarilylonglastnamethatwillbetruncated"})
+    void testValidLastName(String value) {
+        person.setFirstName(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -87,19 +72,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testLongLastNameIsTruncatedToMakeValid() {
-        person.setLastName("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testEmptyLastNameIsInvalid() {
-        person.setLastName("");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "Fl0res", "$%^%&%&$%"})
+    void testInvalidLastName(String value) {
+        person.setLastName(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("name.format", null, Locale.US);
@@ -107,19 +83,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testLastNameWithNonLetterCharacterIsInvalid() {
-        person.setLastName("Flor3s");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("name.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testValidUsername() {
-        person.setUsername("Georgieboy");
+    @ParameterizedTest
+    @ValueSource(strings = {"geflores", "username", "this_is.acceptable", "sixchar", "Uptotwentyfivecharacterss"})
+    void testValidUsername(String value) {
+        person.setUsername(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -127,9 +94,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testUsernameTooLong() {
-        person.setUsername("George but make it too long");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "       ", "\n", "\t", "Georg", "Up to twenty six characters"})
+    void testInvalidUsername(String value) {
+        person.setUsername(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("username.format", null, Locale.US);
@@ -137,19 +105,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testUsernameTooShort() {
-        person.setUsername("Georg");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("username.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testValidDate() {
-        person.setDateOfBirth(LocalDate.parse("08/30/2022", DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+    @ParameterizedTest
+    @ValueSource(strings = {"2022-08-11", "1994-11-12", "1932-12-31", "2010-01-01"})
+    void testValidDate(String value) {
+        person.setDateOfBirth(LocalDate.parse(value, DateTimeFormatter.ISO_DATE));
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -157,9 +116,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testFutureDateIsInvalid() {
-        person.setDateOfBirth(LocalDate.parse("10/31/3200", DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+    @ParameterizedTest
+    @ValueSource(strings = {"3000-12-31", "2092-10-01", "3091-12-11", "4091-11-12"})
+    void testFutureDateInvalid(String value) {
+        person.setDateOfBirth(LocalDate.parse(value, DateTimeFormatter.ISO_DATE));
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("date.future", null, Locale.US);
@@ -167,9 +127,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testValidSocialSecurity() {
-        person.setSocialSecurityNumber("123-45-6789");
+    @ParameterizedTest
+    @ValueSource(strings = {"123-45-6789", "234-56-7890", "883-02-4509"})
+    void testValidSocialSecurity(String value) {
+        person.setSocialSecurityNumber(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -177,9 +138,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testInvalidSocialSecurityFormat() {
-        person.setSocialSecurityNumber("123456789");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "123456789", "234567890", "000-00-0000", "999-99-9999"})
+    void testInvalidSocialSecurity(String value) {
+        person.setSocialSecurityNumber(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("ssn.format", null, Locale.US);
@@ -187,9 +149,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testValidGender() {
-        person.setGender(Gender.MALE);
+    @ParameterizedTest
+    @ValueSource(strings = {"MALE", "FEMALE", "REFUSE"})
+    void testValidGender(String value) {
+        person.setGender(Gender.valueOf(value));
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -197,9 +160,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testValidEmail() {
-        person.setEmail("who@what.com");
+    @ParameterizedTest
+    @ValueSource(strings = {"someone@something.net", "aperson@thedomain.org", "what@who.net", "email@address.com"})
+    void testValidEmail(String value) {
+        person.setEmail(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -207,19 +171,10 @@ public class PersonValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testEmailWithoutAtSymbolInvalid() {
-        person.setEmail("who.com");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("email.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testEmailWithoutTopLevelDomainIsInvalid() {
-        person.setEmail("who@what");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "someone.net", "who@whatcom", "127.0.0.1"})
+    void testInvalidEmail(String value) {
+        person.setEmail(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("email.format", null, Locale.US);

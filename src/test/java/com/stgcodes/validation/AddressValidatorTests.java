@@ -3,7 +3,8 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.enums.GeographicState;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AddressValidatorTests {
+class AddressValidatorTests {
 
     private Address address;
     private ValidatorTestUtils validatorTestUtils;
@@ -33,9 +34,10 @@ public class AddressValidatorTests {
         messageSource.setBasename("ValidationMessages");
     }
 
-    @Test
-    public void testValidLineOne() {
-        address.setLineOne("1234 David St.");
+    @ParameterizedTest
+    @ValueSource(strings = {"1234 David St.", "111 Montgomery Rd.", "P.O. Box 893", "This is acceptable", "   384 Richard Ave.   "})
+    void testValidLineOne(String value) {
+        address.setLineOne(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -43,9 +45,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testEmptyLineOneIsInvalid() {
-        address.setLineOne("");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "Some Random Line One That Does Not Exist With A Bunch Of Lettersssssssssssss"})
+    void testInvalidLineOne(String value) {
+        address.setLineOne(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("lineone.format", null, Locale.US);
@@ -53,19 +56,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testLineOneTooLongIsInvalid() {
-        address.setLineOne("Some Random Line One That Does Not Exist With A Bunch Of Lettersssssssssssss");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("lineone.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testValidLineTwo() {
-        address.setLineTwo("Unit 4");
+    @ParameterizedTest
+    @ValueSource(strings = {"Unit 4", "Apt. 3", "No. 1", "   Unit 189   ", "This is acceptable input"})
+    void testValidLineTwo(String value) {
+        address.setLineTwo(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -73,9 +67,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testEmptyLineTwoIsInvalid() {
-        address.setLineTwo("");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "abcdefghijklmnopqrstuvwxyz"})
+    void testInvalidLineTwo(String value) {
+        address.setLineTwo(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("linetwo.format", null, Locale.US);
@@ -83,19 +78,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testLineTwoTooLongIsInvalid() {
-        address.setLineTwo("abcdefghijklmnopqrstuvwxyz");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("linetwo.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testValidCity() {
-        address.setCity("Austin");
+    @ParameterizedTest
+    @ValueSource(strings = {"Austin", "New York City", "Raleigh", "This is acceptable", "Miami"})
+    void testValidCity(String value) {
+        address.setCity(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -103,9 +89,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testEmptyCityIsInvalid() {
-        address.setCity("");
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "Village of Grosse Pointe Shores City, A Michigan City Plussssssssssssssssssssssss"})
+    void testEmptyCityIsInvalid(String value) {
+        address.setCity(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("city.format", null, Locale.US);
@@ -113,59 +100,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testCityTooLongIsInvalid() {
-        address.setCity("Village of Grosse Pointe Shores City, A Michigan City Plussssssssssssssssssssssss");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("city.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-//    @Test
-//    public void testValidStateName() {
-//        address.setState(GeographicState.TEXAS);
-//        errors = validatorTestUtils.getErrors();
-//
-//        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-//
-//        assertEquals(expected, errors.get(0));
-//    }
-//
-//    @Test
-//    public void testValidStateAbbreviation() {
-//        address.setState("Tx");
-//        errors = validatorTestUtils.getErrors();
-//
-//        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-//
-//        assertEquals(expected, errors.get(0));
-//    }
-//
-//    @Test
-//    public void testEmptyStateIsInvalid() {
-//        address.setState("");
-//        errors = validatorTestUtils.getErrors();
-//
-//        String expected = messageSource.getMessage("state.invalid", null, Locale.US);
-//
-//        assertEquals(expected, errors.get(0));
-//    }
-//
-//    @Test
-//    public void testInvalidState() {
-//        address.setState("Oklahom");
-//        errors = validatorTestUtils.getErrors();
-//
-//        String expected = messageSource.getMessage("state.invalid", null, Locale.US);
-//
-//        assertEquals(expected, errors.get(0));
-//    }
-
-    @Test
-    public void testValid5DigitZip() {
-        address.setZip("12345");
+    @ParameterizedTest
+    @ValueSource(strings = {"12345", "76017", "75052", "89013", "54321"})
+    void testValid5DigitZip(String value) {
+        address.setZip(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -173,9 +111,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testValid9DigitZip() {
-        address.setZip("12345-6789");
+    @ParameterizedTest
+    @ValueSource(strings = {"12345-6789", "76017-1234", "33101-0119", "27513-1100", "11385-9994"})
+    void testValid9DigitZip(String value) {
+        address.setZip(value);
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("errors.none", null, Locale.US);
@@ -183,39 +122,10 @@ public class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @Test
-    public void testEmptyZipIsInvalid() {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "\n", "\t", "7601", "12345-67890", "12345-678", "12345-6", "12345-", "12345-67", "1", "12", "123"})
+    void testEmptyZipIsInvalid() {
         address.setZip("");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("zip.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testZipLessThan5Digits() {
-        address.setZip("7601");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("zip.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testZipLongerThan9Digits() {
-        address.setZip("12345-67890");
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("zip.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @Test
-    public void testZipBetween5And9Digits() {
-        address.setZip("12345-678");
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("zip.format", null, Locale.US);

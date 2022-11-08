@@ -2,11 +2,9 @@ package com.stgcodes.service;
 
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.AddressMapper;
 import com.stgcodes.model.Address;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.AddressValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address save(Address address) {
+        isValidRequestBody(address);
         AddressEntity addressEntity = mapToEntity(address);
         AddressEntity result = dao.save(addressEntity);
 
@@ -53,12 +52,14 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address update(Address address, Long addressId) {
         findById(addressId);
+        isValidRequestBody(address);
 
         AddressEntity addressEntity = mapToEntity(address);
         addressEntity.setAddressId(addressId);
 
-        dao.update(addressEntity);
-        return address;
+        AddressEntity result = dao.update(addressEntity);
+
+        return mapToModel(result);
     }
 
     @Override
@@ -75,25 +76,13 @@ public class AddressServiceImpl implements AddressService {
         return AddressMapper.INSTANCE.addressEntityToAddress(addressEntity);
     }
 
-    private void cleanAddress(Address address) {
-        FieldFormatter fieldFormatter = new FieldFormatter();
-
-        address.setLineOne(address.getLineOne().trim());
-        address.setLineTwo(address.getLineTwo().trim());
-        address.setCity(address.getCity().trim());
-        address.setZip(fieldFormatter.separateBy(address.getZip(), "-"));
-    }
-
-    private boolean isValidRequestBody(Address address) {
+    private void isValidRequestBody(Address address) {
         BindingResult bindingResult = new BindException(address, "address");
 
-        cleanAddress(address);
         validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
             throw new InvalidRequestBodyException(Address.class, bindingResult);
         }
-
-        return true;
     }
 }

@@ -68,7 +68,7 @@ public enum GeographicState {
     
     private final String abbreviation;
 
-    private static final Map<String, GeographicState> GEOGRAPHIC_STATES_BY_ABBR = new HashMap<String, GeographicState>();
+    private static final Map<String, GeographicState> GEOGRAPHIC_STATES_BY_ABBR = new HashMap<>();
 
     /* static initializer */
     static {

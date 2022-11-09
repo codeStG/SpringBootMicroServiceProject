@@ -41,19 +41,15 @@ public class ApiError {
         subErrors.add(new ApiSubError(object, field, rejectedValue, message));
     }
 
-    private void addSubError(String object, String message) {
-        subErrors.add(new ApiSubError(object, message));
-    }
-
     private void addSubError(FieldError fieldError) {
         String errorCode = fieldError.getCode();
-        String message = errorCode != null ? messageSource.getMessage(errorCode, null, Locale.US) : fieldError.getDefaultMessage();
+        String errorMessage = errorCode != null ? messageSource.getMessage(errorCode, null, Locale.US) : fieldError.getDefaultMessage();
 
         this.addSubError(
                 fieldError.getObjectName(),
                 fieldError.getField(),
                 fieldError.getRejectedValue(),
-                message);
+                errorMessage);
     }
 
     public void addSubErrors(List<FieldError> fieldErrors) {

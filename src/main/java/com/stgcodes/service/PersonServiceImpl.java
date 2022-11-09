@@ -4,20 +4,16 @@ import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exception.DataAccessException;
-import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
-import javax.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -74,27 +70,13 @@ public class PersonServiceImpl implements PersonService {
     private void isValidRequestBody(Person person) {
         BindingResult bindingResult = new BindException(person, "person");
 
-        cleanPerson(person);
         validator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors()) {
             throw new InvalidRequestBodyException(Person.class, bindingResult);
         }
-    }
 
-    private void cleanPerson(Person person) {
-        /**
-         * TODO: apache common StringUtils class provides a null safe way to handle trimming.
-         * I recommend the String manipulation be done using the Apache Commons class
-         * (the dependency is already defined in the pom file)
-         */
-
-        person.setFirstName(StringUtils.trim(person.getFirstName()));
-        person.setLastName(StringUtils.trim(person.getLastName()));
-        person.setUsername(StringUtils.trim(person.getUsername()));
         person.setAge(calculateAge(person.getDateOfBirth()));
-        person.setSocialSecurityNumber(StringUtils.trim(person.getSocialSecurityNumber()));
-        person.setEmail(StringUtils.trim(person.getEmail()));
     }
 
     private Person savePerson(Person person) {

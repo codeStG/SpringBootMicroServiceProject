@@ -4,23 +4,19 @@ import com.stgcodes.dao.PersonDao;
 import com.stgcodes.dao.PhoneDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.IllegalPhoneDeletionException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
-import com.stgcodes.utils.FieldFormatter;
 import com.stgcodes.validation.PhoneValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Slf4j
 @Component("phoneService")
@@ -94,24 +90,14 @@ public class PhoneServiceImpl implements PhoneService {
         return PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
     }
 
-    private void cleanPhone(Phone phone) {
-        FieldFormatter fieldFormatter = new FieldFormatter();
-
-        phone.setPhoneNumber(phone.getPhoneNumber().trim());
-        phone.setPhoneType(fieldFormatter.formatAsEnum(phone.getPhoneType()));
-    }
-
-    private boolean isValidRequestBody(Phone phone) {
+    private void isValidRequestBody(Phone phone) {
         BindingResult bindingResult = new BindException(phone, "phone");
 
-        cleanPhone(phone);
         validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
             throw new InvalidRequestBodyException(Phone.class, bindingResult);
         }
-
-        return true;
     }
 
     private boolean personHasMoreThanOnePhone(Long phoneId) {

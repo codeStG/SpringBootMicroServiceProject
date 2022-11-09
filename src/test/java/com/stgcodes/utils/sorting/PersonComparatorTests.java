@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PersonComparatorTests {
+class PersonComparatorTests {
 
     List<Person> people;
 
@@ -48,7 +48,7 @@ public class PersonComparatorTests {
     }
 
     @Test
-    public void testPeopleSortedByFirstNameAscending() {
+    void testPeopleSortedByFirstNameAscending() {
         Collections.shuffle(people);
         people.sort(new PersonComparator());
 

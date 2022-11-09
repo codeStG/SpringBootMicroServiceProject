@@ -10,8 +10,7 @@ import org.springframework.validation.Validator;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
-import static com.stgcodes.utils.constants.CustomMatchers.LETTER;
-import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
+import static com.stgcodes.utils.constants.CustomMatchers.*;
 
 @Component
 @NoArgsConstructor
@@ -61,7 +60,7 @@ public class PersonValidator implements Validator {
     }
 
     private void validateUsername(String username, Errors errors) {
-        if (username.length() < 6 || username.length() > MAX_NAME_LENGTH) {
+        if (!username.matches(USERNAME)) {
             errors.rejectValue("username", "username.format");
         }
     }

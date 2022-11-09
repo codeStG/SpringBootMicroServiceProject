@@ -51,16 +51,14 @@ public class PersonController {
         return new ResponseEntity<>(service.save(person), HttpStatus.CREATED);
     }
 
-    //TODO: Look into appropraite HttpStatus code
     @PutMapping(path = "/update")
     public ResponseEntity<Person> updatePerson(@RequestBody Person person, @RequestParam Long personId) throws InvalidRequestBodyException, DataAccessException {
         return new ResponseEntity<>(service.update(person, personId), HttpStatus.OK);
     }
 
-    //TODO: Look into appropraite HttpStatus code
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Person> deletePerson(@RequestParam Long personId) {
         service.delete(personId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

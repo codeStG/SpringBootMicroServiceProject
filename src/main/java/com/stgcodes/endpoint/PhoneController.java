@@ -37,7 +37,7 @@ public class PhoneController {
     @PutMapping(path = "/add")
     public ResponseEntity<Phone> addPhone(@RequestBody Phone phone, @RequestParam Long personId) {
         Phone refreshedPhone = service.save(phone, personId);
-        return new ResponseEntity<>(refreshedPhone, HttpStatus.OK);
+        return new ResponseEntity<>(refreshedPhone, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/update")
@@ -49,6 +49,6 @@ public class PhoneController {
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Phone> deletePhone(@RequestParam Long phoneId) {
         service.delete(phoneId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

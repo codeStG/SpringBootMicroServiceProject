@@ -37,7 +37,7 @@ public class AddressController {
     @PutMapping(path = "/add")
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
         service.save(address);
-        return new ResponseEntity<>(address, HttpStatus.OK);
+        return new ResponseEntity<>(address, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/update")
@@ -49,6 +49,6 @@ public class AddressController {
     @DeleteMapping(path = "/remove")
     public ResponseEntity<Address> deleteAddress(@RequestParam Long addressId) {
         service.delete(addressId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

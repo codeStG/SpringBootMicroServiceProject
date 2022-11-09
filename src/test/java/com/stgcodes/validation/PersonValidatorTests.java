@@ -3,7 +3,6 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ResourceBundleMessageSource;

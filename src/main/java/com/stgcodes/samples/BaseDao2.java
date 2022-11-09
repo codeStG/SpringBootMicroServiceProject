@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseDao2<T extends Serializable> {
+public abstract class BaseDao2<T> {
 
     @Autowired
     private SessionFactory factory;

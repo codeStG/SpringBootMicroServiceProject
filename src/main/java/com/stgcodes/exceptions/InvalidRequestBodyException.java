@@ -5,7 +5,7 @@ import org.springframework.validation.BindingResult;
 
 public class InvalidRequestBodyException extends RuntimeException {
 
-    private final BindingResult bindingResult;
+    private final transient BindingResult bindingResult;
 
     public InvalidRequestBodyException(Class<?> clazz, BindingResult bindingResult) {
         super(generateMessage(clazz.getSimpleName(), bindingResult.getErrorCount()));

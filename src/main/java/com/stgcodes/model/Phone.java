@@ -1,6 +1,7 @@
 package com.stgcodes.model;
 
 import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.validation.enums.PhoneType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,13 +9,7 @@ import lombok.Data;
 @Builder
 public class Phone {
     private Long phoneId;
-    enum PhoneType {
-        MOBILE,
-        HOME,
-        BUSINESS
-    }
-
     private String phoneNumber;
-    private String phoneType;
+    private PhoneType phoneType;
     private PersonEntity personEntity;
 }

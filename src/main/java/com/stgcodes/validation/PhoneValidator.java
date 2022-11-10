@@ -21,20 +21,11 @@ public class PhoneValidator implements Validator {
         Phone phone = (Phone) target;
 
         validatePhoneNumber(phone.getPhoneNumber(), errors);
-        validatePhoneType(phone.getPhoneType(), errors);
     }
 
     private void validatePhoneNumber(String phoneNumber, Errors errors) {
         if (!phoneNumber.matches(US_PHONE)) {
             errors.rejectValue("phoneNumber", "phonenumber.format");
-        }
-    }
-
-    private void validatePhoneType(String phoneType, Errors errors) {
-        try {
-            PhoneType.valueOf(phoneType);
-        } catch (IllegalArgumentException e) {
-            errors.rejectValue("phoneType", "phonetype.format");
         }
     }
 }

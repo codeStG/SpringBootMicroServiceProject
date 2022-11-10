@@ -1,6 +1,7 @@
 package com.stgcodes.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.stgcodes.validation.enums.PhoneType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,8 +29,9 @@ public class PhoneEntity {
     @Column(name = "phone_number", nullable = false, length = 12, unique = true)
     private String phoneNumber;
 
-    @Column(name = "phone_type", nullable = false, length = 8)
-    private String phoneType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "phone_type", nullable = false)
+    private PhoneType phoneType;
 
     @JsonIgnore
     @ToString.Exclude

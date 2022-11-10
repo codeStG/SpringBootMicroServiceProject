@@ -1,7 +1,6 @@
 package com.stgcodes.utils.sorting;
 
 import com.stgcodes.model.Person;
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

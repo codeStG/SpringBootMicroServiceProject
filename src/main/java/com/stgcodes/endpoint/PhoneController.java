@@ -1,5 +1,8 @@
 package com.stgcodes.endpoint;
 
+import com.stgcodes.exception.DataAccessException;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Phone;
 import com.stgcodes.service.PhoneService;
 import com.stgcodes.validation.PhoneValidator;
@@ -24,26 +27,22 @@ public class PhoneController {
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Phone>> getAllPhones() {
-        List<Phone> phones = service.findAll();
-        return new ResponseEntity<>(phones, HttpStatus.OK);
+        return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/id")
-    public ResponseEntity<Phone> getPhone(@RequestParam Long phoneId) {
-        Phone phone = service.findById(phoneId);
-        return new ResponseEntity<>(phone, HttpStatus.OK);
+    public ResponseEntity<Phone> getPhone(@RequestParam Long phoneId) throws IdNotFoundException {
+        return new ResponseEntity<>(service.findById(phoneId), HttpStatus.OK);
     }
 
     @PutMapping(path = "/add")
-    public ResponseEntity<Phone> addPhone(@RequestBody Phone phone, @RequestParam Long personId) {
-        Phone refreshedPhone = service.save(phone, personId);
-        return new ResponseEntity<>(refreshedPhone, HttpStatus.CREATED);
+    public ResponseEntity<Phone> addPhone(@RequestBody Phone phone, @RequestParam(defaultValue = "-1") Long personId) throws InvalidRequestBodyException, IdNotFoundException, DataAccessException {
+        return new ResponseEntity<>(service.save(phone, personId), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<Phone> updatePhone(@RequestBody Phone phone, @RequestParam Long phoneId) {
-        Phone refreshedPhone = service.update(phone, phoneId);
-        return new ResponseEntity<>(refreshedPhone, HttpStatus.OK);
+    public ResponseEntity<Phone> updatePhone(@RequestBody Phone phone, @RequestParam Long phoneId) throws InvalidRequestBodyException, IdNotFoundException, DataAccessException {
+        return new ResponseEntity<>(service.update(phone, phoneId), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/remove")

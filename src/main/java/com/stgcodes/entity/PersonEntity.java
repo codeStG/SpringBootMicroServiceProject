@@ -49,7 +49,7 @@ public class PersonEntity {
     private String socialSecurityNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
     @Column(name = "email", nullable = false, unique = true)

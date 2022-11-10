@@ -23,6 +23,7 @@ public class AddressValidator implements Validator {
         validateLineOne(address.getLineOne(), errors);
         validateLineTwo(address.getLineTwo(), errors);
         validateCity(address.getCity(), errors);
+        ValidationUtils.rejectIfEmpty(errors, "state", "state.invalid");
         validateZip(address.getZip(), errors);
     }
 

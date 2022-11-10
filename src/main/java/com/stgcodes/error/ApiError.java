@@ -37,7 +37,7 @@ public class ApiError {
     }
 
 
-    private void addSubError(String object, String field, Object rejectedValue, String message) {
+    public void addSubError(String object, String field, Object rejectedValue, String message) {
         subErrors.add(new ApiSubError(object, field, rejectedValue, message));
     }
 

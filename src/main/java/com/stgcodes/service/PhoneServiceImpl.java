@@ -96,6 +96,7 @@ public class PhoneServiceImpl implements PhoneService {
         validator.validate(phone, bindingResult);
 
         if(bindingResult.hasErrors()) {
+            log.error(bindingResult.toString());
             throw new InvalidRequestBodyException(Phone.class, bindingResult);
         }
     }

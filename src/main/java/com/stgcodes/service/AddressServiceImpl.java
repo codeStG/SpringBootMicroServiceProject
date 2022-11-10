@@ -82,6 +82,7 @@ public class AddressServiceImpl implements AddressService {
         validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
+            log.error(bindingResult.toString());
             throw new InvalidRequestBodyException(Address.class, bindingResult);
         }
     }

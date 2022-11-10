@@ -4,6 +4,7 @@ import com.stgcodes.error.ApiError;
 import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Arrays;
+
 import static org.springframework.http.HttpStatus.*;
 
+@Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class ExceptionController extends ResponseEntityExceptionHandler {
@@ -26,6 +30,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
         String error = "Malformed JSON request";
         ApiError apiError = new ApiError(BAD_REQUEST, error);
 
+        log.error(ex.getMessage());
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 

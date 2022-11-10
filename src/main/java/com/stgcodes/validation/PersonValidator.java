@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ public class PersonValidator implements Validator {
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
+        ValidationUtils.rejectIfEmpty(errors, "gender", "gender.format");
         validateEmail(person.getEmail(), errors);
     }
 

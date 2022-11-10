@@ -7,6 +7,7 @@ import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
+import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> findAll() {
         List<Person> people = new ArrayList<>();
         dao.findAll().forEach(e -> people.add(mapToModel(e)));
+        people.sort(new PersonComparator());
 
         return people;
     }
@@ -48,6 +50,8 @@ public class PersonServiceImpl implements PersonService {
                 .and(ofAge(criteria.getAge()))
                 .and(ofGender(criteria.getGender())))
                 .forEach(entity -> result.add(mapToModel(entity)));
+
+        result.sort(new PersonComparator());
 
         return result;
     }
@@ -73,6 +77,7 @@ public class PersonServiceImpl implements PersonService {
         validator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors()) {
+            log.error(bindingResult.toString());
             throw new InvalidRequestBodyException(Person.class, bindingResult);
         }
 

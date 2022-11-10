@@ -38,6 +38,7 @@ public abstract class DaoImpl<T> implements Dao<T> {
         T t = entityManager.find(type, id);
 
         if(t == null) {
+            log.warn("The ID provided does not exist - " + id);
             throw new IdNotFoundException(type, id.toString());
         }
 

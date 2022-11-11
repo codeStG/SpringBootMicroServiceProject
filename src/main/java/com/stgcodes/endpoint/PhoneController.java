@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/phones")
-@Slf4j
 public class PhoneController {
 
     @Autowired

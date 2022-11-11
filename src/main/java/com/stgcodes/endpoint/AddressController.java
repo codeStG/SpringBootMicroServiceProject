@@ -6,7 +6,6 @@ import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Address;
 import com.stgcodes.service.AddressService;
 import com.stgcodes.validation.AddressValidator;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/addresses")
-@Slf4j
 public class AddressController {
 
     @Autowired

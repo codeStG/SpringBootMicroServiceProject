@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -106,12 +105,4 @@ class AddressControllerTests {
 		
 		Assertions.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
 	}
-	
-//    @Test
-//    void shouldPassVerification() {
-//        when()
-//            .get("http://localhost:8081/addresses/all")
-//        .then()
-//            .statusCode(200);
-//    }
 }

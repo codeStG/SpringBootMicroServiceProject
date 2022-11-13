@@ -1,5 +1,6 @@
 package com.stgcodes.validation;
 
+import com.stgcodes.model.Address;
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PersonValidatorTests {
 
@@ -38,6 +40,14 @@ class PersonValidatorTests {
         messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
     }
+    
+    @Test
+    void testValidatorSupportsPerson() {
+    	PersonValidator validator = new PersonValidator();
+
+    	assertTrue(validator.supports(Person.class));
+    }
+
 
     @ParameterizedTest
     @ValueSource(strings = {"George", "Bobbie", "Somerandomguy", "Frederick", "Thisisanacceptableinput", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"})

@@ -1,8 +1,10 @@
 package com.stgcodes.validation;
 
+import com.stgcodes.model.Person;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.enums.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class PhoneValidatorTests {
@@ -31,6 +34,13 @@ class PhoneValidatorTests {
         validatorTestUtils = new ValidatorTestUtils(new PhoneValidator(), phone);
         messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
+    }
+    
+    @Test
+    void testValidatorSupportsPhone() {
+    	PhoneValidator validator = new PhoneValidator();
+
+    	assertTrue(validator.supports(Phone.class));
     }
 
     @ParameterizedTest

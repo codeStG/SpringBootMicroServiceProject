@@ -39,10 +39,10 @@ class PersonComparatorTests {
                 .build());
 
         people.add(Person.builder()
-                .firstName("Ritchie")
+                .firstName("Lionel")
                 .lastName("Montgomery")
-                .username("rimontgom")
-                .email("rimontgom@hotmail.com")
+                .username("liomontgom")
+                .email("liomontgom@hotmail.com")
                 .build());
     }
 

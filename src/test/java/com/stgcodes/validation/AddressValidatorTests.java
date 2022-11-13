@@ -67,10 +67,8 @@ class AddressValidatorTests {
         assertEquals(expected, errors.get(0));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", "   ", "\n", "\t", "abcdefghijklmnopqrstuvwxyz"})
-    void testInvalidLineTwo(String value) {
-        address.setLineTwo(value);
+    void testInvalidLineTwo() {
+        address.setLineTwo("abcdefghijklmnopqrstuvwxyz");
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("linetwo.format", null, Locale.US);

@@ -36,9 +36,7 @@ public class AddressValidator implements Validator {
     }
 
     private void validateLineTwo(String lineTwo, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lineTwo", "linetwo.format");
-
-        if (lengthIsInvalid(1, 25, lineTwo)) {
+        if (lineTwo.length() > 25) {
             errors.rejectValue("lineTwo", "linetwo.format");
         }
     }

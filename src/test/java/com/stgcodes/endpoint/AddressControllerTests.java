@@ -1,67 +1,65 @@
 package com.stgcodes.endpoint;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.stgcodes.dao.AddressDao;
+import com.stgcodes.entity.AddressEntity;
+import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.enums.GeographicState;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest()
+@AutoConfigureMockMvc
 class AddressControllerTests {
-
-	@LocalServerPort
-	private int port;
 	
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private MockMvc mockMvc;
 	
-	private static Address testAddress;
+	@Autowired
+	private ObjectMapper objectMapper;
 	
-	@BeforeAll
-	static void setup() {
-		testAddress = Address.builder()
-				.addressId(1L)
-				.lineOne("1234 Davis St.")
-				.lineTwo("Apt. 1")
-				.city("Grand Prairie")
-				.state(GeographicState.TX)
-				.zip("75052")
-				.build();
-	}
+	@Autowired
+	private AddressDao addressDao;
 	
 	@Test
-	void getAllShouldReturnListOfAddresses() {
-		ResponseEntity<List<Address>> responseEntity = restTemplate.exchange("http://localhost:" + port + "/addresses/all", HttpMethod.GET, null, new ParameterizedTypeReference<List<Address>>() {});
-
-		List<Address> addresses = responseEntity.getBody();
+	void getAllShouldReturnListOfAddresses() throws Exception {
+		List<AddressEntity> addressEntities = addressDao.findAll();
+		String json = new Gson().toJson(addressEntities);
 		
-		Assertions.assertEquals(testAddress, addresses.get(0));
+		mockMvc.perform(get("/addresses/all"))
+				.andExpect(content().json(json))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void getByIdShouldReturnAddress() {
-		ResponseEntity<Address> responseEntity = restTemplate.exchange("http://localhost:" + port + "/addresses/id?addressId=1", HttpMethod.GET, null, new ParameterizedTypeReference<Address>() {});
-
-		Address address = responseEntity.getBody();
+	void getByIdShouldReturnAddress() throws Exception {
+		Long testId = 1L;
+		AddressEntity addressEntity = addressDao.findById(testId);
+		String json = new Gson().toJson(addressEntity);
 		
-		Assertions.assertEquals(testAddress, address);
+		mockMvc.perform(get("/addresses/id?addressId=" + testId))
+				.andExpect(content().json(json))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void addAddressShouldReturnCreatedAddress() {
+	void addAddressShouldReturnCreatedAddress() throws Exception {
 		Address newAddress = Address.builder()
 				.lineOne("Random Rd.")
 				.lineTwo("Unit 42")
@@ -70,39 +68,44 @@ class AddressControllerTests {
 				.zip("98101")
 				.build();
 		
-		HttpEntity<Address> requestEntity = new HttpEntity<>(newAddress);
-		
-		ResponseEntity<Address> responseEntity = restTemplate.exchange("http://localhost:" + port + "/addresses/add", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<Address>() {});
-
-		Address address = responseEntity.getBody();
-
-		/** TODO: possibly implement searchability and then change this to use the AddressService
-		 *  to search for the newly created Address (the service.searchBy() call should be
-		 *  the expected argument)
-		**/
-		newAddress.setAddressId(address.getAddressId());
-		
-		Assertions.assertEquals(newAddress, address);
+		List<AddressEntity> addresses = addressDao.findAll();
+		Long addressId = (long) addresses.size() + 1;
+				
+		mockMvc.perform(put("/addresses/add")
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(newAddress)))
+				.andExpect(content().json(new Gson().toJson(addressDao.findById(addressId))))
+				.andExpect(status().isCreated());
 	}
 	
 	@Test
-	void updateAddressShouldReturnUpdatedAddress() {
-		testAddress.setLineOne("Different Rd.");
-		testAddress.setLineTwo("No. 24");
+	void updateAddressShouldReturnUpdatedAddress() throws Exception {
+		Address addressToUpdate = Address.builder()
+				.addressId(2L)
+				.lineOne("New Ave.")
+				.lineTwo("")
+				.city("Rockwall")
+				.state(GeographicState.TX)
+				.zip("75032")
+				.build();
 		
-		HttpEntity<Address> requestEntity = new HttpEntity<>(testAddress);
-		ResponseEntity<Address> responseEntity = restTemplate.exchange("http://localhost:" + port + "/addresses/update?addressId=1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<Address>() {});
-	
-		Address address = responseEntity.getBody();
+		String json = new Gson().toJson(addressToUpdate);
 		
-		Assertions.assertEquals(testAddress, address);
+		mockMvc.perform(put("/addresses/update?addressId=2")
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(addressToUpdate)))
+				.andDo(print())
+				.andExpect(content().json(json))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void deleteAddressShouldRemoveAddressFromDatabase() {
-		restTemplate.exchange("http://localhost:" + port + "/addresses/remove?addressId=1", HttpMethod.DELETE, null, new ParameterizedTypeReference<Address>() {});
-		ResponseEntity<Address> responseEntity = restTemplate.exchange("http://localhost:" + port + "/addresses/id?addressId=1", HttpMethod.GET, null, new ParameterizedTypeReference<Address>() {});
+	void deleteAddressShouldRemoveAddressFromDatabase() throws Exception {
+		Long testId = 3L;
 		
-		Assertions.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		mockMvc.perform(delete("/addresses/remove?addressId=" + testId))
+				.andExpect(status().isNoContent());
+		
+		assertThrows(IdNotFoundException.class, () -> addressDao.findById(3L));
 	}
 }

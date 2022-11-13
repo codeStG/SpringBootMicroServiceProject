@@ -3,6 +3,7 @@ package com.stgcodes.validation;
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -80,6 +81,14 @@ class PersonValidatorTests {
         String expected = messageSource.getMessage("name.format", null, Locale.US);
 
         assertEquals(expected, errors.get(0));
+    }
+    
+    @Test
+    void testLongLastNameIsTruncated() {
+        person.setLastName("ThisIsAnExceptionallyLongLastName");
+        errors = validatorTestUtils.getErrors();
+
+        assertEquals(25, person.getLastName().length());
     }
 
     @ParameterizedTest

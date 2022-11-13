@@ -1,8 +1,5 @@
 package com.stgcodes.validation.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum GeographicState {
 
     AL("Alabama", "AL"),
@@ -68,14 +65,6 @@ public enum GeographicState {
     
     private final String abbreviation;
 
-    private static final Map<String, GeographicState> GEOGRAPHIC_STATES_BY_ABBR = new HashMap<>();
-
-    /* static initializer */
-    static {
-        for (GeographicState geographicState : values()) {
-            GEOGRAPHIC_STATES_BY_ABBR.put(geographicState.getAbbreviation(), geographicState);
-        }
-    }
     
     GeographicState(String name, String abbreviation) {
         this.name = name;
@@ -86,9 +75,6 @@ public enum GeographicState {
         return abbreviation;
     }
     
-    public static GeographicState valueOfAbbreviation(String abbr) {
-        return GEOGRAPHIC_STATES_BY_ABBR.get(abbr);
-    }
 
     public static GeographicState valueOfName(String name) {
         try {
@@ -96,10 +82,6 @@ public enum GeographicState {
         } catch (IllegalArgumentException e) {
             return null;
         }
-    }
-
-    public static boolean isAState(String abbrOrName) {
-        return valueOfAbbreviation(abbrOrName) != null || valueOfName(abbrOrName) != null;
     }
 
     @Override

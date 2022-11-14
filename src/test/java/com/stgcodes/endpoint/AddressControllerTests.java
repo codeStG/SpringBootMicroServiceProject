@@ -2,9 +2,13 @@ package com.stgcodes.endpoint;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;
@@ -33,33 +36,20 @@ class AddressControllerTests {
 	private MockMvc mockMvc;
 	
 	@Autowired
-	private ObjectMapper objectMapper;
-	
-	@Autowired
 	private AddressDao addressDao;
 	
-	private Address validAddress;
-	private Address invalidAddress;
+	private Address testAddress;
 	private ResourceBundleMessageSource messageSource;
 	
 	@BeforeEach
 	void setup() {
-		validAddress = Address.builder()
+		testAddress = Address.builder()
 				.lineOne("Random Rd.")
 				.lineTwo("Unit 42")
 				.city("Seattle")
 				.state(GeographicState.WA)
 				.zip("98101")
 				.build();
-		
-		invalidAddress = Address.builder()
-				.lineOne("")
-				.lineTwo("abcdefghijklmnopqrstuvwxyz")
-				.city("")
-				.state(null)
-				.zip("981")
-				.build();
-	
 		
 		messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
@@ -100,19 +90,23 @@ class AddressControllerTests {
 	void addAddressShouldReturnCreatedAddress() throws Exception {
 		List<AddressEntity> addresses = addressDao.findAll();
 		Long addressId = (long) addresses.size() + 1;
-				
+		String json = new Gson().toJson(testAddress);
+		
 		mockMvc.perform(put("/addresses/add")
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(validAddress)))
+				.content(json))
 				.andExpect(content().json(new Gson().toJson(addressDao.findById(addressId))))
 				.andExpect(status().isCreated());
 	}
 	
 	@Test
 	void addAddressShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
+		invalidateTestAddress();
+		String json = new Gson().toJson(testAddress);
+		
 		mockMvc.perform(put("/addresses/add")
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(invalidAddress)))
+				.content(json))
 				.andExpect(jsonPath("$.subErrors[0].message", is(messageSource.getMessage("lineone.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[1].message", is(messageSource.getMessage("linetwo.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[2].message", is(messageSource.getMessage("city.format", null, Locale.US))))
@@ -123,35 +117,39 @@ class AddressControllerTests {
 	
 	@Test
 	void addAddressShouldReturnInternalErrorIfIdExists() throws Exception {
-		validAddress.setAddressId(1L);
+		testAddress.setAddressId(1L);
+		String json = new Gson().toJson(testAddress);
 		
 		mockMvc.perform(put("/addresses/add")
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(validAddress)))
-				.andExpect(status().isBadRequest());
+				.content(json))
+				.andExpect(jsonPath("$.message", is("Encountered an error while attempting to save")))
+				.andExpect(status().isInternalServerError());
 	}
 	
 	@Test
-	void updateAddressShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
-		validAddress.setAddressId(2L);
+	void updateAddressShouldReturnUpdatedAddress() throws Exception {
+		testAddress.setAddressId(2L);
 		
-		String json = new Gson().toJson(validAddress);
+		String json = new Gson().toJson(testAddress);
 		
 		mockMvc.perform(put("/addresses/update?addressId=2")
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(validAddress)))
-				.andDo(print())
+				.content(json))
 				.andExpect(content().json(json))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void updateAddressShouldReturnUpdatedAddress() throws Exception {
-		invalidAddress.setAddressId(2L);
+	void updateAddressShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
+		testAddress.setAddressId(2L);
+		invalidateTestAddress();
+		
+		String json = new Gson().toJson(testAddress);
 
 		mockMvc.perform(put("/addresses/update?addressId=2")
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(invalidAddress)))
+				.content(json))
 				.andExpect(jsonPath("$.subErrors[0].message", is(messageSource.getMessage("lineone.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[1].message", is(messageSource.getMessage("linetwo.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[2].message", is(messageSource.getMessage("city.format", null, Locale.US))))
@@ -177,5 +175,13 @@ class AddressControllerTests {
 		mockMvc.perform(delete("/addresses/remove?addressId=" + testId))
 				.andExpect(jsonPath("$.message", is("AddressEntity was not found with ID " + testId)))
 				.andExpect(status().isNotFound());
+	}
+	
+	void invalidateTestAddress() {
+		testAddress.setLineOne("");
+		testAddress.setLineTwo("abcdefghijklmnopqrstuvwxyz");
+		testAddress.setCity("");
+		testAddress.setState(null);
+		testAddress.setZip("981");
 	}
 }

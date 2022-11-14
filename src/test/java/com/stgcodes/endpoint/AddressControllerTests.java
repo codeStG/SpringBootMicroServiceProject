@@ -61,7 +61,6 @@ class AddressControllerTests {
 		String json = new Gson().toJson(addressEntities);
 		
 		mockMvc.perform(get("/addresses/all"))
-				.andDo(print())
 				.andExpect(content().json(json))
 				.andExpect(status().isOk());
 	}
@@ -69,10 +68,9 @@ class AddressControllerTests {
 	@Test
 	void getByIdShouldReturnAddress() throws Exception {
 		Long testId = 1L;
-		AddressEntity addressEntity = addressDao.findById(testId);
-		String json = new Gson().toJson(addressEntity);
+		String json = new Gson().toJson(addressDao.findById(testId));
 		
-		mockMvc.perform(get("/addresses/id?addressId=" + testId))
+		mockMvc.perform(get("/addresses/id?addressId={testId}", testId))
 				.andExpect(content().json(json))
 				.andExpect(status().isOk());
 	}
@@ -88,8 +86,7 @@ class AddressControllerTests {
 	
 	@Test
 	void addAddressShouldReturnCreatedAddress() throws Exception {
-		List<AddressEntity> addresses = addressDao.findAll();
-		Long addressId = (long) addresses.size() + 1;
+		Long addressId = (long) addressDao.findAll().size() + 1;
 		String json = new Gson().toJson(testAddress);
 		
 		mockMvc.perform(put("/addresses/add")

@@ -30,7 +30,7 @@ public class AddressValidator implements Validator {
     private void validateLineOne(String lineOne, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lineOne", "lineone.format");
 
-        if (lengthIsInvalid(1, 75, lineOne)) {
+        if (lineOne.length() > 75) {
             errors.rejectValue("lineOne", "lineone.format");
         }
     }
@@ -44,7 +44,7 @@ public class AddressValidator implements Validator {
     private void validateCity(String city, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "city.format");
 
-        if (lengthIsInvalid(1, 75, city)) {
+        if (city.length() > 75) {
             errors.rejectValue("city", "city.format");
         }
     }
@@ -55,9 +55,5 @@ public class AddressValidator implements Validator {
         if (!zip.matches(US_ZIP_CODE)) {
             errors.rejectValue("zip", "zip.format");
         }
-    }
-
-    private boolean lengthIsInvalid(int min, int max, String value) {
-        return value.length() < min || value.length() > max;
     }
 }

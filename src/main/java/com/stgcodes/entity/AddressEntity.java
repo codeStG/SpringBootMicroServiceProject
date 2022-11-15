@@ -32,16 +32,8 @@ public class AddressEntity {
     @Column(name = "city", nullable = false, length = 75)
     private String city;
 
-    /**
-     * TODO:
-     * Discuss possibility of implementing a custom JSON deserializer
-     * for this field to be able to accept both full state name and abbreviation
-     * Custom JSON Deserializer could also allow for case insensitive enum inputs
-     * meaning we could also implement one for the Person Gender field to make the
-     * application a bit more robust
-     */
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false, length = 20)
+    @Column(name = "state", nullable = false)
     private GeographicState state;
 
     @Column(name = "zip", nullable = false, length = 10)

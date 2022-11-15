@@ -3,6 +3,7 @@ package com.stgcodes.endpoint;
 import com.stgcodes.error.ApiError;
 import com.stgcodes.exception.DataAccessException;
 import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.IllegalPhoneDeletionException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -37,6 +38,13 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IdNotFoundException.class)
     protected ResponseEntity<ApiError> handleIdNotFound(IdNotFoundException ex) {
         ApiError apiError = new ApiError(NOT_FOUND, ex.getMessage());
+
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
+    
+    @ExceptionHandler(IllegalPhoneDeletionException.class)
+    protected ResponseEntity<ApiError> handleIllegalPhoneDeletion(IllegalPhoneDeletionException ex) {
+        ApiError apiError = new ApiError(BAD_REQUEST, ex.getMessage());
 
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }

@@ -53,7 +53,7 @@ class PhoneControllerTests {
 	}
 	
 	@Test
-	void getAllShouldReturnListOfPhonees() throws Exception {
+	void getAllShouldReturnListOfPhones() throws Exception {
 		List<PhoneEntity> phoneEntities = phoneDao.findAll();
 		
 		mockMvc.perform(get("/phones/all"))

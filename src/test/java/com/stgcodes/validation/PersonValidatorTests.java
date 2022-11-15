@@ -1,8 +1,11 @@
 package com.stgcodes.validation;
 
+import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.model.Address;
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
+import com.stgcodes.validation.enums.PhoneType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,6 +29,10 @@ class PersonValidatorTests {
 
     @BeforeEach
     void setUp() {
+    	PhoneEntity testPhone = new PhoneEntity();
+		testPhone.setPhoneNumber("123-12-1234");
+		testPhone.setPhoneType(PhoneType.HOME);
+		
         person = Person.builder()
                 .firstName("Bryan")
                 .lastName("Byard")
@@ -34,6 +41,7 @@ class PersonValidatorTests {
                 .socialSecurityNumber("123-45-6777")
                 .gender(Gender.MALE)
                 .email("brbyard@gmail.com")
+                .phones(List.of(testPhone))
                 .build();
 
         validatorTestUtils = new ValidatorTestUtils(new PersonValidator(), person);

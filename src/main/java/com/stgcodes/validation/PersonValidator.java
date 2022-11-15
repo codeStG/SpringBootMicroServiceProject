@@ -1,5 +1,6 @@
 package com.stgcodes.validation;
 
+import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.model.Person;
 import lombok.NoArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -9,6 +10,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.stgcodes.utils.constants.CustomMatchers.*;
@@ -35,6 +37,7 @@ public class PersonValidator implements Validator {
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
         ValidationUtils.rejectIfEmpty(errors, "gender", "gender.format");
         validateEmail(person.getEmail(), errors);
+        validatePhones(person.getPhones(), errors);
     }
 
     private void validateFirstName(Person person, Errors errors) {
@@ -82,6 +85,12 @@ public class PersonValidator implements Validator {
     private void validateEmail(String email, Errors errors) {
         if (!EmailValidator.getInstance().isValid(email)) {
             errors.rejectValue("email", "email.format");
+        }
+    }
+    
+    private void validatePhones(List<PhoneEntity> phones, Errors errors) {
+        if (phones.isEmpty()) {
+            errors.rejectValue("phones", "phones.size");
         }
     }
 }

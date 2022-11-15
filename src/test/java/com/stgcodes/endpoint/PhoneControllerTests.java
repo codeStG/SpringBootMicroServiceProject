@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -88,7 +87,6 @@ class PhoneControllerTests {
 		mockMvc.perform(put("/phones/add?personId={personId}", personId)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPhone)))
-		.andDo(print())
 				.andExpect(jsonPath("$.phoneNumber", is(testPhone.getPhoneNumber())))
 				.andExpect(jsonPath("$.phoneType", is(testPhone.getPhoneType().toString())))
 				.andExpect(jsonPath("$.personEntity.personId", is(personId.intValue())))

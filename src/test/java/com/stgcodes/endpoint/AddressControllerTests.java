@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;
 import com.stgcodes.exceptions.IdNotFoundException;
@@ -34,6 +33,9 @@ class AddressControllerTests {
 	
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Autowired
 	private AddressDao addressDao;
@@ -58,20 +60,18 @@ class AddressControllerTests {
 	@Test
 	void getAllShouldReturnListOfAddresses() throws Exception {
 		List<AddressEntity> addressEntities = addressDao.findAll();
-		String json = new Gson().toJson(addressEntities);
 		
 		mockMvc.perform(get("/addresses/all"))
-				.andExpect(content().json(json))
+				.andExpect(content().json(objectMapper.writeValueAsString(addressEntities)))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void getByIdShouldReturnAddress() throws Exception {
 		Long testId = 1L;
-		String json = new Gson().toJson(addressDao.findById(testId));
 		
 		mockMvc.perform(get("/addresses/id?addressId={testId}", testId))
-				.andExpect(content().json(json))
+				.andExpect(content().json(objectMapper.writeValueAsString(addressDao.findById(testId))))
 				.andExpect(status().isOk());
 	}
 	
@@ -86,24 +86,24 @@ class AddressControllerTests {
 	
 	@Test
 	void addAddressShouldReturnCreatedAddress() throws Exception {
-		Long addressId = (long) addressDao.findAll().size() + 1;
-		String json = new Gson().toJson(testAddress);
-		
 		mockMvc.perform(put("/addresses/add")
 				.contentType("application/json")
-				.content(json))
-				.andExpect(content().json(new Gson().toJson(addressDao.findById(addressId))))
+				.content(objectMapper.writeValueAsString(testAddress)))
+				.andExpect(jsonPath("$.lineOne", is(testAddress.getLineOne())))
+				.andExpect(jsonPath("$.lineTwo", is(testAddress.getLineTwo())))
+				.andExpect(jsonPath("$.city", is(testAddress.getCity())))
+				.andExpect(jsonPath("$.state", is(testAddress.getState().toString())))
+				.andExpect(jsonPath("$.zip", is(testAddress.getZip())))
 				.andExpect(status().isCreated());
 	}
 	
 	@Test
 	void addAddressShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
 		invalidateTestAddress();
-		String json = new Gson().toJson(testAddress);
 		
 		mockMvc.perform(put("/addresses/add")
 				.contentType("application/json")
-				.content(json))
+				.content(objectMapper.writeValueAsString(testAddress)))
 				.andExpect(jsonPath("$.subErrors[0].message", is(messageSource.getMessage("lineone.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[1].message", is(messageSource.getMessage("linetwo.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[2].message", is(messageSource.getMessage("city.format", null, Locale.US))))
@@ -115,38 +115,40 @@ class AddressControllerTests {
 	@Test
 	void addAddressShouldReturnInternalErrorIfIdExists() throws Exception {
 		testAddress.setAddressId(1L);
-		String json = new Gson().toJson(testAddress);
 		
 		mockMvc.perform(put("/addresses/add")
 				.contentType("application/json")
-				.content(json))
+				.content(objectMapper.writeValueAsString(testAddress)))
 				.andExpect(jsonPath("$.message", is("Encountered an error while attempting to save")))
 				.andExpect(status().isInternalServerError());
 	}
 	
 	@Test
 	void updateAddressShouldReturnUpdatedAddress() throws Exception {
-		testAddress.setAddressId(2L);
+		Long testId = 2L;
+		testAddress.setAddressId(testId);
 		
-		String json = new Gson().toJson(testAddress);
-		
-		mockMvc.perform(put("/addresses/update?addressId=2")
+		mockMvc.perform(put("/addresses/update?addressId={testId}", testId)
 				.contentType("application/json")
-				.content(json))
-				.andExpect(content().json(json))
+				.content(objectMapper.writeValueAsString(testAddress)))
+				.andExpect(jsonPath("$.addressId", is(testAddress.getAddressId().intValue())))
+				.andExpect(jsonPath("$.lineOne", is(testAddress.getLineOne())))
+				.andExpect(jsonPath("$.lineTwo", is(testAddress.getLineTwo())))
+				.andExpect(jsonPath("$.city", is(testAddress.getCity())))
+				.andExpect(jsonPath("$.state", is(testAddress.getState().toString())))
+				.andExpect(jsonPath("$.zip", is(testAddress.getZip())))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void updateAddressShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
-		testAddress.setAddressId(2L);
+		Long testId = 2L;
+		testAddress.setAddressId(testId);
 		invalidateTestAddress();
 		
-		String json = new Gson().toJson(testAddress);
-
-		mockMvc.perform(put("/addresses/update?addressId=2")
+		mockMvc.perform(put("/addresses/update?addressId={testId}", testId)
 				.contentType("application/json")
-				.content(json))
+				.content(objectMapper.writeValueAsString(testAddress)))
 				.andExpect(jsonPath("$.subErrors[0].message", is(messageSource.getMessage("lineone.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[1].message", is(messageSource.getMessage("linetwo.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[2].message", is(messageSource.getMessage("city.format", null, Locale.US))))
@@ -159,7 +161,7 @@ class AddressControllerTests {
 	void deleteAddressShouldRemoveAddressFromDatabase() throws Exception {
 		Long testId = 3L;
 		
-		mockMvc.perform(delete("/addresses/remove?addressId=" + testId))
+		mockMvc.perform(delete("/addresses/remove?addressId={testId}", testId))
 				.andExpect(status().isNoContent());
 		
 		assertThrows(IdNotFoundException.class, () -> addressDao.findById(3L));
@@ -169,7 +171,7 @@ class AddressControllerTests {
 	void deleteAddressShouldReturnNotFoundIfIdDoesNotExist() throws Exception {
 		Long testId = 0L;
 		
-		mockMvc.perform(delete("/addresses/remove?addressId=" + testId))
+		mockMvc.perform(delete("/addresses/remove?addressId={testId}", testId))
 				.andExpect(jsonPath("$.message", is("AddressEntity was not found with ID " + testId)))
 				.andExpect(status().isNotFound());
 	}

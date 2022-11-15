@@ -103,6 +103,16 @@ class PhoneControllerTests {
 	}
 	
 	@Test
+	void addPhoneShouldReturnBadRequestIfMissingRequestBody() throws Exception {
+		Long personId = 3L;
+		
+		mockMvc.perform(put("/phones/add?personId={personId}", personId)
+				.content(""))
+				.andExpect(jsonPath("$.message", is("Malformed JSON request")))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
 	void addPhoneShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
 		Long personId = 3L;
 		invalidateTestPhone();

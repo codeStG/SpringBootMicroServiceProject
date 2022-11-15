@@ -98,6 +98,14 @@ class AddressControllerTests {
 	}
 	
 	@Test
+	void addAddressShouldReturnBadRequestIfMissingRequestBody() throws Exception {
+		mockMvc.perform(put("/addresses/add")
+				.content(""))
+				.andExpect(jsonPath("$.message", is("Malformed JSON request")))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
 	void addAddressShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
 		invalidateTestAddress();
 		

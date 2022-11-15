@@ -34,8 +34,8 @@ public class PersonSpecs {
 
     public static Specification<PersonEntity> ofAge(int age) {
         return (root, query, criteriaBuilder) -> {
-            if (StringUtils.isEmpty(Integer.toString(age))) {
-                return criteriaBuilder.like(root.get("age"), "%");
+            if (age == 0) {
+                return criteriaBuilder.like(root.get("age").as(String.class), "%");
             }
             return criteriaBuilder.equal(root.get("age"), age);
         };

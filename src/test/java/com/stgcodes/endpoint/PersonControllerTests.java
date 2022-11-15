@@ -81,6 +81,35 @@ class PersonControllerTests {
 	}
 	
 	@Test
+	void searchForShouldReturnMatchedPeople() throws Exception {
+		PersonCriteria criteria = PersonCriteria.builder().firstName("RI").build();
+		
+		mockMvc.perform(get("/people/search")
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(criteria)))
+				.andExpect(jsonPath("$[0].personId", is(1)))
+				.andExpect(jsonPath("$[1].personId", is(3)))
+				.andExpect(jsonPath("$[2].personId", is(5)))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	void searchForShouldReturnMatchedPeopleAndAllowAllArguments() throws Exception {
+		PersonCriteria criteria = PersonCriteria.builder()
+				.firstName("RI")
+				.lastName("rI")
+				.age(40)
+				.gender("male")
+				.build();
+		
+		mockMvc.perform(get("/people/search")
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(criteria)))
+				.andExpect(jsonPath("$[0].personId", is(1)))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
 	void getByIdShouldReturnPerson() throws Exception {
 		Long testId = 1L;
 		PersonEntity personEntity = personDao.findById(testId);
@@ -131,6 +160,14 @@ class PersonControllerTests {
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPerson)))
 				.andExpect(jsonPath("$.subErrors[0].message", is(messageSource.getMessage("phones.size", null, Locale.US))))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	void addPersonShouldReturnBadRequestIfMissingRequestBody() throws Exception {
+		mockMvc.perform(put("/people/add")
+				.content(""))
+				.andExpect(jsonPath("$.message", is("Malformed JSON request")))
 				.andExpect(status().isBadRequest());
 	}
 	
@@ -203,7 +240,7 @@ class PersonControllerTests {
 	
 	@Test
 	void deletePersonShouldRemovePersonFromDatabase() throws Exception {
-		Long testId = 3L;
+		Long testId = 4L;
 		
 		mockMvc.perform(delete("/people/remove?personId={testId}", testId))
 				.andExpect(status().isNoContent());

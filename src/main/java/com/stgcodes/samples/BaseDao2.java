@@ -1,14 +1,14 @@
 package com.stgcodes.samples;
 
-import com.stgcodes.exception.DataAccessException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import com.stgcodes.exception.DataAccessException;
 
 public abstract class BaseDao2<T> {
 

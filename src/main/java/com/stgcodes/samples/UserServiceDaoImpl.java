@@ -1,11 +1,13 @@
 package com.stgcodes.samples;
 
 
-import com.stgcodes.entity.PersonEntity;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.stgcodes.entity.PersonEntity;
 
 @Repository
 public class UserServiceDaoImpl extends BaseDao2<PersonEntity> implements UserServiceDao {

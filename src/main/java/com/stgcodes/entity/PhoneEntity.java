@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.NaturalId;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.stgcodes.validation.enums.PhoneType;
 

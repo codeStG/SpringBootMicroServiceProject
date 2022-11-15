@@ -1,18 +1,19 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Address;
-import com.stgcodes.validation.enums.GeographicState;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Locale;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
-import java.util.List;
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.stgcodes.model.Address;
+import com.stgcodes.validation.enums.GeographicState;
 
 class AddressValidatorTests {
 

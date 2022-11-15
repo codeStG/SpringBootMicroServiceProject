@@ -1,12 +1,13 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Address;
+import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
+import com.stgcodes.model.Address;
 
 @Component
 public class AddressValidator implements Validator {

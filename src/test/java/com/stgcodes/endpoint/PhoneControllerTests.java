@@ -183,7 +183,7 @@ class PhoneControllerTests {
 	void deletePhoneShouldReturnNotFoundIfIdDoesNotExist() throws Exception {
 		Long testId = 0L;
 		
-		mockMvc.perform(delete("/phones/remove?phoneId=" + testId))
+		mockMvc.perform(delete("/phones/remove?phoneId={testId}", testId))
 				.andExpect(jsonPath("$.message", is("PhoneEntity was not found with ID " + testId)))
 				.andExpect(status().isNotFound());
 	}

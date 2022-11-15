@@ -1,5 +1,13 @@
 package com.stgcodes.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.dao.PhoneDao;
 import com.stgcodes.entity.PersonEntity;
@@ -9,14 +17,8 @@ import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.PhoneValidator;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component("phoneService")

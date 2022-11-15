@@ -1,9 +1,9 @@
 package com.stgcodes.service;
 
+import java.util.List;
+
 import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.model.Person;
-
-import java.util.List;
 
 public interface PersonService {
     List<Person> findAll();

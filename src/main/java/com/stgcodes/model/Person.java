@@ -1,12 +1,13 @@
 package com.stgcodes.model;
 
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.validation.enums.Gender;
-import lombok.Builder;
-import lombok.Data;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.validation.enums.Gender;
+
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder

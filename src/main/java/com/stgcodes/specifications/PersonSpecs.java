@@ -1,11 +1,12 @@
 package com.stgcodes.specifications;
 
-import com.stgcodes.entity.PersonEntity;
-import com.stgcodes.validation.enums.Gender;
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.Predicate;
+import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.validation.enums.Gender;
 
 public class PersonSpecs {
 

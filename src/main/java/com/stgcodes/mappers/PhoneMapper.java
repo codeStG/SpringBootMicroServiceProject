@@ -1,9 +1,10 @@
 package com.stgcodes.mappers;
 
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.model.Phone;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.model.Phone;
 
 @Mapper
 public interface PhoneMapper {

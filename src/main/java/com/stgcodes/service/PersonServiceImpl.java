@@ -1,5 +1,21 @@
 package com.stgcodes.service;
 
+import static com.stgcodes.specifications.PersonSpecs.containsTextInFirstName;
+import static com.stgcodes.specifications.PersonSpecs.containsTextInLastName;
+import static com.stgcodes.specifications.PersonSpecs.ofAge;
+import static com.stgcodes.specifications.PersonSpecs.ofGender;
+import static org.springframework.data.jpa.domain.Specification.where;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+
 import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
@@ -9,20 +25,8 @@ import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static com.stgcodes.specifications.PersonSpecs.*;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
 @Component("personService")

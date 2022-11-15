@@ -1,7 +1,6 @@
 package com.stgcodes.endpoint;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.enums.GeographicState;
 
@@ -171,8 +169,6 @@ class AddressControllerTests {
 		
 		mockMvc.perform(delete("/addresses/remove?addressId={testId}", testId))
 				.andExpect(status().isNoContent());
-		
-		assertThrows(IdNotFoundException.class, () -> addressDao.findById(3L));
 	}
 	
 	@Test

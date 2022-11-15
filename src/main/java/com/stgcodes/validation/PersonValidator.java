@@ -1,19 +1,23 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.model.Person;
-import lombok.NoArgsConstructor;
+import static com.stgcodes.utils.constants.CustomMatchers.LETTER;
+import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
+import static com.stgcodes.utils.constants.CustomMatchers.USERNAME;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.regex.Pattern;
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.model.Person;
 
-import static com.stgcodes.utils.constants.CustomMatchers.*;
+import lombok.NoArgsConstructor;
 
 @Component
 @NoArgsConstructor

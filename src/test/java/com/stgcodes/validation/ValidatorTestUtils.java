@@ -1,13 +1,13 @@
 package com.stgcodes.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 //Look into @PropertySource()
 public class ValidatorTestUtils {

@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -209,7 +208,6 @@ class PersonControllerTests {
 		mockMvc.perform(put("/people/update?personId={testId}", testId)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPerson)))
-		.andDo(print())
 				.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
 				.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
 				.andExpect(jsonPath("$.username", is(testPerson.getUsername())))
@@ -250,7 +248,7 @@ class PersonControllerTests {
 	void deletePersonShouldReturnNotFoundIfIdDoesNotExist() throws Exception {
 		Long testId = 0L;
 		
-		mockMvc.perform(delete("/people/remove?personId=" + testId))
+		mockMvc.perform(delete("/people/remove?personId={testId}", testId))
 				.andExpect(jsonPath("$.message", is("PersonEntity was not found with ID " + testId)))
 				.andExpect(status().isNotFound());
 	}

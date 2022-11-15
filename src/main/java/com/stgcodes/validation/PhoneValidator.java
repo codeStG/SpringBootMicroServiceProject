@@ -1,13 +1,13 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Phone;
-import com.stgcodes.validation.enums.PhoneType;
+import static com.stgcodes.utils.constants.CustomMatchers.US_PHONE;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import static com.stgcodes.utils.constants.CustomMatchers.US_PHONE;
+import com.stgcodes.model.Phone;
 
 @Component
 public class PhoneValidator implements Validator {

@@ -1,8 +1,10 @@
 package com.stgcodes.dao;
 
-import com.stgcodes.entity.PhoneEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import com.stgcodes.entity.PhoneEntity;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component("phoneDao")
 @Slf4j

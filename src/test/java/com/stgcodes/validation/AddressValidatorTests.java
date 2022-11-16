@@ -1,16 +1,19 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Address;
-import com.stgcodes.validation.enums.GeographicState;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import com.stgcodes.model.Address;
+import com.stgcodes.validation.enums.GeographicState;
 
 class AddressValidatorTests {
 
@@ -32,6 +35,13 @@ class AddressValidatorTests {
         validatorTestUtils = new ValidatorTestUtils(new AddressValidator(), address);
         messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
+    }
+    
+    @Test
+    void testValidatorSupportsAddress() {
+    	AddressValidator validator = new AddressValidator();
+
+    	assertTrue(validator.supports(Address.class));
     }
 
     @ParameterizedTest
@@ -57,7 +67,7 @@ class AddressValidatorTests {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Unit 4", "Apt. 3", "No. 1", "   Unit 189   ", "This is acceptable input"})
+    @ValueSource(strings = {"", " ", "\n", "Unit 4", "Apt. 3", "No. 1", "   Unit 189   ", "This is acceptable input"})
     void testValidLineTwo(String value) {
         address.setLineTwo(value);
         errors = validatorTestUtils.getErrors();
@@ -66,11 +76,10 @@ class AddressValidatorTests {
 
         assertEquals(expected, errors.get(0));
     }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "   ", "\n", "\t", "abcdefghijklmnopqrstuvwxyz"})
-    void testInvalidLineTwo(String value) {
-        address.setLineTwo(value);
+    
+    @Test
+    void testInvalidLineTwo() {
+        address.setLineTwo("abcdefghijklmnopqrstuvwxyz");
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("linetwo.format", null, Locale.US);

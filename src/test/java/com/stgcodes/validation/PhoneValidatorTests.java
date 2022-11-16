@@ -1,15 +1,19 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Phone;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import com.stgcodes.model.Phone;
+import com.stgcodes.validation.enums.PhoneType;
 
 
 class PhoneValidatorTests {
@@ -24,12 +28,19 @@ class PhoneValidatorTests {
     public void setUp() {
         phone = Phone.builder()
                 .phoneNumber("223-456-7890")
-                .phoneType("MOBILE")
+                .phoneType(PhoneType.MOBILE)
                 .build();
 
         validatorTestUtils = new ValidatorTestUtils(new PhoneValidator(), phone);
         messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
+    }
+    
+    @Test
+    void testValidatorSupportsPhone() {
+    	PhoneValidator validator = new PhoneValidator();
+
+    	assertTrue(validator.supports(Phone.class));
     }
 
     @ParameterizedTest
@@ -50,28 +61,6 @@ class PhoneValidatorTests {
         errors = validatorTestUtils.getErrors();
 
         String expected = messageSource.getMessage("phonenumber.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"MOBILE", "HOME", "BUSINESS"})
-    void testValidPhoneType(String value) {
-        phone.setPhoneType(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "   ", "\n", "\t", "home", "mobile", "business"})
-    void testInvalidPhoneType(String value) {
-        phone.setPhoneType(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("phonetype.format", null, Locale.US);
 
         assertEquals(expected, errors.get(0));
     }

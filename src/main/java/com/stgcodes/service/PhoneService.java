@@ -1,8 +1,8 @@
 package com.stgcodes.service;
 
-import com.stgcodes.model.Phone;
-
 import java.util.List;
+
+import com.stgcodes.model.Phone;
 
 public interface PhoneService {
     List<Phone> findAll();

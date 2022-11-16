@@ -1,20 +1,33 @@
 package com.stgcodes.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.stgcodes.validation.enums.Gender;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.Hibernate;
-
-import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.Hibernate;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.stgcodes.validation.enums.Gender;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "PERSON_TBL")
@@ -22,6 +35,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@JsonIgnoreProperties({"firstName", "lastName", "username", "dateOfBirth", "age", "socialSecurityNumber", "gender", "email", "phones"})
 public class PersonEntity {
 
     @Id
@@ -49,7 +63,7 @@ public class PersonEntity {
     private String socialSecurityNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -58,6 +72,10 @@ public class PersonEntity {
     @OneToMany(mappedBy="personEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneEntity> phones = new ArrayList<>();
 
+    public String getFullName() {
+    	return firstName + " " + lastName;
+    }
+    
     public void addPhone(PhoneEntity phone) {
         phone.setPersonEntity(this);
         phones.add(phone);

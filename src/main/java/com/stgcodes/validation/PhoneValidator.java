@@ -1,12 +1,13 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Phone;
-import com.stgcodes.validation.enums.PhoneType;
+import static com.stgcodes.utils.constants.CustomMatchers.US_PHONE;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import static com.stgcodes.utils.constants.CustomMatchers.US_PHONE;
+import com.stgcodes.model.Phone;
 
 @Component
 public class PhoneValidator implements Validator {
@@ -21,20 +22,12 @@ public class PhoneValidator implements Validator {
         Phone phone = (Phone) target;
 
         validatePhoneNumber(phone.getPhoneNumber(), errors);
-        validatePhoneType(phone.getPhoneType(), errors);
+        ValidationUtils.rejectIfEmpty(errors, "phoneType", "phonetype.invalid");
     }
 
     private void validatePhoneNumber(String phoneNumber, Errors errors) {
         if (!phoneNumber.matches(US_PHONE)) {
             errors.rejectValue("phoneNumber", "phonenumber.format");
-        }
-    }
-
-    private void validatePhoneType(String phoneType, Errors errors) {
-        try {
-            PhoneType.valueOf(phoneType);
-        } catch (IllegalArgumentException e) {
-            errors.rejectValue("phoneType", "phonetype.format");
         }
     }
 }

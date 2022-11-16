@@ -1,12 +1,13 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Address;
+import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
+import com.stgcodes.model.Address;
 
 @Component
 public class AddressValidator implements Validator {
@@ -23,21 +24,20 @@ public class AddressValidator implements Validator {
         validateLineOne(address.getLineOne(), errors);
         validateLineTwo(address.getLineTwo(), errors);
         validateCity(address.getCity(), errors);
+        ValidationUtils.rejectIfEmpty(errors, "state", "state.invalid");
         validateZip(address.getZip(), errors);
     }
 
     private void validateLineOne(String lineOne, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lineOne", "lineone.format");
 
-        if (lengthIsInvalid(1, 75, lineOne)) {
+        if (lineOne.length() > 75) {
             errors.rejectValue("lineOne", "lineone.format");
         }
     }
 
     private void validateLineTwo(String lineTwo, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lineTwo", "linetwo.format");
-
-        if (lengthIsInvalid(1, 25, lineTwo)) {
+        if (lineTwo.length() > 25) {
             errors.rejectValue("lineTwo", "linetwo.format");
         }
     }
@@ -45,7 +45,7 @@ public class AddressValidator implements Validator {
     private void validateCity(String city, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "city.format");
 
-        if (lengthIsInvalid(1, 75, city)) {
+        if (city.length() > 75) {
             errors.rejectValue("city", "city.format");
         }
     }
@@ -56,9 +56,5 @@ public class AddressValidator implements Validator {
         if (!zip.matches(US_ZIP_CODE)) {
             errors.rejectValue("zip", "zip.format");
         }
-    }
-
-    private boolean lengthIsInvalid(int min, int max, String value) {
-        return value.length() < min || value.length() > max;
     }
 }

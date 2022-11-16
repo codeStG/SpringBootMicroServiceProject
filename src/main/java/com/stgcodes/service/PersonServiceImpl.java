@@ -1,5 +1,21 @@
 package com.stgcodes.service;
 
+import static com.stgcodes.specifications.PersonSpecs.containsTextInFirstName;
+import static com.stgcodes.specifications.PersonSpecs.containsTextInLastName;
+import static com.stgcodes.specifications.PersonSpecs.ofAge;
+import static com.stgcodes.specifications.PersonSpecs.ofGender;
+import static org.springframework.data.jpa.domain.Specification.where;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+
 import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
@@ -7,20 +23,10 @@ import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
+import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.stgcodes.specifications.PersonSpecs.*;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Slf4j
 @Component("personService")
@@ -36,6 +42,7 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> findAll() {
         List<Person> people = new ArrayList<>();
         dao.findAll().forEach(e -> people.add(mapToModel(e)));
+        people.sort(new PersonComparator());
 
         return people;
     }
@@ -48,6 +55,8 @@ public class PersonServiceImpl implements PersonService {
                 .and(ofAge(criteria.getAge()))
                 .and(ofGender(criteria.getGender())))
                 .forEach(entity -> result.add(mapToModel(entity)));
+
+        result.sort(new PersonComparator());
 
         return result;
     }
@@ -73,6 +82,7 @@ public class PersonServiceImpl implements PersonService {
         validator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors()) {
+            log.error(bindingResult.toString());
             throw new InvalidRequestBodyException(Person.class, bindingResult);
         }
 

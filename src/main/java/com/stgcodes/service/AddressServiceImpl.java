@@ -1,19 +1,21 @@
 package com.stgcodes.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.AddressMapper;
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.AddressValidator;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component("addressService")
@@ -82,6 +84,7 @@ public class AddressServiceImpl implements AddressService {
         validator.validate(address, bindingResult);
 
         if(bindingResult.hasErrors()) {
+            log.error(bindingResult.toString());
             throw new InvalidRequestBodyException(Address.class, bindingResult);
         }
     }

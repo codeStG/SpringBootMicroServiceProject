@@ -1,9 +1,9 @@
 package com.stgcodes.samples;
 
 
-import com.stgcodes.entity.PersonEntity;
-
 import java.util.List;
+
+import com.stgcodes.entity.PersonEntity;
 
 public interface UserServiceDao {
 

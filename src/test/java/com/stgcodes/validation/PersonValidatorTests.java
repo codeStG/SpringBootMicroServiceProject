@@ -1,18 +1,23 @@
 package com.stgcodes.validation;
 
-import com.stgcodes.model.Person;
-import com.stgcodes.validation.enums.Gender;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.model.Person;
+import com.stgcodes.validation.enums.Gender;
+import com.stgcodes.validation.enums.PhoneType;
 
 class PersonValidatorTests {
 
@@ -23,6 +28,10 @@ class PersonValidatorTests {
 
     @BeforeEach
     void setUp() {
+    	PhoneEntity testPhone = new PhoneEntity();
+		testPhone.setPhoneNumber("123-12-1234");
+		testPhone.setPhoneType(PhoneType.HOME);
+		
         person = Person.builder()
                 .firstName("Bryan")
                 .lastName("Byard")
@@ -31,12 +40,21 @@ class PersonValidatorTests {
                 .socialSecurityNumber("123-45-6777")
                 .gender(Gender.MALE)
                 .email("brbyard@gmail.com")
+                .phones(List.of(testPhone))
                 .build();
 
         validatorTestUtils = new ValidatorTestUtils(new PersonValidator(), person);
         messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("ValidationMessages");
     }
+    
+    @Test
+    void testValidatorSupportsPerson() {
+    	PersonValidator validator = new PersonValidator();
+
+    	assertTrue(validator.supports(Person.class));
+    }
+
 
     @ParameterizedTest
     @ValueSource(strings = {"George", "Bobbie", "Somerandomguy", "Frederick", "Thisisanacceptableinput", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"})
@@ -80,6 +98,14 @@ class PersonValidatorTests {
         String expected = messageSource.getMessage("name.format", null, Locale.US);
 
         assertEquals(expected, errors.get(0));
+    }
+    
+    @Test
+    void testLongLastNameIsTruncated() {
+        person.setLastName("ThisIsAnExceptionallyLongLastName");
+        errors = validatorTestUtils.getErrors();
+
+        assertEquals(25, person.getLastName().length());
     }
 
     @ParameterizedTest

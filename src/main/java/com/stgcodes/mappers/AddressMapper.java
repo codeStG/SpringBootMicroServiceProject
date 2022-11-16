@@ -1,9 +1,10 @@
 package com.stgcodes.mappers;
 
-import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.model.Address;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+
+import com.stgcodes.entity.AddressEntity;
+import com.stgcodes.model.Address;
 
 @Mapper
 public interface AddressMapper {

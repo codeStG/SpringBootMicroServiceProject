@@ -1,11 +1,12 @@
 package com.stgcodes.specifications;
 
-import com.stgcodes.entity.PersonEntity;
-import com.stgcodes.validation.enums.Gender;
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.Predicate;
+import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.validation.enums.Gender;
 
 public class PersonSpecs {
 
@@ -34,8 +35,8 @@ public class PersonSpecs {
 
     public static Specification<PersonEntity> ofAge(int age) {
         return (root, query, criteriaBuilder) -> {
-            if (StringUtils.isEmpty(Integer.toString(age))) {
-                return criteriaBuilder.like(root.get("age"), "%");
+            if (age == 0) {
+                return criteriaBuilder.like(root.get("age").as(String.class), "%");
             }
             return criteriaBuilder.equal(root.get("age"), age);
         };

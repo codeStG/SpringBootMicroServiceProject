@@ -1,8 +1,8 @@
 package com.stgcodes.utils.sorting;
 
-import com.stgcodes.model.Person;
-
 import java.util.Comparator;
+
+import com.stgcodes.model.Person;
 
 public class PersonComparator implements Comparator<Person> {
 

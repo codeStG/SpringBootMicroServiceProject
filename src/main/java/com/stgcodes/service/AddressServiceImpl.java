@@ -44,7 +44,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address save(Address address) {
-        isValidRequestBody(address);
+        validateRequestBody(address);
         AddressEntity addressEntity = mapToEntity(address);
         AddressEntity result = dao.save(addressEntity);
 
@@ -54,7 +54,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address update(Address address, Long addressId) {
         findById(addressId);
-        isValidRequestBody(address);
+        validateRequestBody(address);
 
         AddressEntity addressEntity = mapToEntity(address);
         addressEntity.setAddressId(addressId);
@@ -66,8 +66,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void delete(Long addressId) {
-        Address address = findById(addressId);
-        dao.delete(mapToEntity(address));
+        AddressEntity addressEntity = dao.findById(addressId);
+        dao.delete(addressEntity);
     }
 
     private AddressEntity mapToEntity(Address address) {
@@ -78,7 +78,7 @@ public class AddressServiceImpl implements AddressService {
         return AddressMapper.INSTANCE.addressEntityToAddress(addressEntity);
     }
 
-    private void isValidRequestBody(Address address) {
+    private void validateRequestBody(Address address) {
         BindingResult bindingResult = new BindException(address, "address");
 
         validator.validate(address, bindingResult);

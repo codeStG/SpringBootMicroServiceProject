@@ -21,13 +21,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Configuration
 @PropertySource({"classpath:/application.properties"})
 @ComponentScan(basePackages = "com.stgcodes")
 @EnableTransactionManagement
-@Slf4j
 public class JpaTransactionManagerConfiguration {
 
     @Value("${spring.datasource.driverClassName}")

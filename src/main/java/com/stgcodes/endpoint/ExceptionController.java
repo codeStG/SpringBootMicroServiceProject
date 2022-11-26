@@ -54,7 +54,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidRequestBodyException.class)
     protected ResponseEntity<ApiError> handleInvalidRequestBody(InvalidRequestBodyException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST, ex.getMessage());
-        apiError.addSubErrors(ex.getBindingResult().getFieldErrors());
+        apiError.addSubErrors(ex.getErrors().getFieldErrors());
 
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }

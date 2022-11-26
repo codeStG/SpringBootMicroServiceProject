@@ -5,19 +5,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.AddressMapper;
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.AddressValidator;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component("addressService")
 public class AddressServiceImpl implements AddressService {
 
@@ -44,7 +38,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address save(Address address) {
-        validateRequestBody(address);
+        validator.validate(address);
         AddressEntity addressEntity = mapToEntity(address);
         AddressEntity result = dao.save(addressEntity);
 
@@ -54,7 +48,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address update(Address address, Long addressId) {
         findById(addressId);
-        validateRequestBody(address);
+        validator.validate(address);
 
         AddressEntity addressEntity = mapToEntity(address);
         addressEntity.setAddressId(addressId);
@@ -76,16 +70,5 @@ public class AddressServiceImpl implements AddressService {
 
     private Address mapToModel(AddressEntity addressEntity) {
         return AddressMapper.INSTANCE.addressEntityToAddress(addressEntity);
-    }
-
-    private void validateRequestBody(Address address) {
-        BindingResult bindingResult = new BindException(address, "address");
-
-        validator.validate(address, bindingResult);
-
-        if(bindingResult.hasErrors()) {
-            log.error(bindingResult.toString());
-            throw new InvalidRequestBodyException(Address.class, bindingResult);
-        }
     }
 }

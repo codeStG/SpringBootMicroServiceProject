@@ -5,22 +5,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.dao.PhoneDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.IllegalPhoneDeletionException;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.PhoneValidator;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component("phoneService")
 public class PhoneServiceImpl implements PhoneService {
 
@@ -51,7 +44,7 @@ public class PhoneServiceImpl implements PhoneService {
     @Override
     public Phone save(Phone phone, Long personId) {
         PersonEntity personEntity = personDao.findById(personId);
-        isValidRequestBody(phone);
+        validator.validate(phone);
 
         PhoneEntity phoneEntity = mapToEntity(phone);
         personEntity.addPhone(phoneEntity);
@@ -63,7 +56,7 @@ public class PhoneServiceImpl implements PhoneService {
     @Override
     public Phone update(Phone phone, Long phoneId) {
         PersonEntity personEntity = findById(phoneId).getPersonEntity();
-        isValidRequestBody(phone);
+        validator.validate(phone);
 
         PhoneEntity phoneEntity = mapToEntity(phone);
         phoneEntity.setPhoneId(phoneId);
@@ -77,7 +70,7 @@ public class PhoneServiceImpl implements PhoneService {
     	PhoneEntity phoneEntity = mapToEntity(findById(phoneId));
     	PersonEntity personEntity = phoneEntity.getPersonEntity();
     	
-    	validateUserHasMorePhones(personEntity);
+    	validator.validateUserHasMorePhones(personEntity);
     
         personEntity.removePhone(phoneEntity);
         personDao.update(personEntity);
@@ -91,20 +84,20 @@ public class PhoneServiceImpl implements PhoneService {
         return PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
     }
 
-    private void isValidRequestBody(Phone phone) {
-        BindingResult bindingResult = new BindException(phone, "phone");
-
-        validator.validate(phone, bindingResult);
-
-        if(bindingResult.hasErrors()) {
-            log.error(bindingResult.toString());
-            throw new InvalidRequestBodyException(Phone.class, bindingResult);
-        }
-    }
-
-    private void validateUserHasMorePhones(PersonEntity personEntity) {
-    	if(personEntity.getPhones().size() < 2) {
-    		throw new IllegalPhoneDeletionException();
-    	}
-    }
+//    private void isValidRequestBody(Phone phone) {
+//        BindingResult bindingResult = new BindException(phone, "phone");
+//
+//        validator.validate(phone, bindingResult);
+//
+//        if(bindingResult.hasErrors()) {
+//            log.error(bindingResult.toString());
+//            throw new InvalidRequestBodyException(Phone.class, bindingResult);
+//        }
+//    }
+//
+//    private void validateUserHasMorePhones(PersonEntity personEntity) {
+//    	if(personEntity.getPhones().size() < 2) {
+//    		throw new IllegalPhoneDeletionException();
+//    	}
+//    }
 }

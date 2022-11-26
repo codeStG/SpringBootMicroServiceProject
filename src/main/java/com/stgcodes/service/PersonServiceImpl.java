@@ -13,22 +13,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
 import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
 import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component("personService")
 public class PersonServiceImpl implements PersonService {
 
@@ -71,22 +65,10 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person save(Person person) {
-        isValidRequestBody(person);
+        validator.validate(person);
+        person.setAge(calculateAge(person.getDateOfBirth()));
 
         return savePerson(person);
-    }
-
-    private void isValidRequestBody(Person person) {
-        BindingResult bindingResult = new BindException(person, "person");
-
-        validator.validate(person, bindingResult);
-
-        if(bindingResult.hasErrors()) {
-            log.error(bindingResult.toString());
-            throw new InvalidRequestBodyException(Person.class, bindingResult);
-        }
-
-        person.setAge(calculateAge(person.getDateOfBirth()));
     }
 
     private Person savePerson(Person person) {
@@ -113,7 +95,7 @@ public class PersonServiceImpl implements PersonService {
     public Person update(Person person, Long personId) {
         Person personToUpdate = findById(personId);
         List<PhoneEntity> phones = personToUpdate.getPhones();
-        isValidRequestBody(person);
+        validator.validate(person);
 
         PersonEntity personEntity = mapToEntity(person);
         personEntity.setPhones(phones);

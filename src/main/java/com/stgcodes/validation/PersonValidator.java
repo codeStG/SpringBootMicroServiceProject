@@ -10,38 +10,38 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Person;
 
-import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
-@NoArgsConstructor
-public class PersonValidator implements Validator {
+public class PersonValidator {
 
     private static final Integer MAX_NAME_LENGTH = 25;
 
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return Person.class.equals(clazz);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        Person person = (Person) target;
+    public void validate(Person person) {
+        Errors errors = new BindException(person, "person");
 
         validateFirstName(person, errors);
         validateLastName(person, errors);
         validateUsername(person.getUsername(), errors);
         validateDateOfBirth(person.getDateOfBirth(), errors);
         validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
-        ValidationUtils.rejectIfEmpty(errors, "gender", "gender.format");
+        ValidationUtils.rejectIfEmpty(errors, "gender", "gender.invalid");
         validateEmail(person.getEmail(), errors);
         validatePhones(person.getPhones(), errors);
+        
+        if(errors.hasErrors()) {
+            log.error(errors.toString());
+            throw new InvalidRequestBodyException(Person.class, errors);
+        }
     }
 
     private void validateFirstName(Person person, Errors errors) {

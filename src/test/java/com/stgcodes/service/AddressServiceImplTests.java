@@ -11,8 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
 import com.stgcodes.dao.AddressDao;
 import com.stgcodes.entity.AddressEntity;

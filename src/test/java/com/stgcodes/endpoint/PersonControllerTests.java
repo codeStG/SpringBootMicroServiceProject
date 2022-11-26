@@ -181,7 +181,7 @@ class PersonControllerTests {
 				.andExpect(jsonPath("$.subErrors[1].message", is(messageSource.getMessage("name.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[2].message", is(messageSource.getMessage("username.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[3].message", is(messageSource.getMessage("ssn.format", null, Locale.US))))
-				.andExpect(jsonPath("$.subErrors[4].message", is(messageSource.getMessage("gender.format", null, Locale.US))))
+				.andExpect(jsonPath("$.subErrors[4].message", is(messageSource.getMessage("gender.invalid", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[5].message", is(messageSource.getMessage("email.format", null, Locale.US))))
 				.andExpect(status().isBadRequest());
 	}
@@ -231,7 +231,7 @@ class PersonControllerTests {
 				.andExpect(jsonPath("$.subErrors[1].message", is(messageSource.getMessage("name.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[2].message", is(messageSource.getMessage("username.format", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[3].message", is(messageSource.getMessage("ssn.format", null, Locale.US))))
-				.andExpect(jsonPath("$.subErrors[4].message", is(messageSource.getMessage("gender.format", null, Locale.US))))
+				.andExpect(jsonPath("$.subErrors[4].message", is(messageSource.getMessage("gender.invalid", null, Locale.US))))
 				.andExpect(jsonPath("$.subErrors[5].message", is(messageSource.getMessage("email.format", null, Locale.US))))
 				.andExpect(status().isBadRequest());
 	}

@@ -1,7 +1,6 @@
 package com.stgcodes.service;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +42,7 @@ public class PhoneServiceImplTests {
 	@BeforeEach
 	void setup() {
 		testPhone = Phone.builder()
+				.phoneId(0L)
 				.phoneNumber("214-214-2142")
 				.phoneType(PhoneType.HOME)
 				.build();
@@ -69,22 +69,18 @@ public class PhoneServiceImplTests {
 	}
 	
 	@Test
-	void testSave() { 
-		Long personTestId = 1L;
-		PersonEntity personEntity = new PersonEntity();
-		personEntity.setPersonId(personTestId);
-		
+	void testSave() { 		
 		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
-		personEntity.addPhone(phoneEntity);
 		
-		when(personDao.findById(personTestId))
-			.thenReturn(personEntity);
+		when(personDao.findById(anyLong()))
+			.thenReturn(new PersonEntity());
 		
 		when(dao.save(phoneEntity))
-			.thenReturn(phoneEntity);
+			.thenReturn(new PhoneEntity());
 		
-		service.save(testPhone, personTestId);
+		service.save(testPhone, anyLong());
 		
+		verify(personDao).findById(anyLong());
 		verify(dao).save(phoneEntity);
 	}
 	

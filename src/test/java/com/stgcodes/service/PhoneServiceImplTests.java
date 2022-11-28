@@ -1,5 +1,7 @@
 package com.stgcodes.service;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,25 +68,26 @@ public class PhoneServiceImplTests {
 		verify(dao).findById(1L);
 	}
 	
-//	@Test
-//	void testSave() { 
-//		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
-//		Long personTestId = 1L;
-//		
-////		doReturn(new PersonEntity())
-////			.when(personDao.findById(personTestId));
-//		
-//		when(personDao.findById(personTestId))
-//		.thenReturn(new PersonEntity());
-//		
-//		when(dao.save(phoneEntity))
-//			.thenReturn(new PhoneEntity());
-//		
-//		service.save(testPhone, personTestId);
-//		
-//		verify(dao).save(phoneEntity);
-//	}
-//	
+	@Test
+	void testSave() { 
+		Long personTestId = 1L;
+		PersonEntity personEntity = new PersonEntity();
+		personEntity.setPersonId(personTestId);
+		
+		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
+		personEntity.addPhone(phoneEntity);
+		
+		when(personDao.findById(personTestId))
+			.thenReturn(personEntity);
+		
+		when(dao.save(phoneEntity))
+			.thenReturn(phoneEntity);
+		
+		service.save(testPhone, personTestId);
+		
+		verify(dao).save(phoneEntity);
+	}
+	
 //	@Test
 //	void testUpdate() {
 //		testPhone.setPhoneId(1L);

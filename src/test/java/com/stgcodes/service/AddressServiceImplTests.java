@@ -32,6 +32,7 @@ public class AddressServiceImplTests {
 	private AddressServiceImpl service;
 	
 	Address testAddress;
+	Long id;
 	
 	@BeforeEach
 	void setup() {
@@ -42,6 +43,8 @@ public class AddressServiceImplTests {
 				.state(GeographicState.IL)
 				.zip("60626")
 				.build();
+		
+		id = 1L;
 	}
 	
 	@Test
@@ -55,13 +58,13 @@ public class AddressServiceImplTests {
 	}
 	
 	@Test
-	void testFindById() {		
-		when(dao.findById(1L))
+	void testFindById() {				
+		when(dao.findById(id))
 			.thenReturn(new AddressEntity());
 		
-		service.findById(1L);
+		service.findById(id);
 		
-		verify(dao).findById(1L);
+		verify(dao).findById(id);
 	}
 	
 	@Test
@@ -78,25 +81,25 @@ public class AddressServiceImplTests {
 	
 	@Test
 	void testUpdate() {
-		testAddress.setAddressId(1L);
+		testAddress.setAddressId(id);
 		
 		AddressEntity addressEntity = AddressMapper.INSTANCE.addressToAddressEntity(testAddress);
 		
 		when(dao.update(addressEntity))
 			.thenReturn(new AddressEntity());
 		
-		service.update(testAddress, 1L);
+		service.update(testAddress, id);
 	
 		verify(dao).update(addressEntity);
 	}
 	
 	@Test
 	void testDelete() {
-        when(dao.findById(1L))
+        when(dao.findById(id))
         		.thenReturn(new AddressEntity());
         
-        service.delete(1L);
+        service.delete(id);
 		
-		verify(dao).delete(dao.findById(1L));
+		verify(dao).delete(dao.findById(id));
 	}
 }

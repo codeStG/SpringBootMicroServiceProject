@@ -61,6 +61,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void delete(Long addressId) {
         AddressEntity addressEntity = dao.findById(addressId);
+        
         dao.delete(addressEntity);
     }
 

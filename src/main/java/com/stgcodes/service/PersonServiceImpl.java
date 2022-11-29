@@ -78,8 +78,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person update(Person person, Long personId) {
-        Person personToUpdate = findById(personId);
-        List<PhoneEntity> phones = personToUpdate.getPhones();
+        PersonEntity existingPerson = dao.findById(personId);
+        List<PhoneEntity> phones = existingPerson.getPhones();
         validator.validate(person);
 
         PersonEntity personEntity = mapToEntity(person);
@@ -93,8 +93,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void delete(Long personId) {
-        Person person = findById(personId);
-        PersonEntity personEntity = mapToEntity(person);
+        PersonEntity personEntity = dao.findById(personId);
 
         dao.delete(personEntity);
     }

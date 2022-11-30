@@ -55,7 +55,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public Phone update(Phone phone, Long phoneId) {
-        PersonEntity personEntity = findById(phoneId).getPersonEntity();
+        PersonEntity personEntity = dao.findById(phoneId).getPersonEntity();
         validator.validate(phone);
 
         PhoneEntity phoneEntity = mapToEntity(phone);
@@ -67,7 +67,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public void delete(Long phoneId) {
-    	PhoneEntity phoneEntity = mapToEntity(findById(phoneId));
+    	PhoneEntity phoneEntity = dao.findById(phoneId);
     	PersonEntity personEntity = phoneEntity.getPersonEntity();
     	
     	validator.validateUserHasMorePhones(personEntity);
@@ -83,21 +83,4 @@ public class PhoneServiceImpl implements PhoneService {
     private Phone mapToModel(PhoneEntity phoneEntity) {
         return PhoneMapper.INSTANCE.phoneEntityToPhone(phoneEntity);
     }
-
-//    private void isValidRequestBody(Phone phone) {
-//        BindingResult bindingResult = new BindException(phone, "phone");
-//
-//        validator.validate(phone, bindingResult);
-//
-//        if(bindingResult.hasErrors()) {
-//            log.error(bindingResult.toString());
-//            throw new InvalidRequestBodyException(Phone.class, bindingResult);
-//        }
-//    }
-//
-//    private void validateUserHasMorePhones(PersonEntity personEntity) {
-//    	if(personEntity.getPhones().size() < 2) {
-//    		throw new IllegalPhoneDeletionException();
-//    	}
-//    }
 }

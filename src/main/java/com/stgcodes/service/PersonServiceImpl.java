@@ -66,35 +66,20 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person save(Person person) {
         validator.validate(person);
-        person.setAge(calculateAge(person.getDateOfBirth()));
-
-        return savePerson(person);
-    }
-
-    private Person savePerson(Person person) {
-        /**
-         * George - one school of thought on exception handling.
-         *
-         * My rule of thumb has been catch these types of cases at the service/domain level,
-         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
-         * perhaps by some specific error handler that displays the appropriate web page view
-         * based on exception types, etc.
-         *
-         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
-         *
-         */
+        
         PersonEntity personEntity = mapToEntity(person);
         person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
-
+        person.setAge(calculateAge(person.getDateOfBirth()));
+        
         PersonEntity result = dao.save(personEntity);
-
+        
         return mapToModel(result);
     }
 
     @Override
     public Person update(Person person, Long personId) {
-        Person personToUpdate = findById(personId);
-        List<PhoneEntity> phones = personToUpdate.getPhones();
+        PersonEntity existingPerson = dao.findById(personId);
+        List<PhoneEntity> phones = existingPerson.getPhones();
         validator.validate(person);
 
         PersonEntity personEntity = mapToEntity(person);
@@ -108,8 +93,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void delete(Long personId) {
-        Person person = findById(personId);
-        PersonEntity personEntity = mapToEntity(person);
+        PersonEntity personEntity = dao.findById(personId);
 
         dao.delete(personEntity);
     }

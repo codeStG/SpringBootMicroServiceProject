@@ -47,7 +47,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address update(Address address, Long addressId) {
-        findById(addressId);
+        dao.findById(addressId);
         validator.validate(address);
 
         AddressEntity addressEntity = mapToEntity(address);
@@ -61,6 +61,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void delete(Long addressId) {
         AddressEntity addressEntity = dao.findById(addressId);
+        
         dao.delete(addressEntity);
     }
 

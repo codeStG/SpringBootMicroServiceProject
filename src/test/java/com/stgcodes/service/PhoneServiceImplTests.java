@@ -1,7 +1,5 @@
 package com.stgcodes.service;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,13 +37,19 @@ public class PhoneServiceImplTests {
 	private PhoneServiceImpl service;
 	
 	Phone testPhone;
+	Long phoneId;
+	Long personId;
 	
 	@BeforeEach
 	void setup() {
 		testPhone = Phone.builder()
+				.phoneId(0L)
 				.phoneNumber("214-214-2142")
 				.phoneType(PhoneType.HOME)
 				.build();
+		
+		phoneId = 1L;
+		personId = 1L;
 	}
 	
 	@Test
@@ -60,55 +64,57 @@ public class PhoneServiceImplTests {
 	
 	@Test
 	void testFindById() {		
-		when(dao.findById(1L))
+		when(dao.findById(phoneId))
 			.thenReturn(new PhoneEntity());
 		
-		service.findById(1L);
+		service.findById(phoneId);
 		
-		verify(dao).findById(1L);
+		verify(dao).findById(phoneId);
 	}
 	
 	@Test
-	void testSave() { 
-		Long personTestId = 1L;
-		PersonEntity personEntity = new PersonEntity();
-		personEntity.setPersonId(personTestId);
-		
+	void testSave() { 		
 		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
-		personEntity.addPhone(phoneEntity);
 		
-		when(personDao.findById(personTestId))
-			.thenReturn(personEntity);
+		when(personDao.findById(personId))
+			.thenReturn(new PersonEntity());
 		
 		when(dao.save(phoneEntity))
-			.thenReturn(phoneEntity);
+			.thenReturn(new PhoneEntity());
 		
-		service.save(testPhone, personTestId);
+		service.save(testPhone, personId);
 		
+		verify(personDao).findById(personId);
 		verify(dao).save(phoneEntity);
 	}
 	
-//	@Test
-//	void testUpdate() {
-//		testPhone.setPhoneId(1L);
-//		
-//		PhoneEntity PhoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
-//		
-//		when(dao.update(PhoneEntity))
-//			.thenReturn(new PhoneEntity());
-//		
-//		service.update(testPhone, 1L);
-//	
-//		verify(dao).update(PhoneEntity);
-//	}
-//	
-//	@Test
-//	void testDelete() {
-//        when(dao.findById(1L))
-//        		.thenReturn(new PhoneEntity());
-//        
-//        service.delete(1L);
-//		
-//		verify(dao).delete(dao.findById(1L));
-//	}
+	@Test
+	void testUpdate() {
+		testPhone.setPhoneId(phoneId);
+		
+		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
+		
+		when(dao.findById(phoneId))
+			.thenReturn(new PhoneEntity());
+		
+		when(dao.update(phoneEntity))
+			.thenReturn(new PhoneEntity());
+		
+		service.update(testPhone, phoneId);
+	
+		verify(dao).update(phoneEntity);
+	}
+	
+	@Test
+	void testDelete() {
+		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
+		phoneEntity.setPersonEntity(new PersonEntity());
+		
+        when(dao.findById(phoneId))
+        		.thenReturn(phoneEntity);
+        
+        service.delete(phoneId);
+		
+		verify(dao).delete(dao.findById(phoneId));
+	}
 }	

@@ -13,5 +13,5 @@ public class PersonCriteria {
 	@Builder.Default
     private int age = 0;
     @Builder.Default
-    private String gender = "UNKNOWN";
+    private String gender = "";
 }

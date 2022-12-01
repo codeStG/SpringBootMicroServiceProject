@@ -1,10 +1,5 @@
 package com.stgcodes.service;
 
-import static com.stgcodes.specifications.person.PersonSpecifications.hasNameLike;
-import static com.stgcodes.specifications.person.PersonSpecifications.ofAge;
-import static com.stgcodes.specifications.person.PersonSpecifications.ofGender;
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -19,6 +14,7 @@ import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
+import com.stgcodes.specifications.person.PersonSpecifications;
 import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
 
@@ -27,6 +23,9 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     private PersonDao dao;
+    
+    @Autowired
+    private PersonSpecifications specs;
 
     @Autowired
     private PersonValidator validator;
@@ -41,13 +40,10 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<Person> findByCriteria(PersonCriteria criteria) {
+    public List<Person> findByCriteria(PersonCriteria searchCriteria) {
         List<Person> result = new ArrayList<>();
                 
-        dao.findAll(where(hasNameLike(criteria.getFirstName())
-        		.and(where(hasNameLike(criteria.getLastName()))))
-        		.and(where(ofAge(criteria.getAge())))
-        		.and(where(ofGender(criteria.getGender()))))
+        dao.findAll(specs.whereMatches(searchCriteria))
                 .forEach(entity -> result.add(mapToModel(entity)));
 
         result.sort(new PersonComparator());

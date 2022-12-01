@@ -1,9 +1,8 @@
 package com.stgcodes.service;
 
-import static com.stgcodes.specifications.PersonSpecs.containsTextInFirstName;
-import static com.stgcodes.specifications.PersonSpecs.containsTextInLastName;
-import static com.stgcodes.specifications.PersonSpecs.ofAge;
-import static com.stgcodes.specifications.PersonSpecs.ofGender;
+import static com.stgcodes.specifications.person.PersonSpecifications.hasNameLike;
+import static com.stgcodes.specifications.person.PersonSpecifications.ofAge;
+import static com.stgcodes.specifications.person.PersonSpecifications.ofGender;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ import com.stgcodes.validation.PersonValidator;
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
-    PersonDao dao;
+    private PersonDao dao;
 
     @Autowired
     private PersonValidator validator;
@@ -44,10 +43,11 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<Person> findByCriteria(PersonCriteria criteria) {
         List<Person> result = new ArrayList<>();
-        dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
-                .and(containsTextInLastName(criteria.getLastName()))
-                .and(ofAge(criteria.getAge()))
-                .and(ofGender(criteria.getGender())))
+                
+        dao.findAll(where(hasNameLike(criteria.getFirstName())
+        		.and(where(hasNameLike(criteria.getLastName()))))
+        		.and(where(ofAge(criteria.getAge())))
+        		.and(where(ofGender(criteria.getGender()))))
                 .forEach(entity -> result.add(mapToModel(entity)));
 
         result.sort(new PersonComparator());

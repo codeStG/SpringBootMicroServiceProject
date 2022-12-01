@@ -6,8 +6,12 @@ import lombok.Data;
 @Data
 @Builder
 public class PersonCriteria {
-    private String firstName;
-    private String lastName;
-    private int age;
-    private String gender;
+	@Builder.Default
+    private String firstName = "";
+	@Builder.Default
+    private String lastName = "";
+	@Builder.Default
+    private int age = 0;
+    @Builder.Default
+    private String gender = "UNKNOWN";
 }

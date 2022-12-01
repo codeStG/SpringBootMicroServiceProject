@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.stgcodes.dao.PersonDao;
-import com.stgcodes.dao.PhoneDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PersonMapper;
@@ -28,9 +27,6 @@ public class PersonServiceImplTests {
 	
 	@Mock
 	private PersonDao dao;
-	
-	@Mock
-	private PhoneDao phoneDao;
 	
 	@Mock
 	private PersonValidator validator;
@@ -71,7 +67,28 @@ public class PersonServiceImplTests {
 		
 		verify(dao).findAll();
 	}
-
+	
+	@Test
+	void testFindByCriteria() {
+//		PersonCriteria searchCriteria = PersonCriteria.builder()
+//				.firstName("r")
+//				.lastName("r")
+//				.age(0)
+//				.gender("male")
+//				.build();
+//		
+//		when(specs.containsSearchCriteria(searchCriteria))
+//			.thenReturn(Mockito.any(Specification));
+//				
+//		when(dao.findAll(spec))
+//			.thenReturn(List.of(new PersonEntity()));
+//		
+//		service.findByCriteria(searchCriteria);
+//		
+//		verify(specs).containsSearchCriteria(searchCriteria);
+//		verify(dao).findAll(spec);
+	}
+	
 	@Test
 	void testFindById() {		
 		when(dao.findById(personId))

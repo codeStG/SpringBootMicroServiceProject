@@ -18,10 +18,10 @@ import com.stgcodes.validation.PhoneValidator;
 public class PhoneServiceImpl implements PhoneService {
 
     @Autowired
-    PhoneDao dao;
+    private PhoneDao dao;
 
     @Autowired
-    PersonDao personDao;
+    private PersonDao personDao;
 
     @Autowired
     private PhoneValidator validator;

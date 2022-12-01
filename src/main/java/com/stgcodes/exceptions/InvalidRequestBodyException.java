@@ -5,7 +5,8 @@ import org.springframework.validation.Errors;
 
 public class InvalidRequestBodyException extends RuntimeException {
 
-    private final transient Errors errors;
+	private static final long serialVersionUID = -6668944283553004365L;
+	private final transient Errors errors;
 
     public InvalidRequestBodyException(Class<?> clazz, Errors errors) {
         super(generateMessage(clazz.getSimpleName(), errors.getErrorCount()));
@@ -13,7 +14,7 @@ public class InvalidRequestBodyException extends RuntimeException {
     }
 
     private static String generateMessage(String entity, int errorCount) {
-        return "There were " + errorCount + " error(s) saving the " + StringUtils.capitalize(entity);
+        return "Found " + errorCount + " error(s) in the parameters provided for " + StringUtils.capitalize(entity);
     }
 
     public Errors getErrors() {

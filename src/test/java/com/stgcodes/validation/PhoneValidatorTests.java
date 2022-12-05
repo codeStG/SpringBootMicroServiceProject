@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.exceptions.IllegalPhoneDeletionException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.mappers.PersonMapper;
+import com.stgcodes.mappers.UserMapper;
 import com.stgcodes.mappers.PhoneMapper;
-import com.stgcodes.model.Person;
+import com.stgcodes.model.User;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.enums.PhoneType;
 
@@ -24,7 +24,7 @@ import com.stgcodes.validation.enums.PhoneType;
 class PhoneValidatorTests {
 
     private Phone phone;
-    private PersonEntity personEntity;
+    private UserEntity userEntity;
     private PhoneValidator validator;
 
     @BeforeEach
@@ -35,13 +35,13 @@ class PhoneValidatorTests {
                 .phoneType(PhoneType.MOBILE)
                 .build();
         
-        personEntity = PersonMapper.INSTANCE.personToPersonEntity(
-        		Person.builder()
-        		.personId(0L)
+        userEntity = UserMapper.INSTANCE.userToUserEntity(
+        		User.builder()
+        		.userId(0L)
         		.phones(List.of(PhoneMapper.INSTANCE.phoneToPhoneEntity(phone)))
         		.build());
         
-        phone.setPersonEntity(personEntity);
+        phone.setUserEntity(userEntity);
 
         validator = new PhoneValidator();
     }
@@ -66,15 +66,15 @@ class PhoneValidatorTests {
     
     @Test
     void testUserHasMoreThanOnePhoneOnDelete() {
-    	personEntity.addPhone(PhoneMapper.INSTANCE.phoneToPhoneEntity(Phone.builder().build()));
+    	userEntity.addPhone(PhoneMapper.INSTANCE.phoneToPhoneEntity(Phone.builder().build()));
     	
-    	assertDoesNotThrow(() -> validator.validateUserHasMorePhones(personEntity));
+    	assertDoesNotThrow(() -> validator.validateUserHasMorePhones(userEntity));
     }
     
     @Test
     void testUserHasOnePhoneOnDelete() {    	
     	IllegalPhoneDeletionException ex =  
-        		assertThrows(IllegalPhoneDeletionException.class, () -> validator.validateUserHasMorePhones(personEntity), "Expected Phone Validator to throw but it did not");
+        		assertThrows(IllegalPhoneDeletionException.class, () -> validator.validateUserHasMorePhones(userEntity), "Expected Phone Validator to throw but it did not");
         assertEquals("User account must have at least one Phone", ex.getMessage());
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.stgcodes.endpoint.AddressController;
-import com.stgcodes.endpoint.PersonController;
+import com.stgcodes.endpoint.UserController;
 import com.stgcodes.endpoint.PhoneController;
 
 @SpringBootTest
@@ -17,14 +17,14 @@ class ApplicationTests {
 	private AddressController addressController;
 	
 	@Autowired
-	private PersonController personController;
+	private UserController userController;
 	
 	@Autowired
 	private PhoneController phoneController;
 	
 	@Test
 	void contextLoads() throws Exception {
-		assertThat(personController).isNotNull();
+		assertThat(userController).isNotNull();
 		assertThat(addressController).isNotNull();
 		assertThat(phoneController).isNotNull();
 

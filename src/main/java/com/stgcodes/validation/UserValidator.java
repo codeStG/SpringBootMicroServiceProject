@@ -16,55 +16,55 @@ import org.springframework.validation.ValidationUtils;
 
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.Person;
+import com.stgcodes.model.User;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class PersonValidator {
+public class UserValidator {
 
     private static final Integer MAX_NAME_LENGTH = 25;
 
-    public void validate(Person person) {
-        Errors errors = new BindException(person, "person");
+    public void validate(User user) {
+        Errors errors = new BindException(user, "user");
 
-        validateFirstName(person, errors);
-        validateLastName(person, errors);
-        validateUsername(person.getUsername(), errors);
-        validateDateOfBirth(person.getDateOfBirth(), errors);
-        validateSocialSecurityNumber(person.getSocialSecurityNumber(), errors);
+        validateFirstName(user, errors);
+        validateLastName(user, errors);
+        validateUsername(user.getUsername(), errors);
+        validateDateOfBirth(user.getDateOfBirth(), errors);
+        validateSocialSecurityNumber(user.getSocialSecurityNumber(), errors);
         ValidationUtils.rejectIfEmpty(errors, "gender", "gender.invalid");
-        validateEmail(person.getEmail(), errors);
-        validatePhones(person.getPhones(), errors);
+        validateEmail(user.getEmail(), errors);
+        validatePhones(user.getPhones(), errors);
         
         if(errors.hasErrors()) {
             log.error(errors.toString());
-            throw new InvalidRequestBodyException(Person.class, errors);
+            throw new InvalidRequestBodyException(User.class, errors);
         }
     }
 
-    private void validateFirstName(Person person, Errors errors) {
-        String firstName = person.getFirstName();
+    private void validateFirstName(User user, Errors errors) {
+        String firstName = user.getFirstName();
 
         if (!firstName.matches(LETTER)) {
             errors.rejectValue("firstName", "name.format");
         }
 
         if (firstName.length() > MAX_NAME_LENGTH) {
-            person.setFirstName(firstName.substring(0, MAX_NAME_LENGTH));
+            user.setFirstName(firstName.substring(0, MAX_NAME_LENGTH));
         }
     }
 
-    private void validateLastName(Person person, Errors errors) {
-        String lastName = person.getLastName();
+    private void validateLastName(User user, Errors errors) {
+        String lastName = user.getLastName();
 
         if (!lastName.matches(LETTER)) {
             errors.rejectValue("lastName", "name.format");
         }
 
         if (lastName.length() > MAX_NAME_LENGTH) {
-            person.setLastName(lastName.substring(0, MAX_NAME_LENGTH));
+            user.setLastName(lastName.substring(0, MAX_NAME_LENGTH));
         }
     }
 

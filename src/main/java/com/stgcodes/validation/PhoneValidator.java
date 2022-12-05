@@ -7,7 +7,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.exceptions.IllegalPhoneDeletionException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Phone;
@@ -30,8 +30,8 @@ public class PhoneValidator {
         }
     }
     
-    public void validateUserHasMorePhones(PersonEntity personEntity) {
-    	if(personEntity.getPhones().size() < 2) {
+    public void validateUserHasMorePhones(UserEntity userEntity) {
+    	if(userEntity.getPhones().size() < 2) {
     		throw new IllegalPhoneDeletionException();
     	}
     }

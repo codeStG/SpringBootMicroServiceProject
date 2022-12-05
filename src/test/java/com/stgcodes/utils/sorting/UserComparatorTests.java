@@ -8,38 +8,38 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.stgcodes.model.Person;
+import com.stgcodes.model.User;
 
-class PersonComparatorTests {
+class UserComparatorTests {
 
-    List<Person> people;
+    List<User> users;
 
     @BeforeEach
     public void setUp() {
-        people = new ArrayList<>();
+        users = new ArrayList<>();
 
-        people.add(Person.builder()
+        users.add(User.builder()
                 .firstName("Lionel")
                 .lastName("Montgomery")
                 .username("limontgom")
                 .email("limontgom@hotmail.com")
                 .build());
 
-        people.add(Person.builder()
+        users.add(User.builder()
                 .firstName("Zachary")
                 .lastName("Still")
                 .username("zastill")
                 .email("zastill@gmail.com")
                 .build());
 
-        people.add(Person.builder()
+        users.add(User.builder()
                 .firstName("Andreas")
                 .lastName("Muniz")
                 .username("anmuniz")
                 .email("anmuniz@hotmail.com")
                 .build());
 
-        people.add(Person.builder()
+        users.add(User.builder()
                 .firstName("Lionel")
                 .lastName("Montgomery")
                 .username("liomontgom")
@@ -48,13 +48,13 @@ class PersonComparatorTests {
     }
 
     @Test
-    void testPeopleSortedByFirstNameAscending() {
-        Collections.shuffle(people);
-        people.sort(new PersonComparator());
+    void testUsersSortedByFirstNameAscending() {
+        Collections.shuffle(users);
+        users.sort(new UserComparator());
 
-        for(int i = 0; i < people.size() - 1; i++) {
-            Person p1 = people.get(i);
-            Person p2 = people.get(i + 1);
+        for(int i = 0; i < users.size() - 1; i++) {
+            User p1 = users.get(i);
+            User p2 = users.get(i + 1);
 
             int result = p1.getLastName().compareTo(p2.getLastName());
 

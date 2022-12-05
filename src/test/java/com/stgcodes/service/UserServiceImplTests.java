@@ -14,35 +14,35 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.stgcodes.criteria.PersonCriteria;
-import com.stgcodes.dao.PersonDao;
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.criteria.UserCriteria;
+import com.stgcodes.dao.UserDao;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.mappers.PersonMapper;
-import com.stgcodes.model.Person;
-import com.stgcodes.specifications.person.NameLikeSpecification;
-import com.stgcodes.specifications.person.PersonSpecifications;
-import com.stgcodes.validation.PersonValidator;
+import com.stgcodes.mappers.UserMapper;
+import com.stgcodes.model.User;
+import com.stgcodes.specifications.user.NameLikeSpecification;
+import com.stgcodes.specifications.user.UserSpecifications;
+import com.stgcodes.validation.UserValidator;
 import com.stgcodes.validation.enums.Gender;
 import com.stgcodes.validation.enums.PhoneType;
 
 @ExtendWith(MockitoExtension.class)
-class PersonServiceImplTests {
+class UserServiceImplTests {
 	
 	@Mock
-	private PersonDao dao;
+	private UserDao dao;
 	
 	@Mock
-	private PersonSpecifications specs;
+	private UserSpecifications specs;
 	
 	@Mock
-	private PersonValidator validator;
+	private UserValidator validator;
 	
 	@InjectMocks
-	private PersonServiceImpl service;
+	private UserServiceImpl service;
 	
-	Person testPerson;
-	Long personId;
+	User testUser;
+	Long userId;
 	
 	@BeforeEach
 	void setup() {
@@ -50,8 +50,8 @@ class PersonServiceImplTests {
 		testPhone.setPhoneNumber("123-12-1234");
 		testPhone.setPhoneType(PhoneType.HOME);
 		
-		testPerson = Person.builder()
-				.personId(0L)
+		testUser = User.builder()
+				.userId(0L)
 				.firstName("Bryan")
                 .lastName("Byard")
                 .username("brbyard")
@@ -62,13 +62,13 @@ class PersonServiceImplTests {
                 .phones(List.of(testPhone))
                 .build();
 		
-		personId = 1L;
+		userId = 1L;
 	}
 	
 	@Test
 	void testFindAll() {
 		when(dao.findAll())
-			.thenReturn(List.of(new PersonEntity()));
+			.thenReturn(List.of(new UserEntity()));
 		
 		service.findAll();
 		
@@ -77,20 +77,20 @@ class PersonServiceImplTests {
 	
 	@Test
 	void testFindByCriteria() {
-		PersonCriteria searchCriteria = PersonCriteria.builder()
+		UserCriteria searchCriteria = UserCriteria.builder()
 				.firstName("r")
 				.lastName("r")
 				.age(0)
 				.gender("")
 				.build();
 		
-		Specification<PersonEntity> spec = new NameLikeSpecification(searchCriteria.getFirstName());
+		Specification<UserEntity> spec = new NameLikeSpecification(searchCriteria.getFirstName());
 		
 		when(specs.whereMatches(searchCriteria))
 			.thenReturn(spec);
 				
 		when(dao.findAll(spec))
-			.thenReturn(List.of(new PersonEntity()));
+			.thenReturn(List.of(new UserEntity()));
 		
 		service.findByCriteria(searchCriteria);
 		
@@ -100,53 +100,53 @@ class PersonServiceImplTests {
 	
 	@Test
 	void testFindById() {		
-		when(dao.findById(personId))
-			.thenReturn(new PersonEntity());
+		when(dao.findById(userId))
+			.thenReturn(new UserEntity());
 		
-		service.findById(personId);
+		service.findById(userId);
 		
-		verify(dao).findById(personId);
+		verify(dao).findById(userId);
 	}
 	
 	@Test
 	void testSave() { 		
-		PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(testPerson);
+		UserEntity userEntity = UserMapper.INSTANCE.userToUserEntity(testUser);
 		
-		when(dao.save(personEntity))
-			.thenReturn(new PersonEntity());
+		when(dao.save(userEntity))
+			.thenReturn(new UserEntity());
 		
-		service.save(testPerson);
+		service.save(testUser);
 		
-		verify(dao).save(personEntity);
+		verify(dao).save(userEntity);
 	}
 	
 	@Test
 	void testUpdate() {
-		personId = 0L;
-		PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(testPerson);
+		userId = 0L;
+		UserEntity userEntity = UserMapper.INSTANCE.userToUserEntity(testUser);
 		
-		when(dao.findById(personId))
-			.thenReturn(personEntity);
+		when(dao.findById(userId))
+			.thenReturn(userEntity);
 				
-		when(dao.update(personEntity))
-			.thenReturn(new PersonEntity());
+		when(dao.update(userEntity))
+			.thenReturn(new UserEntity());
 		
-		service.update(testPerson, personId);
+		service.update(testUser, userId);
 		
-		verify(dao).findById(personId);
-		verify(dao).update(personEntity);
+		verify(dao).findById(userId);
+		verify(dao).update(userEntity);
 	}
 	
 	@Test
 	void testDelete() {
-		personId = 0L;
-		PersonEntity personEntity = PersonMapper.INSTANCE.personToPersonEntity(testPerson);
+		userId = 0L;
+		UserEntity userEntity = UserMapper.INSTANCE.userToUserEntity(testUser);
 		
-		when(dao.findById(personId))
-			.thenReturn(personEntity);
+		when(dao.findById(userId))
+			.thenReturn(userEntity);
 		
-		service.delete(personId);
+		service.delete(userId);
 		
-		verify(dao).delete(dao.findById(personId));
+		verify(dao).delete(dao.findById(userId));
 	}
 }	

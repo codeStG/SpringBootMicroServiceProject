@@ -1,4 +1,4 @@
-package com.stgcodes.specifications.person;
+package com.stgcodes.specifications.user;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -11,12 +11,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
-import com.stgcodes.criteria.PersonCriteria;
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.criteria.UserCriteria;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.validation.enums.Gender;
 
-public class OfGenderSpecification implements Specification<PersonEntity> {
+public class OfGenderSpecification implements Specification<UserEntity> {
 
 	private static final long serialVersionUID = 6857167798115847457L;
 	private final String gender;
@@ -26,7 +26,7 @@ public class OfGenderSpecification implements Specification<PersonEntity> {
 	}
 	
 	@Override
-	public Predicate toPredicate(Root<PersonEntity> searchCriteria, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {		
+	public Predicate toPredicate(Root<UserEntity> searchCriteria, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {		
 		Expression<String> expression = searchCriteria.get("gender");
 
 		if(StringUtils.isEmpty(gender)) {
@@ -36,9 +36,9 @@ public class OfGenderSpecification implements Specification<PersonEntity> {
 		try {
 			return criteriaBuilder.equal(expression, Gender.valueOf(gender.toUpperCase()));
 		} catch(IllegalArgumentException e) {
-			Errors errors = new BindException(PersonCriteria.builder().build(), "personCriteria");
+			Errors errors = new BindException(UserCriteria.builder().build(), "userCriteria");
 			errors.rejectValue("gender", "gender.invalid");
-			throw new InvalidRequestBodyException(PersonCriteria.class, errors);
+			throw new InvalidRequestBodyException(UserCriteria.class, errors);
 		}
 	}
 

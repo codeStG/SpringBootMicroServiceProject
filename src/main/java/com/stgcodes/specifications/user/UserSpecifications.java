@@ -1,36 +1,36 @@
-package com.stgcodes.specifications.person;
+package com.stgcodes.specifications.user;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import com.stgcodes.criteria.PersonCriteria;
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.criteria.UserCriteria;
+import com.stgcodes.entity.UserEntity;
 
 @Component
-public class PersonSpecifications {
+public class UserSpecifications {
 
-	private PersonSpecifications() {
+	private UserSpecifications() {
 		
 	}
 	
-	public Specification<PersonEntity> whereMatches(PersonCriteria searchCriteria) {
+	public Specification<UserEntity> whereMatches(UserCriteria searchCriteria) {
 		return where(hasNameLike(searchCriteria.getFirstName())
         		.and(where(hasNameLike(searchCriteria.getLastName()))))
         		.and(where(ofAge(searchCriteria.getAge())))
         		.and(where(ofGender(searchCriteria.getGender())));
 	}
 	
-	private Specification<PersonEntity> hasNameLike(String name) {
+	private Specification<UserEntity> hasNameLike(String name) {
 		return new NameLikeSpecification(name);
 	}
 	
-	private Specification<PersonEntity> ofAge(int age) {
+	private Specification<UserEntity> ofAge(int age) {
 		return new OfAgeSpecification(age);
 	}
 	
-	private Specification<PersonEntity> ofGender(String gender) {
+	private Specification<UserEntity> ofGender(String gender) {
 		return new OfGenderSpecification(gender);
 	}
 }

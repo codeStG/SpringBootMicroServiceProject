@@ -12,9 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.stgcodes.dao.PersonDao;
+import com.stgcodes.dao.UserDao;
 import com.stgcodes.dao.PhoneDao;
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
@@ -28,7 +28,7 @@ class PhoneServiceImplTests {
 	private PhoneDao dao;
 	
 	@Mock
-	private PersonDao personDao;
+	private UserDao userDao;
 	
 	@Mock
 	private PhoneValidator validator;
@@ -38,7 +38,7 @@ class PhoneServiceImplTests {
 	
 	Phone testPhone;
 	Long phoneId;
-	Long personId;
+	Long userId;
 	
 	@BeforeEach
 	void setup() {
@@ -49,7 +49,7 @@ class PhoneServiceImplTests {
 				.build();
 		
 		phoneId = 1L;
-		personId = 1L;
+		userId = 1L;
 	}
 	
 	@Test
@@ -76,15 +76,15 @@ class PhoneServiceImplTests {
 	void testSave() { 		
 		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
 		
-		when(personDao.findById(personId))
-			.thenReturn(new PersonEntity());
+		when(userDao.findById(userId))
+			.thenReturn(new UserEntity());
 		
 		when(dao.save(phoneEntity))
 			.thenReturn(new PhoneEntity());
 		
-		service.save(testPhone, personId);
+		service.save(testPhone, userId);
 		
-		verify(personDao).findById(personId);
+		verify(userDao).findById(userId);
 		verify(dao).save(phoneEntity);
 	}
 	
@@ -108,7 +108,7 @@ class PhoneServiceImplTests {
 	@Test
 	void testDelete() {
 		PhoneEntity phoneEntity = PhoneMapper.INSTANCE.phoneToPhoneEntity(testPhone);
-		phoneEntity.setPersonEntity(new PersonEntity());
+		phoneEntity.setUserEntity(new UserEntity());
 		
         when(dao.findById(phoneId))
         		.thenReturn(phoneEntity);

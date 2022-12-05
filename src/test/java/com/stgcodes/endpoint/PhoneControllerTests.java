@@ -81,32 +81,32 @@ class PhoneControllerTests {
 	
 	@Test
 	void addPhoneShouldReturnCreatedPhone() throws Exception {
-		Long personId = 3L;
+		Long userId = 3L;
 		testPhone.setPhoneNumber("817-718-8177");
 
-		mockMvc.perform(put("/phones/add?personId={personId}", personId)
+		mockMvc.perform(put("/phones/add?userId={userId}", userId)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPhone)))
 				.andExpect(jsonPath("$.phoneNumber", is(testPhone.getPhoneNumber())))
 				.andExpect(jsonPath("$.phoneType", is(testPhone.getPhoneType().toString())))
-				.andExpect(jsonPath("$.personEntity.personId", is(personId.intValue())))
+				.andExpect(jsonPath("$.userEntity.userId", is(userId.intValue())))
 				.andExpect(status().isCreated());
 	}
 	
 	@Test
-	void addPhoneShouldReturnNotFoundWithoutPersonId() throws Exception {
+	void addPhoneShouldReturnNotFoundWithoutUserId() throws Exception {
 		mockMvc.perform(put("/phones/add")
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPhone)))
-				.andExpect(jsonPath("$.message", is("PersonEntity was not found with ID -1")))
+				.andExpect(jsonPath("$.message", is("UserEntity was not found with ID -1")))
 				.andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void addPhoneShouldReturnBadRequestIfMissingRequestBody() throws Exception {
-		Long personId = 3L;
+		Long userId = 3L;
 		
-		mockMvc.perform(put("/phones/add?personId={personId}", personId)
+		mockMvc.perform(put("/phones/add?userId={userId}", userId)
 				.content(""))
 				.andExpect(jsonPath("$.message", is("Malformed JSON request")))
 				.andExpect(status().isBadRequest());
@@ -114,10 +114,10 @@ class PhoneControllerTests {
 	
 	@Test
 	void addPhoneShouldReturnBadRequestIfRequestBodyInvalid() throws Exception {
-		Long personId = 3L;
+		Long userId = 3L;
 		invalidateTestPhone();
 		
-		mockMvc.perform(put("/phones/add?personId={personId}", personId)
+		mockMvc.perform(put("/phones/add?userId={userId}", userId)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPhone)))
 				.andExpect(jsonPath("$.subErrors[0].message", is(messageSource.getMessage("phonenumber.format", null, Locale.US))))
@@ -127,10 +127,10 @@ class PhoneControllerTests {
 	
 	@Test
 	void addPhoneShouldReturnInternalErrorIfPhoneIdExists() throws Exception {
-		Long personId = 3L;
+		Long userId = 3L;
 		testPhone.setPhoneId(1L);
 		
-		mockMvc.perform(put("/phones/add?personId={personId}", personId)
+		mockMvc.perform(put("/phones/add?userId={userId}", userId)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(testPhone)))
 				.andExpect(jsonPath("$.message", is("Encountered an error while attempting to save")))

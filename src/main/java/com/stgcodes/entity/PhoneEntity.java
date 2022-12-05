@@ -31,7 +31,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@JsonIgnoreProperties({"phoneId", "personEntity"})
+@JsonIgnoreProperties({"phoneId", "userEntity"})
 public class PhoneEntity {
 
     @Id
@@ -49,8 +49,8 @@ public class PhoneEntity {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "person_id")
-    private PersonEntity personEntity;
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
 
     @Override
     public boolean equals(Object o) {

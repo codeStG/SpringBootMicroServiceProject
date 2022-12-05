@@ -30,18 +30,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "PERSON_TBL")
+@Table(name = "USER_TBL")
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
 @JsonIgnoreProperties({"firstName", "lastName", "username", "dateOfBirth", "age", "socialSecurityNumber", "gender", "email", "phones"})
-public class PersonEntity {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "person_id")
-    private Long personId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "first_name", nullable = false, length = 25)
     private String firstName;
@@ -69,7 +69,7 @@ public class PersonEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy="personEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="userEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneEntity> phones = new ArrayList<>();
 
     public String getFullName() {
@@ -77,7 +77,7 @@ public class PersonEntity {
     }
     
     public void addPhone(PhoneEntity phone) {
-        phone.setPersonEntity(this);
+        phone.setUserEntity(this);
         phones.add(phone);
     }
 
@@ -89,8 +89,8 @@ public class PersonEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        PersonEntity that = (PersonEntity) o;
-        return personId != null && Objects.equals(personId, that.personId);
+        UserEntity that = (UserEntity) o;
+        return userId != null && Objects.equals(userId, that.userId);
     }
 
     @Override

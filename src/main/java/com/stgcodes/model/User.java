@@ -11,9 +11,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Person {
+public class User {
 
-    private Long personId;
+    private Long userId;
     private String firstName;
     private String lastName;
     private String username;

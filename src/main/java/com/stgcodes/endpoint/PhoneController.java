@@ -37,8 +37,8 @@ public class PhoneController {
     }
 
     @PutMapping(path = "/add")
-    public ResponseEntity<Phone> addPhone(@RequestBody Phone phone, @RequestParam(defaultValue = "-1") Long personId) throws InvalidRequestBodyException, IdNotFoundException, DataAccessException {
-        return new ResponseEntity<>(service.save(phone, personId), HttpStatus.CREATED);
+    public ResponseEntity<Phone> addPhone(@RequestBody Phone phone, @RequestParam(defaultValue = "-1") Long userId) throws InvalidRequestBodyException, IdNotFoundException, DataAccessException {
+        return new ResponseEntity<>(service.save(phone, userId), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/update")

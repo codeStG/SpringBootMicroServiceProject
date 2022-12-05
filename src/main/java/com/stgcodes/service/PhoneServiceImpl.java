@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.stgcodes.dao.PersonDao;
+import com.stgcodes.dao.UserDao;
 import com.stgcodes.dao.PhoneDao;
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
@@ -21,7 +21,7 @@ public class PhoneServiceImpl implements PhoneService {
     private PhoneDao dao;
 
     @Autowired
-    private PersonDao personDao;
+    private UserDao userDao;
 
     @Autowired
     private PhoneValidator validator;
@@ -42,12 +42,12 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
-    public Phone save(Phone phone, Long personId) {
-        PersonEntity personEntity = personDao.findById(personId);
+    public Phone save(Phone phone, Long userId) {
+        UserEntity userEntity = userDao.findById(userId);
         validator.validate(phone);
 
         PhoneEntity phoneEntity = mapToEntity(phone);
-        personEntity.addPhone(phoneEntity);
+        userEntity.addPhone(phoneEntity);
         PhoneEntity result = dao.save(phoneEntity);
 
         return mapToModel(result);
@@ -55,12 +55,12 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public Phone update(Phone phone, Long phoneId) {
-        PersonEntity personEntity = dao.findById(phoneId).getPersonEntity();
+        UserEntity userEntity = dao.findById(phoneId).getUserEntity();
         validator.validate(phone);
 
         PhoneEntity phoneEntity = mapToEntity(phone);
         phoneEntity.setPhoneId(phoneId);
-        phoneEntity.setPersonEntity(personEntity);
+        phoneEntity.setUserEntity(userEntity);
 
         return mapToModel(dao.update(phoneEntity));
     }
@@ -68,12 +68,12 @@ public class PhoneServiceImpl implements PhoneService {
     @Override
     public void delete(Long phoneId) {
     	PhoneEntity phoneEntity = dao.findById(phoneId);
-    	PersonEntity personEntity = phoneEntity.getPersonEntity();
+    	UserEntity userEntity = phoneEntity.getUserEntity();
     	
-    	validator.validateUserHasMorePhones(personEntity);
+    	validator.validateUserHasMorePhones(userEntity);
     
-        personEntity.removePhone(phoneEntity);
-        personDao.update(personEntity);
+        userEntity.removePhone(phoneEntity);
+        userDao.update(userEntity);
     }
 
     private PhoneEntity mapToEntity(Phone phone) {

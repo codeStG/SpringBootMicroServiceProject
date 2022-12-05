@@ -1,4 +1,4 @@
-package com.stgcodes.specifications.person;
+package com.stgcodes.specifications.user;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -8,9 +8,9 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.stgcodes.entity.PersonEntity;
+import com.stgcodes.entity.UserEntity;
 
-public class NameLikeSpecification implements Specification<PersonEntity> {
+public class NameLikeSpecification implements Specification<UserEntity> {
 
 	private static final long serialVersionUID = 5048704077731414182L;
 	private final String name;
@@ -20,7 +20,7 @@ public class NameLikeSpecification implements Specification<PersonEntity> {
 	}
 	
 	@Override
-	public Predicate toPredicate(Root<PersonEntity> searchCriteria, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+	public Predicate toPredicate(Root<UserEntity> searchCriteria, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
 		Expression<String> expression = criteriaBuilder.lower(searchCriteria.get("firstName"));
 		return criteriaBuilder.like(expression, "%" + name.toLowerCase() + "%");
 	}

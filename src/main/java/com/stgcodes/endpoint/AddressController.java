@@ -18,7 +18,6 @@ import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Address;
 import com.stgcodes.service.AddressService;
-import com.stgcodes.validation.AddressValidator;
 
 @RestController
 @RequestMapping("/addresses")
@@ -26,9 +25,6 @@ public class AddressController {
 
     @Autowired
     private AddressService service;
-
-    @Autowired
-    private AddressValidator validator;
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Address>> getAllAddresses() {

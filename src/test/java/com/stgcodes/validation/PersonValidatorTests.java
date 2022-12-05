@@ -1,20 +1,21 @@
 package com.stgcodes.validation;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Person;
 import com.stgcodes.validation.enums.Gender;
 import com.stgcodes.validation.enums.PhoneType;
@@ -22,9 +23,7 @@ import com.stgcodes.validation.enums.PhoneType;
 class PersonValidatorTests {
 
     private Person person;
-    private ValidatorTestUtils validatorTestUtils;
-    private ResourceBundleMessageSource messageSource;
-    private List<String> errors;
+    private PersonValidator validator;
 
     @BeforeEach
     void setUp() {
@@ -43,16 +42,7 @@ class PersonValidatorTests {
                 .phones(List.of(testPhone))
                 .build();
 
-        validatorTestUtils = new ValidatorTestUtils(new PersonValidator(), person);
-        messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("ValidationMessages");
-    }
-    
-    @Test
-    void testValidatorSupportsPerson() {
-    	PersonValidator validator = new PersonValidator();
-
-    	assertTrue(validator.supports(Person.class));
+        validator = new PersonValidator();
     }
 
 
@@ -60,150 +50,142 @@ class PersonValidatorTests {
     @ValueSource(strings = {"George", "Bobbie", "Somerandomguy", "Frederick", "Thisisanacceptableinput", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"})
     void testValidFirstName(String value) {
         person.setFirstName(value);
-        errors = validatorTestUtils.getErrors();
+        
+        assertDoesNotThrow(() -> validator.validate(person));
 
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   ", "\n", "\t", "G$%^&", "Ge0rge"})
     void testInvalidFirstName(String value) {
         person.setFirstName(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("name.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("name.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"Flores", "Saskatchewan", "Somerandomlastname", "Areallyunnecesarilylonglastnamethatwillbetruncated"})
     void testValidLastName(String value) {
         person.setFirstName(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        assertDoesNotThrow(() -> validator.validate(person));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   ", "\n", "\t", "Fl0res", "$%^%&%&$%"})
     void testInvalidLastName(String value) {
         person.setLastName(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("name.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("name.format", ex.getErrors().getFieldError().getCode());
     }
     
     @Test
     void testLongLastNameIsTruncated() {
         person.setLastName("ThisIsAnExceptionallyLongLastName");
-        errors = validatorTestUtils.getErrors();
-
-        assertEquals(25, person.getLastName().length());
+        validator.validate(person);
+        
+        assertEquals(25, person.getLastName().length(), "Something went wrong truncating the last name");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"geflores", "username", "this_is.acceptable", "sixchar", "Uptotwentyfivecharacterss"})
     void testValidUsername(String value) {
         person.setUsername(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        assertDoesNotThrow(() -> validator.validate(person));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "       ", "\n", "\t", "Georg", "Up to twenty six characters"})
     void testInvalidUsername(String value) {
         person.setUsername(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("username.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("username.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"2022-08-11", "1994-11-12", "1932-12-31", "2010-01-01"})
     void testValidDate(String value) {
         person.setDateOfBirth(LocalDate.parse(value, DateTimeFormatter.ISO_DATE));
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        assertDoesNotThrow(() -> validator.validate(person));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"3000-12-31", "2092-10-01", "3091-12-11", "4091-11-12"})
     void testFutureDateInvalid(String value) {
         person.setDateOfBirth(LocalDate.parse(value, DateTimeFormatter.ISO_DATE));
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("date.future", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("date.future", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"123-45-6789", "234-56-7890", "883-02-4509"})
     void testValidSocialSecurity(String value) {
         person.setSocialSecurityNumber(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        assertDoesNotThrow(() -> validator.validate(person));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   ", "\n", "\t", "123456789", "234567890", "000-00-0000", "999-99-9999"})
     void testInvalidSocialSecurity(String value) {
         person.setSocialSecurityNumber(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("ssn.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("ssn.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"MALE", "FEMALE", "REFUSE"})
     void testValidGender(String value) {
         person.setGender(Gender.valueOf(value));
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        assertDoesNotThrow(() -> validator.validate(person));
+    }
+    
+    @Test
+    void testInvalidGender() {
+        person.setGender(null);
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("gender.invalid", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"someone@something.net", "aperson@thedomain.org", "what@who.net", "email@address.com"})
     void testValidEmail(String value) {
         person.setEmail(value);
-        errors = validatorTestUtils.getErrors();
-
-        String expected = messageSource.getMessage("errors.none", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+        
+        assertDoesNotThrow(() -> validator.validate(person));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   ", "\n", "\t", "someone.net", "who@whatcom", "127.0.0.1"})
     void testInvalidEmail(String value) {
         person.setEmail(value);
-        errors = validatorTestUtils.getErrors();
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("email.format", ex.getErrors().getFieldError().getCode());
+    }
 
-        String expected = messageSource.getMessage("email.format", null, Locale.US);
-
-        assertEquals(expected, errors.get(0));
+    @Test
+    void testNoPhones() {
+        person.setPhones(Collections.emptyList());
+        
+        InvalidRequestBodyException ex =  
+        		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
+        assertEquals("phones.size", ex.getErrors().getFieldError().getCode());
     }
 }

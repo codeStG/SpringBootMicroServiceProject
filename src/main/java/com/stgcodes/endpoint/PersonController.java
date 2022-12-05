@@ -19,7 +19,6 @@ import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Person;
 import com.stgcodes.service.PersonService;
-import com.stgcodes.validation.PersonValidator;
 
 @RestController
 @RequestMapping("/people")
@@ -27,9 +26,6 @@ public class PersonController {
 
     @Autowired
     private PersonService service;
-
-    @Autowired
-    private PersonValidator validator;
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Person>> getAllPeople() {

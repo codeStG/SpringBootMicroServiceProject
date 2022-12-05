@@ -1,11 +1,5 @@
 package com.stgcodes.service;
 
-import static com.stgcodes.specifications.PersonSpecs.containsTextInFirstName;
-import static com.stgcodes.specifications.PersonSpecs.containsTextInLastName;
-import static com.stgcodes.specifications.PersonSpecs.ofAge;
-import static com.stgcodes.specifications.PersonSpecs.ofGender;
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -13,27 +7,25 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 
 import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
+import com.stgcodes.specifications.person.PersonSpecifications;
 import com.stgcodes.utils.sorting.PersonComparator;
 import com.stgcodes.validation.PersonValidator;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component("personService")
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
-    PersonDao dao;
+    private PersonDao dao;
+    
+    @Autowired
+    private PersonSpecifications specs;
 
     @Autowired
     private PersonValidator validator;
@@ -48,12 +40,10 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<Person> findByCriteria(PersonCriteria criteria) {
+    public List<Person> findByCriteria(PersonCriteria searchCriteria) {
         List<Person> result = new ArrayList<>();
-        dao.findAll(where(containsTextInFirstName(criteria.getFirstName()))
-                .and(containsTextInLastName(criteria.getLastName()))
-                .and(ofAge(criteria.getAge()))
-                .and(ofGender(criteria.getGender())))
+                
+        dao.findAll(specs.whereMatches(searchCriteria))
                 .forEach(entity -> result.add(mapToModel(entity)));
 
         result.sort(new PersonComparator());
@@ -71,49 +61,22 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person save(Person person) {
-        isValidRequestBody(person);
-
-        return savePerson(person);
-    }
-
-    private void isValidRequestBody(Person person) {
-        BindingResult bindingResult = new BindException(person, "person");
-
-        validator.validate(person, bindingResult);
-
-        if(bindingResult.hasErrors()) {
-            log.error(bindingResult.toString());
-            throw new InvalidRequestBodyException(Person.class, bindingResult);
-        }
-
-        person.setAge(calculateAge(person.getDateOfBirth()));
-    }
-
-    private Person savePerson(Person person) {
-        /**
-         * George - one school of thought on exception handling.
-         *
-         * My rule of thumb has been catch these types of cases at the service/domain level,
-         * propagate domain specific exceptions from there and handle those exceptions in the controllers as needed,
-         * perhaps by some specific error handler that displays the appropriate web page view
-         * based on exception types, etc.
-         *
-         * In our case, we would return the appropriate HttpStatus code in the ResponseEntity in the controller
-         *
-         */
+        validator.validate(person);
+        
         PersonEntity personEntity = mapToEntity(person);
         person.getPhones().forEach(phone -> phone.setPersonEntity(personEntity));
-
+        person.setAge(calculateAge(person.getDateOfBirth()));
+        
         PersonEntity result = dao.save(personEntity);
-
+        
         return mapToModel(result);
     }
 
     @Override
     public Person update(Person person, Long personId) {
-        Person personToUpdate = findById(personId);
-        List<PhoneEntity> phones = personToUpdate.getPhones();
-        isValidRequestBody(person);
+        PersonEntity existingPerson = dao.findById(personId);
+        List<PhoneEntity> phones = existingPerson.getPhones();
+        validator.validate(person);
 
         PersonEntity personEntity = mapToEntity(person);
         personEntity.setPhones(phones);
@@ -126,8 +89,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void delete(Long personId) {
-        Person person = findById(personId);
-        PersonEntity personEntity = mapToEntity(person);
+        PersonEntity personEntity = dao.findById(personId);
 
         dao.delete(personEntity);
     }

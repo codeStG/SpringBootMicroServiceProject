@@ -11,7 +11,7 @@ import com.stgcodes.endpoint.PersonController;
 import com.stgcodes.endpoint.PhoneController;
 
 @SpringBootTest
-public class ApplicationTests {
+class ApplicationTests {
 
 	@Autowired
 	private AddressController addressController;
@@ -23,7 +23,7 @@ public class ApplicationTests {
 	private PhoneController phoneController;
 	
 	@Test
-	public void contextLoads() throws Exception {
+	void contextLoads() throws Exception {
 		assertThat(personController).isNotNull();
 		assertThat(addressController).isNotNull();
 		assertThat(phoneController).isNotNull();

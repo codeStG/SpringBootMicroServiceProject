@@ -35,19 +35,7 @@ public abstract class DaoImpl<T> implements Dao<T> {
         ParameterizedType pt = (ParameterizedType) t;
         type = (Class) pt.getActualTypeArguments()[0];
     }
-
-    @Override
-    public T findById(Long id) {
-        T t = entityManager.find(type, id);
-
-        if(t == null) {
-            log.warn("The ID provided does not exist - " + id);
-            throw new IdNotFoundException(type, id.toString());
-        }
-
-        return t;
-    }
-
+    
     @Override
     public List<T> findAll() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -69,6 +57,18 @@ public abstract class DaoImpl<T> implements Dao<T> {
 
         List<T> result = entityManager.createQuery(criteria).getResultList();
         return result.isEmpty() ? Collections.emptyList() : result;
+    }
+
+    @Override
+    public T findById(Long id) {
+        T t = entityManager.find(type, id);
+
+        if(t == null) {
+            log.warn("The ID provided does not exist - " + id);
+            throw new IdNotFoundException(type, id.toString());
+        }
+
+        return t;
     }
 
     @Override

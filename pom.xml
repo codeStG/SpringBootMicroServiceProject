@@ -11,10 +11,12 @@
 	<groupId>com.stgcodes</groupId>
 	<artifactId>firstmicroservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>firstmicroservice</name>
+	<name>SpringBootStarterProject</name>
 	<description>Spring Boot Micro Service Project</description>
+
 	<properties>
 		<java.version>11</java.version>
+		<mapstruct.version>1.5.2.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
@@ -22,10 +24,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
@@ -35,16 +39,17 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 			<version>1.7</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -61,12 +66,13 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>1.5.2.Final</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
-			<version>1.5.2.Final</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
 		
 	    <dependency>
@@ -84,6 +90,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

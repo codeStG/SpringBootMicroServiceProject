@@ -18,7 +18,6 @@ import com.stgcodes.exceptions.IdNotFoundException;
 import com.stgcodes.exceptions.InvalidRequestBodyException;
 import com.stgcodes.model.Phone;
 import com.stgcodes.service.PhoneService;
-import com.stgcodes.validation.PhoneValidator;
 
 @RestController
 @RequestMapping("/phones")
@@ -26,9 +25,6 @@ public class PhoneController {
 
     @Autowired
     private PhoneService service;
-
-    @Autowired
-    private PhoneValidator validator;
 
     @GetMapping(path = "/all")
     public ResponseEntity<List<Phone>> getAllPhones() {

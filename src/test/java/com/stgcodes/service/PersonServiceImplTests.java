@@ -12,21 +12,28 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
+import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.dao.PersonDao;
 import com.stgcodes.entity.PersonEntity;
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.mappers.PersonMapper;
 import com.stgcodes.model.Person;
+import com.stgcodes.specifications.person.NameLikeSpecification;
+import com.stgcodes.specifications.person.PersonSpecifications;
 import com.stgcodes.validation.PersonValidator;
 import com.stgcodes.validation.enums.Gender;
 import com.stgcodes.validation.enums.PhoneType;
 
 @ExtendWith(MockitoExtension.class)
-public class PersonServiceImplTests {
+class PersonServiceImplTests {
 	
 	@Mock
 	private PersonDao dao;
+	
+	@Mock
+	private PersonSpecifications specs;
 	
 	@Mock
 	private PersonValidator validator;
@@ -70,23 +77,25 @@ public class PersonServiceImplTests {
 	
 	@Test
 	void testFindByCriteria() {
-//		PersonCriteria searchCriteria = PersonCriteria.builder()
-//				.firstName("r")
-//				.lastName("r")
-//				.age(0)
-//				.gender("male")
-//				.build();
-//		
-//		when(specs.containsSearchCriteria(searchCriteria))
-//			.thenReturn(Mockito.any(Specification));
-//				
-//		when(dao.findAll(spec))
-//			.thenReturn(List.of(new PersonEntity()));
-//		
-//		service.findByCriteria(searchCriteria);
-//		
-//		verify(specs).containsSearchCriteria(searchCriteria);
-//		verify(dao).findAll(spec);
+		PersonCriteria searchCriteria = PersonCriteria.builder()
+				.firstName("r")
+				.lastName("r")
+				.age(0)
+				.gender("")
+				.build();
+		
+		Specification<PersonEntity> spec = new NameLikeSpecification(searchCriteria.getFirstName());
+		
+		when(specs.whereMatches(searchCriteria))
+			.thenReturn(spec);
+				
+		when(dao.findAll(spec))
+			.thenReturn(List.of(new PersonEntity()));
+		
+		service.findByCriteria(searchCriteria);
+		
+		verify(specs).whereMatches(searchCriteria);
+		verify(dao).findAll(spec);
 	}
 	
 	@Test

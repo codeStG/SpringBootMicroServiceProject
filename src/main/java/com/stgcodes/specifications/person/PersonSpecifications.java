@@ -9,7 +9,7 @@ import com.stgcodes.criteria.PersonCriteria;
 import com.stgcodes.entity.PersonEntity;
 
 @Component
-public final class PersonSpecifications {
+public class PersonSpecifications {
 
 	private PersonSpecifications() {
 		

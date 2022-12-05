@@ -22,7 +22,7 @@ import com.stgcodes.validation.PhoneValidator;
 import com.stgcodes.validation.enums.PhoneType;
 
 @ExtendWith(MockitoExtension.class)
-public class PhoneServiceImplTests {
+class PhoneServiceImplTests {
 	
 	@Mock
 	private PhoneDao dao;

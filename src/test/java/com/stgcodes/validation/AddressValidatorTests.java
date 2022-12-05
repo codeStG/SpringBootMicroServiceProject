@@ -46,7 +46,7 @@ class AddressValidatorTests {
 
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(address), "Expected Address Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "lineone.format");
+        assertEquals("lineone.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -63,7 +63,7 @@ class AddressValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(address), "Expected Address Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "linetwo.format");
+        assertEquals("linetwo.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -81,7 +81,7 @@ class AddressValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(address), "Expected Address Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "city.format");
+        assertEquals("city.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -107,6 +107,6 @@ class AddressValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(address), "Expected Address Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "zip.format");
+        assertEquals("zip.format", ex.getErrors().getFieldError().getCode());
     }
 }

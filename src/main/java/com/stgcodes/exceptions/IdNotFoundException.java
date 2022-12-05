@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class IdNotFoundException extends RuntimeException {
 
-    public IdNotFoundException(Class clazz, String id) {
+	private static final long serialVersionUID = 1425261801890555925L;
+
+	public IdNotFoundException(Class<?> clazz, String id) {
         super(generateMessage(clazz.getSimpleName(), id));
     }
 

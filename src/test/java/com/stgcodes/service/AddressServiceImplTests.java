@@ -20,7 +20,7 @@ import com.stgcodes.validation.AddressValidator;
 import com.stgcodes.validation.enums.GeographicState;
 
 @ExtendWith(MockitoExtension.class)
-public class AddressServiceImplTests {
+class AddressServiceImplTests {
 	
 	@Mock
 	private AddressDao dao;

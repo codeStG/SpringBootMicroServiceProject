@@ -16,8 +16,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<jacoco.version>0.8.6</jacoco.version>
-		<mapstruc.version>1.5.2.Final</mapstruc.version>
+		<mapstruct.version>1.5.2.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
@@ -67,13 +66,13 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${mapstruc.version}</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
-			<version>${mapstruc.version}</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
 		
 	    <dependency>
@@ -87,20 +86,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>${jacoco.version}</version>
-		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>org.sonarsource.scanner.maven</groupId>-->
-<!--			<artifactId>sonar-maven-plugin</artifactId>-->
-<!--			<version>3.9.1.2184</version>-->
-<!--			<type>maven-plugin</type>-->
-<!--		</dependency>-->
-
 	</dependencies>
 
 	<build>
@@ -110,63 +95,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco.version}</version>
-				<executions>
-					<execution>
-						<id>jacoco-initialize</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>jacoco-site</id>
-						<phase>package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-<!--				<version>3.5.0.1254</version>-->
-				<executions>
-					<execution>
-						<id>verify-sonar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>sonar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>sonar</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<sonar.host.url>http://localhost:9000</sonar.host.url>
-				<sonar.projectKey>SpringBootStarterProject</sonar.projectKey>
-				<sonar.login>2da6f126fa78bfb403b6242c26170305f0df709c</sonar.login>
-				<!-- JaCoCo Properties -->
-				<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-				<sonar.language>java</sonar.language>
-				<sonar.exclusions>**/test/**/*</sonar.exclusions>
-			</properties>
-		</profile>
-	</profiles>
 </project>

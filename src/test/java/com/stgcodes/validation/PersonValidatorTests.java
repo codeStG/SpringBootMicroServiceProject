@@ -62,7 +62,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "name.format");
+        assertEquals("name.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -80,7 +80,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "name.format");
+        assertEquals("name.format", ex.getErrors().getFieldError().getCode());
     }
     
     @Test
@@ -106,7 +106,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "username.format");
+        assertEquals("username.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -124,7 +124,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "date.future");
+        assertEquals("date.future", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -142,7 +142,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "ssn.format");
+        assertEquals("ssn.format", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -159,7 +159,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "gender.invalid");
+        assertEquals("gender.invalid", ex.getErrors().getFieldError().getCode());
     }
 
     @ParameterizedTest
@@ -177,7 +177,7 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "email.format");
+        assertEquals("email.format", ex.getErrors().getFieldError().getCode());
     }
 
     @Test
@@ -186,6 +186,6 @@ class PersonValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(person), "Expected Person Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "phones.size");
+        assertEquals("phones.size", ex.getErrors().getFieldError().getCode());
     }
 }

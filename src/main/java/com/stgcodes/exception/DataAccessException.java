@@ -2,7 +2,9 @@ package com.stgcodes.exception;
 
 public class DataAccessException extends RuntimeException {
 
-    public DataAccessException() {
+	private static final long serialVersionUID = 5200076483886125467L;
+
+	public DataAccessException() {
         super();
     }
 

@@ -61,7 +61,7 @@ class PhoneValidatorTests {
         
         InvalidRequestBodyException ex =  
         		assertThrows(InvalidRequestBodyException.class, () -> validator.validate(phone), "Expected Phone Validator to throw but it did not");
-        assertEquals(ex.getErrors().getFieldError().getCode(), "phonenumber.format");
+        assertEquals("phonenumber.format", ex.getErrors().getFieldError().getCode());
     }
     
     @Test
@@ -75,6 +75,6 @@ class PhoneValidatorTests {
     void testUserHasOnePhoneOnDelete() {    	
     	IllegalPhoneDeletionException ex =  
         		assertThrows(IllegalPhoneDeletionException.class, () -> validator.validateUserHasMorePhones(personEntity), "Expected Phone Validator to throw but it did not");
-        assertEquals(ex.getMessage(), "User account must have at least one Phone");
+        assertEquals("User account must have at least one Phone", ex.getMessage());
     }
 }

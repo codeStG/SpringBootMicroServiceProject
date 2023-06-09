@@ -1,12 +1,11 @@
 package com.stgcodes.specifications.user;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
+import com.stgcodes.criteria.UserCriteria;
+import com.stgcodes.entity.UserEntity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import com.stgcodes.criteria.UserCriteria;
-import com.stgcodes.entity.UserEntity;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
 public class UserSpecifications {

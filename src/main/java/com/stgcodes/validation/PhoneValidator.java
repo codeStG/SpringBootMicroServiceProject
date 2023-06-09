@@ -1,18 +1,16 @@
 package com.stgcodes.validation;
 
-import static com.stgcodes.utils.constants.CustomMatchers.US_PHONE;
-
+import com.stgcodes.entity.UserEntity;
+import com.stgcodes.exceptions.IllegalPhoneDeletionException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.model.Phone;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
-import com.stgcodes.entity.UserEntity;
-import com.stgcodes.exceptions.IllegalPhoneDeletionException;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.Phone;
-
-import lombok.extern.slf4j.Slf4j;
+import static com.stgcodes.utils.constants.CustomMatchers.US_PHONE;
 
 @Slf4j
 @Component

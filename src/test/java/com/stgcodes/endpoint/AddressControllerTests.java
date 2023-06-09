@@ -1,16 +1,10 @@
 package com.stgcodes.endpoint;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.List;
-import java.util.Locale;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stgcodes.dao.AddressDao;
+import com.stgcodes.entity.AddressEntity;
+import com.stgcodes.model.Address;
+import com.stgcodes.validation.enums.GeographicState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stgcodes.dao.AddressDao;
-import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.model.Address;
-import com.stgcodes.validation.enums.GeographicState;
+import java.util.List;
+import java.util.Locale;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest()
 @AutoConfigureMockMvc

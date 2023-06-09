@@ -1,18 +1,17 @@
 package com.stgcodes.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.stgcodes.dao.UserDao;
 import com.stgcodes.dao.PhoneDao;
-import com.stgcodes.entity.UserEntity;
+import com.stgcodes.dao.UserDao;
 import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.mappers.PhoneMapper;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.PhoneValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component("phoneService")
 public class PhoneServiceImpl implements PhoneService {

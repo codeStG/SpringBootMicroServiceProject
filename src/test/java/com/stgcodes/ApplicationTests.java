@@ -1,14 +1,13 @@
 package com.stgcodes;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.stgcodes.endpoint.AddressController;
+import com.stgcodes.endpoint.PhoneController;
+import com.stgcodes.endpoint.UserController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.stgcodes.endpoint.AddressController;
-import com.stgcodes.endpoint.UserController;
-import com.stgcodes.endpoint.PhoneController;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ApplicationTests {

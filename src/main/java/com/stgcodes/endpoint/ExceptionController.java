@@ -1,9 +1,11 @@
 package com.stgcodes.endpoint;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
+import com.stgcodes.error.ApiError;
+import com.stgcodes.exception.DataAccessException;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.IllegalPhoneDeletionException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -15,13 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.stgcodes.error.ApiError;
-import com.stgcodes.exception.DataAccessException;
-import com.stgcodes.exceptions.IdNotFoundException;
-import com.stgcodes.exceptions.IllegalPhoneDeletionException;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)

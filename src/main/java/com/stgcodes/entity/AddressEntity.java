@@ -1,6 +1,11 @@
 package com.stgcodes.entity;
 
-import java.util.Objects;
+import com.stgcodes.validation.enums.GeographicState;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,15 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.Hibernate;
-
-import com.stgcodes.validation.enums.GeographicState;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ADDRESS_TBL")

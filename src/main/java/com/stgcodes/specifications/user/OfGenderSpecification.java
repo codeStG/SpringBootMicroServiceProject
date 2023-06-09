@@ -1,20 +1,19 @@
 package com.stgcodes.specifications.user;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import com.stgcodes.criteria.UserCriteria;
+import com.stgcodes.entity.UserEntity;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.validation.enums.Gender;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
-import com.stgcodes.criteria.UserCriteria;
-import com.stgcodes.entity.UserEntity;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.validation.enums.Gender;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 public class OfGenderSpecification implements Specification<UserEntity> {
 

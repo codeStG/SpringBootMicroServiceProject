@@ -1,16 +1,15 @@
 package com.stgcodes.mappers;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.entity.UserEntity;
+import com.stgcodes.model.User;
+import com.stgcodes.validation.enums.Gender;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.stgcodes.entity.UserEntity;
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.model.User;
-import com.stgcodes.validation.enums.Gender;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 class UserMapperTests {
 
@@ -45,11 +44,10 @@ class UserMapperTests {
         userEntity.setFirstName("User");
         userEntity.setLastName("Name");
         userEntity.setUsername("username");
-        userEntity.setDateOfBirth(LocalDate.now());
+        userEntity.setDateOfBirth(LocalDate.of(1973, 01,01));
         userEntity.setSocialSecurityNumber("123-45-6789");
         userEntity.setGender(Gender.REFUSE);
         userEntity.setEmail("email@address.com");
-
 
         User user = UserMapper.INSTANCE.userEntityToUser(userEntity);
 
@@ -60,23 +58,20 @@ class UserMapperTests {
         Assertions.assertEquals(userEntity.getSocialSecurityNumber(), user.getSocialSecurityNumber());
         Assertions.assertEquals(userEntity.getGender(), user.getGender());
         Assertions.assertEquals(userEntity.getEmail(), user.getEmail());
+
+        int expectedAge = LocalDate.now().getYear() - userEntity.getDateOfBirth().getYear();
+        Assertions.assertEquals(expectedAge, user.getAge());
     }
 
     @Test
     void testMapNullModelToNullEntity() {
-        User user = null;
-
-        UserEntity userEntity = UserMapper.INSTANCE.userToUserEntity(user);
-
+        UserEntity userEntity = UserMapper.INSTANCE.userToUserEntity(null);
         Assertions.assertNull(userEntity);
     }
 
     @Test
     void testMapNullEntityToNullModel() {
-        UserEntity userEntity = null;
-
-        User user = UserMapper.INSTANCE.userEntityToUser(userEntity);
-
+        User user = UserMapper.INSTANCE.userEntityToUser(null);
         Assertions.assertNull(user);
     }
 }

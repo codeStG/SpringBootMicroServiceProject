@@ -1,10 +1,11 @@
 package com.stgcodes.service;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import com.stgcodes.dao.AddressDao;
+import com.stgcodes.entity.AddressEntity;
+import com.stgcodes.mappers.AddressMapper;
+import com.stgcodes.model.Address;
+import com.stgcodes.validation.AddressValidator;
+import com.stgcodes.validation.enums.GeographicState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.stgcodes.dao.AddressDao;
-import com.stgcodes.entity.AddressEntity;
-import com.stgcodes.mappers.AddressMapper;
-import com.stgcodes.model.Address;
-import com.stgcodes.validation.AddressValidator;
-import com.stgcodes.validation.enums.GeographicState;
+import java.util.List;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AddressServiceImplTests {

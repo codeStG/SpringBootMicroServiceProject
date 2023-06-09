@@ -16,7 +16,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<mapstruct.version>1.5.2.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
@@ -72,7 +71,6 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
-			<version>${mapstruct.version}</version>
 		</dependency>
 
 		<dependency>

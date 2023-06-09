@@ -1,34 +1,32 @@
 package com.stgcodes.service;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.stgcodes.criteria.UserCriteria;
 import com.stgcodes.dao.UserDao;
-import com.stgcodes.entity.UserEntity;
 import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.entity.UserEntity;
 import com.stgcodes.mappers.UserMapper;
 import com.stgcodes.model.User;
 import com.stgcodes.specifications.user.UserSpecifications;
 import com.stgcodes.utils.sorting.UserComparator;
 import com.stgcodes.validation.UserValidator;
+import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component("userService")
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserDao dao;
-    
-    @Autowired
-    private UserSpecifications specs;
-
-    @Autowired
-    private UserValidator validator;
+    private final  UserDao dao;
+    private final  UserSpecifications specs;
+    private final  UserValidator validator;
 
     @Override
     public List<User> findAll() {
@@ -60,6 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = DataAccessException.class)
     public User save(User user) {
         validator.validate(user);
         

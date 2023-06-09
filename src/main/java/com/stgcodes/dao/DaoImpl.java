@@ -1,9 +1,11 @@
 package com.stgcodes.dao;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.List;
+import com.stgcodes.exception.DataAccessException;
+import com.stgcodes.exceptions.IdNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,14 +14,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.stgcodes.exception.DataAccessException;
-import com.stgcodes.exceptions.IdNotFoundException;
-
-import lombok.extern.slf4j.Slf4j;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Transactional
@@ -72,14 +70,17 @@ public abstract class DaoImpl<T> implements Dao<T> {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = DataAccessException.class)
     public T save(final T t) {
         try {
             entityManager.persist(t);
+            throw new PersistenceException("testing rollback");
         } catch(PersistenceException ex) {
             log.error(ex.getMessage());
             throw new DataAccessException("Encountered an error while attempting to save");
         }
-        return t;
+        finally {
+        return t;}
     }
 
     @Override

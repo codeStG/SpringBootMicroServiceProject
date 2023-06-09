@@ -1,10 +1,7 @@
 package com.stgcodes.config;
 
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,14 +9,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @PropertySource({"classpath:/application.properties"})
@@ -42,8 +39,11 @@ public class JpaTransactionManagerConfiguration {
     @Value("${spring.jpa.database-platform}")
     private String hibernateDialect;
 
-    @Bean(destroyMethod = "close")
-    public DataSource actualDataSource() {
+    private static final int MAX_POOL_SIZE = 3;
+
+    private static final String PACKAGE_TO_SCAN = "com.stgcodes.entity";
+
+    public DataSource dataSource() {
         Properties driverProperties = new Properties();
         driverProperties.setProperty("url", jdbcUrl);
         driverProperties.setProperty("user", jdbcUser);
@@ -53,15 +53,11 @@ public class JpaTransactionManagerConfiguration {
         properties.put("driverClassName", driverClassName);
         properties.put("jdbcUrl", jdbcUrl);
         properties.put("dataSourceProperties", driverProperties);
-        properties.setProperty("maximumPoolSize", String.valueOf(3));
+        properties.setProperty("maximumPoolSize", String.valueOf(MAX_POOL_SIZE));
 
         return new HikariDataSource(new HikariConfig(properties));
     }
 
-    @Bean
-    public DataSource dataSource() {
-        return actualDataSource();
-    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -69,11 +65,12 @@ public class JpaTransactionManagerConfiguration {
         entityManagerFactoryBean.setPersistenceUnitName(persistenceUnitName());
         entityManagerFactoryBean.setPersistenceProvider(new HibernatePersistenceProvider());
         entityManagerFactoryBean.setDataSource(dataSource());
-        entityManagerFactoryBean.setPackagesToScan(packagesToScan());
+        entityManagerFactoryBean.setPackagesToScan(PACKAGE_TO_SCAN);
 
-        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
+        entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+
         entityManagerFactoryBean.setJpaProperties(additionalProperties());
+
         return entityManagerFactoryBean;
     }
 
@@ -97,12 +94,6 @@ public class JpaTransactionManagerConfiguration {
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.current_session_context_class", "thread");
         return properties;
-    }
-
-    protected String[] packagesToScan() {
-        return new String[]{
-                "com.stgcodes.entity"
-        };
     }
 
     private String persistenceUnitName() {

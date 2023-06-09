@@ -1,24 +1,21 @@
 package com.stgcodes.validation;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.List;
-
+import com.stgcodes.entity.UserEntity;
+import com.stgcodes.exceptions.IllegalPhoneDeletionException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.mappers.PhoneMapper;
+import com.stgcodes.mappers.UserMapper;
+import com.stgcodes.model.Phone;
+import com.stgcodes.model.User;
+import com.stgcodes.validation.enums.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.stgcodes.entity.UserEntity;
-import com.stgcodes.exceptions.IllegalPhoneDeletionException;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.mappers.UserMapper;
-import com.stgcodes.mappers.PhoneMapper;
-import com.stgcodes.model.User;
-import com.stgcodes.model.Phone;
-import com.stgcodes.validation.enums.PhoneType;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class PhoneValidatorTests {

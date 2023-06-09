@@ -1,11 +1,10 @@
 package com.stgcodes.mappers;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import com.stgcodes.entity.PhoneEntity;
 import com.stgcodes.model.Phone;
 import com.stgcodes.validation.enums.PhoneType;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class PhoneMapperTests {
 

@@ -1,8 +1,8 @@
 package com.stgcodes.dao;
 
-import java.util.List;
-
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.List;
 
 public interface Dao<T> {
     T findById(Long id);

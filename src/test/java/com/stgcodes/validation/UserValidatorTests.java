@@ -1,24 +1,21 @@
 package com.stgcodes.validation;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.model.User;
+import com.stgcodes.validation.enums.Gender;
+import com.stgcodes.validation.enums.PhoneType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.User;
-import com.stgcodes.validation.enums.Gender;
-import com.stgcodes.validation.enums.PhoneType;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UserValidatorTests {
 

@@ -1,11 +1,16 @@
 package com.stgcodes.service;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.util.List;
-
+import com.stgcodes.criteria.UserCriteria;
+import com.stgcodes.dao.UserDao;
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.entity.UserEntity;
+import com.stgcodes.mappers.UserMapper;
+import com.stgcodes.model.User;
+import com.stgcodes.specifications.user.NameLikeSpecification;
+import com.stgcodes.specifications.user.UserSpecifications;
+import com.stgcodes.validation.UserValidator;
+import com.stgcodes.validation.enums.Gender;
+import com.stgcodes.validation.enums.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,17 +19,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.stgcodes.criteria.UserCriteria;
-import com.stgcodes.dao.UserDao;
-import com.stgcodes.entity.UserEntity;
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.mappers.UserMapper;
-import com.stgcodes.model.User;
-import com.stgcodes.specifications.user.NameLikeSpecification;
-import com.stgcodes.specifications.user.UserSpecifications;
-import com.stgcodes.validation.UserValidator;
-import com.stgcodes.validation.enums.Gender;
-import com.stgcodes.validation.enums.PhoneType;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTests {

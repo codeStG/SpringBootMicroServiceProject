@@ -1,10 +1,13 @@
 package com.stgcodes.service;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import com.stgcodes.dao.PhoneDao;
+import com.stgcodes.dao.UserDao;
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.entity.UserEntity;
+import com.stgcodes.mappers.PhoneMapper;
+import com.stgcodes.model.Phone;
+import com.stgcodes.validation.PhoneValidator;
+import com.stgcodes.validation.enums.PhoneType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,14 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.stgcodes.dao.UserDao;
-import com.stgcodes.dao.PhoneDao;
-import com.stgcodes.entity.UserEntity;
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.mappers.PhoneMapper;
-import com.stgcodes.model.Phone;
-import com.stgcodes.validation.PhoneValidator;
-import com.stgcodes.validation.enums.PhoneType;
+import java.util.List;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PhoneServiceImplTests {

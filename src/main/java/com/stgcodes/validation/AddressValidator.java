@@ -1,16 +1,14 @@
 package com.stgcodes.validation;
 
-import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
-
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.model.Address;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.Address;
-
-import lombok.extern.slf4j.Slf4j;
+import static com.stgcodes.utils.constants.CustomMatchers.US_ZIP_CODE;
 
 @Slf4j
 @Component

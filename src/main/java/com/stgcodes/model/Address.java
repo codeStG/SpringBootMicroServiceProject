@@ -1,7 +1,6 @@
 package com.stgcodes.model;
 
 import com.stgcodes.validation.enums.GeographicState;
-
 import lombok.Builder;
 import lombok.Data;
 

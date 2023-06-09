@@ -1,9 +1,9 @@
 package com.stgcodes.service;
 
-import java.util.List;
-
 import com.stgcodes.criteria.UserCriteria;
 import com.stgcodes.model.User;
+
+import java.util.List;
 
 public interface UserService {
     List<User> findAll();

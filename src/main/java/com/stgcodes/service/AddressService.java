@@ -1,8 +1,8 @@
 package com.stgcodes.service;
 
-import java.util.List;
-
 import com.stgcodes.model.Address;
+
+import java.util.List;
 
 public interface AddressService {
     List<Address> findAll();

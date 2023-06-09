@@ -1,11 +1,10 @@
 package com.stgcodes.mappers;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import com.stgcodes.entity.AddressEntity;
 import com.stgcodes.model.Address;
 import com.stgcodes.validation.enums.GeographicState;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class AddressMapperTests {
 

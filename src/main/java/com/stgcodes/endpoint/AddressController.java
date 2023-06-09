@@ -1,7 +1,10 @@
 package com.stgcodes.endpoint;
 
-import java.util.List;
-
+import com.stgcodes.exception.DataAccessException;
+import com.stgcodes.exceptions.IdNotFoundException;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.model.Address;
+import com.stgcodes.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stgcodes.exception.DataAccessException;
-import com.stgcodes.exceptions.IdNotFoundException;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.Address;
-import com.stgcodes.service.AddressService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/addresses")

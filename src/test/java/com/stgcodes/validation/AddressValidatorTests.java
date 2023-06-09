@@ -1,17 +1,14 @@
 package com.stgcodes.validation;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.model.Address;
+import com.stgcodes.validation.enums.GeographicState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.Address;
-import com.stgcodes.validation.enums.GeographicState;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AddressValidatorTests {
 

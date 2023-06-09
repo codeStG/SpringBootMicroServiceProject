@@ -1,24 +1,20 @@
 package com.stgcodes.validation;
 
-import static com.stgcodes.utils.constants.CustomMatchers.LETTER;
-import static com.stgcodes.utils.constants.CustomMatchers.SOCIAL_SECURITY;
-import static com.stgcodes.utils.constants.CustomMatchers.USERNAME;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.regex.Pattern;
-
+import com.stgcodes.entity.PhoneEntity;
+import com.stgcodes.exceptions.InvalidRequestBodyException;
+import com.stgcodes.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
-import com.stgcodes.entity.PhoneEntity;
-import com.stgcodes.exceptions.InvalidRequestBodyException;
-import com.stgcodes.model.User;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.regex.Pattern;
 
-import lombok.extern.slf4j.Slf4j;
+import static com.stgcodes.utils.constants.CustomMatchers.*;
 
 @Slf4j
 @Component
